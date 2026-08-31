@@ -7,6 +7,7 @@
   <title>VIJAY Construction - Papa's Master Control Hub</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="data.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -232,6 +233,9 @@
       </div>
 
       <div class="flex items-center gap-2">
+        <button onclick="triggerHaptic(); refreshFromCloud()" class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-xs active:scale-90" title="Sync Cloud Now">
+          🔄
+        </button>
         <button onclick="triggerHaptic(); toggleAdminLanguage()" class="px-2.5 py-1 rounded-full text-[11px] font-black bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 active:scale-95" id="adminLangToggleBtn">
           🌐 हिन्दी
         </button>
@@ -244,9 +248,7 @@
     <!-- Main Body Container -->
     <main class="flex-1 overflow-y-auto no-scrollbar px-4 pt-3 pb-28 space-y-4" id="mainAppScroll">
 
-      <!-- ========================================== -->
       <!-- TAB 1: 🏠 DASHBOARD -->
-      <!-- ========================================== -->
       <section id="view-dashboard" class="space-y-4">
         
         <div class="flex items-center justify-between p-2 rounded-2xl bg-black/5 dark:bg-white/5">
@@ -373,9 +375,7 @@
         </div>
       </section>
 
-      <!-- ========================================== -->
-      <!-- TAB 2: 👷 LABOUR (WITH DEDICATED HERO) -->
-      <!-- ========================================== -->
+      <!-- TAB 2: 👷 LABOUR -->
       <section id="view-labour" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
@@ -430,9 +430,7 @@
         <div id="workersListContainer" class="space-y-3 pb-8"></div>
       </section>
 
-      <!-- ========================================== -->
       <!-- TAB 3: ⚡ THEKEDAR -->
-      <!-- ========================================== -->
       <section id="view-thekedar" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
@@ -468,9 +466,7 @@
         <div id="thekedarListContainer" class="space-y-3 pb-8"></div>
       </section>
 
-      <!-- ========================================== -->
       <!-- TAB 4: 📦 DEMANDS HUB -->
-      <!-- ========================================== -->
       <section id="view-materials" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
@@ -512,9 +508,7 @@
         <div id="materialsListContainer" class="space-y-3 pb-8"></div>
       </section>
 
-      <!-- ========================================== -->
       <!-- TAB 5: 📢 CLIENT & PROJECT PROGRESS -->
-      <!-- ========================================== -->
       <section id="view-client" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
@@ -822,7 +816,6 @@
   </div>
 
   <script>
-    const MASTER_DB_KEY = 'vijay_subadmin_master_v5';
     const MASTER_ADMIN_PIN = "2026";
     let currentAdminLang = localStorage.getItem('vj_admin_lang') || 'hi';
     let expandedWorkerIds = new Set();
@@ -830,108 +823,25 @@
     let currentThekedarPayId = null;
     let currentProgProjectId = null;
     let currentDemandFilter = 'ALL';
-
-    // Language Dictionary
-    const adminI18n = {
-      hi: {
-        filterSite: "साइट चुनें:",
-        profitTitle: "अनुमानित मुनाफा (Net Profit)",
-        income: "क्लाइंट आमदनी",
-        expense: "कुल खर्चे",
-        labourDue: "शनिवार लेबर बकाया",
-        satBagTitle: "शनिवार नगद निकासी (Cash Bag)",
-        satBagSub: "शनिवार को हिसाब चुकाने के लिए बैंक से निकालने योग्य कैश",
-        manpowerTitle: "👥 लेबर उपस्थिति व लाइव साइट्स",
-        onDuty: "ड्यूटी पर (P)",
-        absent: "छुट्टी (A)",
-        unmarked: "अनमार्क",
-        photoGallery: "📸 लाइव साइट पैक-अप प्रूफ",
-        directControls: "डायरेक्ट फील्ड कंट्रोल्स",
-        tileLabour: "लेबर हाजिरी",
-        tileKharcha: "जेब खर्चा (एडवांस)",
-        tileThekedar: "ठेकेदार बिल व पेमेंट",
-        tileDemands: "मांग (सामान व लेबर)",
-        tileClient: "क्लाइंट व साइट प्रोग्रेस",
-        haziriMatrix: "लेबर हाजिरी व ओटी मैट्रिक्स",
-        markAll: "सबको P लगाएं",
-        finalSubmit: "फाइनल सबमिट 🔒",
-        navHome: "होम",
-        navLabour: "लेबर",
-        navThekedar: "ठेकेदार",
-        navDemands: "मांग",
-        navClient: "क्लाइंट",
-        thekTitle: "ठेकेदार RA व पेमेंट्स",
-        demandsTitle: "सामान व लेबर मांग हब",
-        clientTitle: "क्लाइंट्स व साइट प्रोग्रेस हब",
-        labHeroTitle: "शनिवार कैश जरूरत (लेबर बकाया)",
-        labEarned: "कुल कमाई",
-        labAdvance: "काटा गया एडवांस",
-        labShifts: "कुल हाजिरी",
-        thekHeroTitle: "ठेकेदारों का कुल बकाया (Liability)",
-        thekContractVal: "कुल ठेका वैल्यू",
-        thekPaidVal: "चुकाया गया",
-        thekActive: "चालू काम",
-        demHeroTitle: "पेंडिंग फील्ड मांग (Queue)",
-        demMatCount: "सामान मांग",
-        demLabCount: "कारीगर मांग",
-        demApproved: "मंजूर (Approved)",
-        cliHeroTitle: "मार्केट से वसूली बाकी (Bakaaya)",
-        cliBooked: "कुल बुक वैल्यू",
-        cliReceived: "प्राप्त आमदनी",
-        cliSites: "कुल प्रोजेक्ट्स",
-        langToggle: "🌐 English"
-      },
-      en: {
-        filterSite: "Filter Site:",
-        profitTitle: "Net Estimated Profit",
-        income: "Client Inward",
-        expense: "Total Expenses",
-        labourDue: "Labour Net Due",
-        satBagTitle: "Saturday Cash Required (Bank Bag)",
-        satBagSub: "Estimated cash needed for Saturday settlements",
-        manpowerTitle: "👥 Manpower & Live Sites",
-        onDuty: "On Duty (P)",
-        absent: "Chhutti (A)",
-        unmarked: "Unmarked",
-        photoGallery: "📸 Live Site Pack-Up Proofs",
-        directControls: "Direct Field Controls",
-        tileLabour: "Labour Attendance",
-        tileKharcha: "Fast Advance (Kharcha)",
-        tileThekedar: "Thekedar RA & Payments",
-        tileDemands: "Demands Hub",
-        tileClient: "Client Hub & Progress",
-        haziriMatrix: "Labour Attendance & OT Matrix",
-        markAll: "Mark All P",
-        finalSubmit: "Final Submit 🔒",
-        navHome: "Home",
-        navLabour: "Labour",
-        navThekedar: "Thekedar",
-        navDemands: "Demands",
-        navClient: "Client",
-        thekTitle: "Thekedar RA & Payments",
-        demandsTitle: "Field Demands & Orders",
-        clientTitle: "Client Hub & Site Progress",
-        labHeroTitle: "Saturday Cash Needed (Labour Due)",
-        labEarned: "Gross Wages",
-        labAdvance: "Advance Cut",
-        labShifts: "Total Shifts",
-        thekHeroTitle: "Net Thekedar Liability",
-        thekContractVal: "Total Contracts",
-        thekPaidVal: "Released Paid",
-        thekActive: "Active Sites",
-        demHeroTitle: "Pending Field Demands (Queue)",
-        demMatCount: "Material Demands",
-        demLabCount: "Labour Demands",
-        demApproved: "Approved Done",
-        cliHeroTitle: "Total Market Recovery (Bakaaya)",
-        cliBooked: "Total Booked",
-        cliReceived: "Received Inward",
-        cliSites: "Total Projects",
-        langToggle: "🌐 हिन्दी"
-      }
-    };
+    let db = defaultMasterDB;
 
     function triggerHaptic() { if ('vibrate' in navigator) navigator.vibrate([15]); }
+
+    async function initAdminApp() {
+      db = await getCloudMasterDB();
+      renderAllViews();
+    }
+
+    async function refreshFromCloud() {
+      db = await getCloudMasterDB();
+      renderAllViews();
+      alert("☁️ Cloud Database Live Refresh Ho Gaya!");
+    }
+
+    async function saveState() {
+      await saveCloudMasterDB(db);
+      renderAllViews();
+    }
 
     function toggleAdminLanguage() {
       currentAdminLang = currentAdminLang === 'hi' ? 'en' : 'hi';
@@ -1007,40 +917,6 @@
 
     function getTodayString() { return new Date().toISOString().slice(0, 10); }
 
-    function defaultDatabase() {
-      return {
-        projects: [
-          { id: 'P1', client: 'Sharma Ji', name: 'Flat 309 (Dilshad Garden)', totalValue: 500000, received: 180000, progress: 65, phase: 'Plaster & Electrical Piping' },
-          { id: 'P2', client: 'Gupta Ji', name: 'Villa 12 (Shahdara)', totalValue: 1200000, received: 400000, progress: 35, phase: 'Brickwork & Conduit Wiring' }
-        ],
-        suppliers: ["Gupta Building Material", "Aggarwal Hardware", "Sharma Paint & Sanitary"],
-        workers: [
-          { id: 'W1', name: 'Ramesh Mistri', role: 'Mistri', rate: 800, otRate: 100, site: 'P1', phone: '9811000001', pin: '1234', photo: '', att: {}, advance: 200, advanceList: [], bakaaya: 0, gpsMatch: true },
-          { id: 'W2', name: 'Suresh Mazdoor', role: 'Mazdoor', rate: 500, otRate: 65, site: 'P1', phone: '9811000004', pin: '1234', photo: '', att: {}, advance: 100, advanceList: [], bakaaya: 0, gpsMatch: true }
-        ],
-        thekedars: [
-          { id: 'T1', name: 'Raju Electrical Thekedar', site: 'P2', work: 'Wiring & DB Dressing @ Villa 12', value: 85000, paid: 54200, progress: 60 }
-        ],
-        materials: [
-          { id: 'M1', type: 'material', category: 'Cement & Masonry', item: 'Ultratech PPC Cement (10 Bags)', site: 'P1', supplier: 'Gupta Building Material', requestedBy: 'Ramesh Mistri', time: '09:30 AM', status: 'Pending' },
-          { id: 'M2', type: 'manpower', category: 'Manpower / Karigar', item: '2 Workers - Mazdoor (Kal Dhalai)', site: 'P1', requestedBy: 'Ramesh Mistri', time: '11:00 AM', status: 'Pending' }
-        ],
-        siteProofs: [
-          { id: 'SP1', worker: 'Ramesh Mistri', site: 'Flat 309 (Dilshad Garden)', time: 'Today • 06:15 PM', img: '' }
-        ],
-        ledger: [
-          { id: 'L1', site: 'P1', type: 'income', amount: 180000, note: 'Sharma Ji Advance (Flat 309)', date: getTodayString() }
-        ]
-      };
-    }
-
-    let db = JSON.parse(localStorage.getItem(MASTER_DB_KEY)) || defaultDatabase();
-
-    function saveState() {
-      localStorage.setItem(MASTER_DB_KEY, JSON.stringify(db));
-      renderAllViews();
-    }
-
     function updateNavBadges() {
       const pendingCount = (db.materials || []).filter(m => m.status === 'Pending').length;
       const badge = document.getElementById('navBadgeDemand');
@@ -1052,10 +928,10 @@
       }
     }
 
-    function getWorkerShifts(w) { return Object.values(w.att || {}).reduce((acc, v) => acc + ((v.status || v) === 'P' ? 1 : ((v.status || v) === 'HD' ? 0.5 : 0)), 0); }
-    function getWorkerOTPay(w) { return Object.values(w.att || {}).reduce((acc, v) => acc + ((v.ot || 0) * (w.otRate || 100)), 0); }
-    function getWorkerDue(w) { return Math.max(0, (getWorkerShifts(w) * w.rate) + getWorkerOTPay(w) + (w.bakaaya || 0) - (w.advance || 0)); }
-    function getProjectObj(pId) { return db.projects.find(p => p.id === pId) || { name: 'General Site', client: 'Client' }; }
+    function getWorkerShifts(w) { return calcWorkerShifts(w); }
+    function getWorkerOTPay(w) { return calcWorkerOTPay(w); }
+    function getWorkerDue(w) { return calcWorkerDue(w); }
+    function getProjectObj(pId) { return getProjectDetails(db, pId); }
 
     function renderAllViews() {
       renderDashboardView();
@@ -1185,7 +1061,7 @@
       });
       if (lockedCount > 0) {
         saveState();
-        alert(`✅ ${lockedCount} workers ki haaziri Lock aur Synchronized ho gayi!`);
+        alert(`✅ ${lockedCount} workers ki haaziri Lock aur Cloud par Sync ho gayi!`);
       } else {
         alert("⚠️ Pehle haaziri (P/HD/A) lagayein!");
       }
@@ -1277,7 +1153,7 @@
                     <span class="font-black text-[14px]" style="color: var(--text-main);">${w.name}</span>
                     <span class="text-[10px] font-extrabold text-blue-600">(${w.role})</span>
                   </div>
-                  <span class="text-[10.5px] font-bold text-slate-500">📍 ${getProjectObj(w.site).name}</span>
+                  <span class="text-[10.5px] font-bold text-slate-500">📍 ${getProjectObj(w.site).name} • PIN: <b>${w.pin || '1234'}</b></span>
                 </div>
               </div>
 
@@ -1344,7 +1220,6 @@
       }).join('');
     }
 
-    // ⚡ Thekedar Payments & Milestones
     function openThekedarPayModal(tId) {
       currentThekedarPayId = tId;
       const t = db.thekedars.find(x => x.id === tId);
@@ -1432,7 +1307,6 @@
               </span>
             </div>
 
-            <!-- Milestone Progress Bar -->
             <div class="space-y-1 bg-black/5 dark:bg-white/5 p-2.5 rounded-xl">
               <div class="flex justify-between text-[11px] font-black">
                 <span class="text-slate-400">Work Done:</span>
@@ -1463,7 +1337,6 @@
       }).join('');
     }
 
-    // 📦 Demands Hub
     function filterDemands(type) {
       currentDemandFilter = type;
       ['fltDemAll', 'fltDemMat', 'fltDemLab'].forEach(id => document.getElementById(id).className = "py-2 rounded-xl font-bold text-[11.5px] text-slate-500");
@@ -1545,7 +1418,6 @@
       window.open(`https://api.whatsapp.com/send?text=${txt}`, '_blank');
     }
 
-    // 📢 Client Hub & Site Work Progress Tracking
     function openUpdateProgressModal(pId) {
       currentProgProjectId = pId;
       const p = db.projects.find(x => x.id === pId);
@@ -1603,7 +1475,6 @@
               </span>
             </div>
 
-            <!-- Site Overall Work Progress Bar -->
             <div class="space-y-1.5 p-3 rounded-2xl bg-black/5 dark:bg-white/5 cursor-pointer" onclick="triggerHaptic(); openUpdateProgressModal('${p.id}')">
               <div class="flex justify-between text-[11.5px] font-black">
                 <span class="text-slate-500">${p.phase || 'Work Progress'}:</span>
@@ -1614,7 +1485,6 @@
               </div>
             </div>
 
-            <!-- Active Team Badges -->
             <div class="space-y-1.5 pt-1">
               <span class="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wider">Active Team Assigned:</span>
               <div class="flex flex-wrap gap-1.5">
@@ -1762,17 +1632,37 @@
       const r = document.getElementById('newWRole').value;
       document.getElementById('newWRate').value = (r === 'Mistri' || r === 'Plumber' || r === 'Electrician') ? 800 : 500;
     }
-    function submitNewWorker() {
+    
+    // NAYA WORKER ADD & CLOUD ME BROADCAST
+    async function submitNewWorker() {
       const name = document.getElementById('newWName').value.trim();
       const role = document.getElementById('newWRole').value;
       const rate = parseFloat(document.getElementById('newWRate').value) || 500;
       const site = document.getElementById('newWSite').value;
       const phone = document.getElementById('newWPhone').value.trim();
       const pin = document.getElementById('newWPin').value.trim() || '1234';
-      if (!name) return alert("Worker Name required!");
-      db.workers.push({ id: 'W' + Date.now(), name, role, site, rate, otRate: (role === 'Mistri' ? 100 : 65), phone, pin, photo: '', att: {}, advance: 0, advanceList: [], bakaaya: 0, gpsMatch: true });
-      saveState();
+      if (!name || !phone) return alert("Worker Name aur Mobile Number dono zaroori hain!");
+      
+      db.workers.push({
+        id: 'W' + Date.now(),
+        name,
+        role,
+        site,
+        rate,
+        otRate: (role === 'Mistri' ? 100 : 65),
+        phone,
+        pin,
+        photo: '',
+        att: {},
+        advance: 0,
+        advanceList: [],
+        bakaaya: 0,
+        gpsMatch: true
+      });
+      
+      await saveState();
       closeAllModals();
+      alert(`✓ ${name} (Phone: ${phone}, PIN: ${pin}) add ho gaya aur Cloud Server par sync ho gaya!`);
     }
 
     function submitThekedarContract() {
@@ -1823,7 +1713,7 @@
       document.getElementById('adminLockOverlay').classList.add('hidden');
     }
 
-    saveState();
+    initAdminApp();
   </script>
 </body>
 </html>

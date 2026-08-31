@@ -7,6 +7,7 @@
   <title>VIJAY Construction - Field Worker & Partner Portal</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="data.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -224,7 +225,7 @@
       </div>
     </header>
 
-    <!-- Professional Login Form -->
+    <!-- Professional Login Form (Live Cloud Auth) -->
     <div id="view-login" class="flex-1 px-4 py-8 flex flex-col justify-center max-w-sm mx-auto w-full space-y-5">
       <div class="glass-card space-y-4 shadow-xl border-t-4 border-blue-600">
         <div class="text-center pt-2 pb-1">
@@ -259,7 +260,7 @@
     <!-- Logged-in Portal -->
     <div id="view-portal" class="hidden flex-1 overflow-y-auto no-scrollbar px-4 pt-3 pb-28 space-y-4">
       
-      <!-- Profile Card with Photo & Audio Ledger -->
+      <!-- Profile Card -->
       <div class="glass-card flex justify-between items-center py-3 px-4">
         <div class="flex items-center gap-3">
           <div class="relative cursor-pointer" onclick="document.getElementById('profilePicInput').click()" title="Change Profile Photo">
@@ -394,7 +395,7 @@
           </div>
         </div>
 
-        <!-- TAB 3: 📦 DUAL DEMAND (MATERIAL + LABOUR / MANPOWER) -->
+        <!-- TAB 3: 📦 DUAL DEMAND -->
         <div id="labour-tab-demand" class="role-tab-view hidden space-y-4">
           
           <div class="p-1 rounded-2xl bg-black/5 dark:bg-white/5 grid grid-cols-2 gap-1 border border-black/5 dark:border-white/5">
@@ -448,7 +449,7 @@
             </div>
           </div>
 
-          <!-- FORM B: MANPOWER / LABOUR DEMAND -->
+          <!-- FORM B: MANPOWER DEMAND -->
           <div id="form-demand-manpower" class="glass-card space-y-3 hidden">
             <div>
               <h3 class="text-[15px] font-black" style="color: var(--text-main);">👷‍♂️ Manpower / Karigar Demand</h3>
@@ -505,7 +506,6 @@
             </div>
           </div>
 
-          <!-- All Live Demands Status Tracking -->
           <div class="glass-card space-y-2.5">
             <span class="text-[13px] font-black" style="color: var(--text-main);">📋 Live Demand Queue</span>
             <div id="workerCombinedDemandList" class="space-y-2 text-[12px]"></div>
@@ -559,9 +559,9 @@
   </div>
 
   <script>
-    const MASTER_DB_KEY = 'vijay_subadmin_master_v5';
     let currentLabourUser = null;
     let currentLang = localStorage.getItem('vj_lang') || 'hi';
+    let liveDB = defaultMasterDB;
 
     const i18n = {
       hi: {
@@ -612,9 +612,7 @@
       }
     };
 
-    function triggerHaptic() {
-      if ('vibrate' in navigator) navigator.vibrate([15]);
-    }
+    function triggerHaptic() { if ('vibrate' in navigator) navigator.vibrate([15]); }
 
     function toggleLanguage() {
       currentLang = currentLang === 'hi' ? 'en' : 'hi';
@@ -647,33 +645,20 @@
       if (currentLabourUser) setupNav();
     }
 
-    function getMasterData() {
-      return JSON.parse(localStorage.getItem(MASTER_DB_KEY)) || {
-        projects: [{ id: 'P1', client: 'Sharma Ji', name: 'Flat 309 (Dilshad Garden)', totalValue: 500000, received: 180000, progress: 65, phase: 'Plaster & Electrical Piping' }],
-        workers: [
-          { id: 'W1', name: 'Ramesh Mistri', role: 'Mistri', rate: 800, otRate: 100, site: 'P1', phone: '9811000001', pin: '1234', photo: '', att: {}, advance: 0, advanceList: [], bakaaya: 0 },
-          { id: 'W2', name: 'Suresh Mazdoor', role: 'Mazdoor', rate: 500, otRate: 65, site: 'P1', phone: '9811000004', pin: '1234', photo: '', att: {}, advance: 0, advanceList: [], bakaaya: 0 }
-        ],
-        thekedars: [{ id: 'T1', name: 'Raju Electrical Thekedar', site: 'P1', work: 'Conduit & DB Wiring', value: 85000, paid: 54200, progress: 60 }],
-        materials: [],
-        siteProofs: []
-      };
-    }
-
-    const demoUsers = {
-      "9811000001": { pin: "1234", name: "Ramesh Mistri", role: "labour", trade: "Master Mason", av: "RM", rate: "₹800/Day (OT: ₹100/hr)", phone: "9811000001" },
-      "9811000002": { pin: "1234", name: "Raju Thekedar", role: "subcon", trade: "Electrical Contractor", av: "RJ", rate: "RA Milestone", phone: "9811000002" },
-      "9811000003": { pin: "1234", name: "Gupta Building Material", role: "supplier", trade: "Cement & Sand Vendor", av: "GB", rate: "GST Registered", phone: "9811000003" },
-      "9811000004": { pin: "1234", name: "Suresh Mazdoor", role: "labour", trade: "Field Mazdoor", av: "SM", rate: "₹500/Day (OT: ₹65/hr)", phone: "9811000004" }
-    };
-
-    function handleLogin() {
+    // 🚀 LIVE CLOUD LOGIN HANDLER
+    async function handleLogin() {
       const p = document.getElementById('inpPhone').value.trim();
       const pin = document.getElementById('inpPin').value.trim();
-      const data = getMasterData();
       
-      const workerMatch = data.workers.find(w => w.phone === p && (w.pin || '1234') === pin);
-      const thekMatch = (data.thekedars || []).find(t => t.phone === p && (t.pin || '1234') === pin);
+      const btn = document.getElementById('btnLogin');
+      btn.innerText = "Connecting to Cloud 🔄...";
+      
+      // Pull fresh data from cloud server before validating login
+      liveDB = await getCloudMasterDB();
+      btn.innerText = i18n[currentLang].loginBtn;
+
+      const workerMatch = (liveDB.workers || []).find(w => w.phone === p && (w.pin || '1234') === pin);
+      const thekMatch = (liveDB.thekedars || []).find(t => t.phone === p && (t.pin || '1234') === pin);
 
       if (workerMatch) {
         currentLabourUser = {
@@ -698,11 +683,8 @@
           rate: 'RA Milestone Contract'
         };
         routePortal();
-      } else if (demoUsers[p] && demoUsers[p].pin === pin) {
-        currentLabourUser = demoUsers[p];
-        routePortal();
       } else {
-        alert(currentLang === 'hi' ? "गलत मोबाइल नंबर या PIN!" : "Invalid Phone or PIN!");
+        alert(currentLang === 'hi' ? "गलत मोबाइल नंबर या PIN! कृपया एडमिन में रजिस्टर्ड नंबर जांचें।" : "Invalid Phone or PIN!");
       }
     }
 
@@ -740,16 +722,15 @@
       }
     }
 
-    function handleProfilePicUpload(event) {
+    async function handleProfilePicUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = async function(e) {
         const img = new Image();
-        img.onload = function() {
+        img.onload = async function() {
           const canvas = document.createElement('canvas');
-          canvas.width = 200;
-          canvas.height = 200;
+          canvas.width = 200; canvas.height = 200;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, 200, 200);
           const photoData = canvas.toDataURL('image/jpeg', 0.8);
@@ -757,13 +738,13 @@
           currentLabourUser.photo = photoData;
           renderAvatarDisplay();
 
-          const data = getMasterData();
-          const w = data.workers.find(x => x.phone === currentLabourUser.phone);
+          liveDB = await getCloudMasterDB();
+          const w = liveDB.workers.find(x => x.phone === currentLabourUser.phone);
           if (w) {
             w.photo = photoData;
-            localStorage.setItem(MASTER_DB_KEY, JSON.stringify(data));
+            await saveCloudMasterDB(liveDB);
           }
-          alert(currentLang === 'hi' ? "✓ प्रोफाइल फोटो अपडेट हो गई!" : "✓ Profile photo updated!");
+          alert(currentLang === 'hi' ? "✓ प्रोफाइल फोटो क्लाउड पर सेव हो गई!" : "✓ Profile photo updated!");
         };
         img.src = e.target.result;
       };
@@ -828,9 +809,8 @@
     }
 
     function syncLiveRoleData() {
-      const data = getMasterData();
       if (currentLabourUser.role === 'labour') {
-        const w = data.workers.find(x => x.phone === currentLabourUser.phone) || data.workers[0];
+        const w = (liveDB.workers || []).find(x => x.phone === currentLabourUser.phone) || liveDB.workers[0];
         
         let shifts = 0;
         let totalOtHours = 0;
@@ -853,14 +833,14 @@
         document.getElementById('labourAdvanceHero').innerText = `-₹${(w.advance || 0).toLocaleString('en-IN')}`;
         document.getElementById('labourShiftsCount').innerText = `${shifts} D`;
         
-        const proj = data.projects.find(p => p.id === w.site) || { name: 'Flat 309 (Dilshad Garden)' };
+        const proj = (liveDB.projects || []).find(p => p.id === w.site) || { name: 'Flat 309 (Dilshad Garden)' };
         document.getElementById('labourAssignedSite').innerText = `📍 ${proj.name}`;
 
         renderCalendarGrid(w);
         renderAdvanceHistory(w);
         renderCombinedDemands();
       } else if (currentLabourUser.role === 'subcon') {
-        const t = (data.thekedars || []).find(x => x.name.includes(currentLabourUser.name) || x.id === currentLabourUser.id) || data.thekedars[0];
+        const t = (liveDB.thekedars || []).find(x => x.name.includes(currentLabourUser.name) || x.id === currentLabourUser.id) || liveDB.thekedars[0];
         const bal = Math.max(0, t.value - t.paid);
         const prog = t.progress || 0;
 
@@ -871,14 +851,14 @@
       }
     }
 
-    function logSubconMilestone(pct) {
-      const data = getMasterData();
-      const t = (data.thekedars || []).find(x => x.name.includes(currentLabourUser.name) || x.id === currentLabourUser.id) || data.thekedars[0];
+    async function logSubconMilestone(pct) {
+      liveDB = await getCloudMasterDB();
+      const t = (liveDB.thekedars || []).find(x => x.name.includes(currentLabourUser.name) || x.id === currentLabourUser.id) || liveDB.thekedars[0];
       if (t) {
         t.progress = pct;
-        localStorage.setItem(MASTER_DB_KEY, JSON.stringify(data));
+        await saveCloudMasterDB(liveDB);
         syncLiveRoleData();
-        alert(`✓ Milestone ${pct}% logged to Papa's Hub!`);
+        alert(`✓ Milestone ${pct}% logged & synced to Papa's Hub!`);
       }
     }
 
@@ -937,34 +917,34 @@
       `).join('');
     }
 
-    function requestKharchaLabour(amt) {
-      const data = getMasterData();
-      const w = data.workers.find(x => x.phone === currentLabourUser.phone) || data.workers[0];
+    async function requestKharchaLabour(amt) {
+      liveDB = await getCloudMasterDB();
+      const w = liveDB.workers.find(x => x.phone === currentLabourUser.phone) || liveDB.workers[0];
       w.advance = (w.advance || 0) + amt;
       if (!w.advanceList) w.advanceList = [];
       const todayStr = new Date().toISOString().slice(0, 10);
       w.advanceList.unshift({ date: todayStr, amount: amt, reason: 'Field Cash' });
       
-      if (!data.ledger) data.ledger = [];
-      data.ledger.push({ id: 'L' + Date.now(), site: w.site, type: 'expense', amount: amt, note: `Field Kharcha Request (${w.name})`, date: todayStr });
+      if (!liveDB.ledger) liveDB.ledger = [];
+      liveDB.ledger.push({ id: 'L' + Date.now(), site: w.site, type: 'expense', amount: amt, note: `Field Kharcha Request (${w.name})`, date: todayStr });
       
-      localStorage.setItem(MASTER_DB_KEY, JSON.stringify(data));
+      await saveCloudMasterDB(liveDB);
       syncLiveRoleData();
       
       const txt = encodeURIComponent(`Namaste Vijay Sir, Mujhe ₹${amt} ka cash kharcha mila hai. Name: ${w.name}`);
       window.open(`https://api.whatsapp.com/send?phone=919268880221&text=${txt}`, '_blank');
     }
 
-    function submitMaterialDemandPro() {
+    async function submitMaterialDemandPro() {
       const cat = document.getElementById('demMatCategory').value;
       const item = document.getElementById('workerDemandItem').value.trim();
       const urgency = document.getElementById('demMatUrgency').value;
 
       if (!item) return alert(currentLang === 'hi' ? "सामान का नाम व क्वांटिटी लिखें!" : "Enter item details!");
       
-      const data = getMasterData();
-      const w = data.workers.find(x => x.phone === currentLabourUser.phone) || { site: 'P1' };
-      data.materials.unshift({
+      liveDB = await getCloudMasterDB();
+      const w = liveDB.workers.find(x => x.phone === currentLabourUser.phone) || { site: 'P1' };
+      liveDB.materials.unshift({
         id: 'M' + Date.now(),
         type: 'material',
         category: cat,
@@ -976,13 +956,13 @@
         time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
         status: 'Pending'
       });
-      localStorage.setItem(MASTER_DB_KEY, JSON.stringify(data));
+      await saveCloudMasterDB(liveDB);
       document.getElementById('workerDemandItem').value = '';
       renderCombinedDemands();
       alert(currentLang === 'hi' ? "📦 सामान मांग एडमिन को भेज दी गई!" : "📦 Material request sent to Admin!");
     }
 
-    function submitManpowerDemandPro() {
+    async function submitManpowerDemandPro() {
       const trade = document.getElementById('demLabTrade').value;
       const count = document.getElementById('demLabCount').value;
       const desc = document.getElementById('demLabWorkDetail').value.trim();
@@ -990,9 +970,9 @@
 
       if (!desc) return alert(currentLang === 'hi' ? "काम का विवरण दर्ज करें!" : "Enter work description!");
 
-      const data = getMasterData();
-      const w = data.workers.find(x => x.phone === currentLabourUser.phone) || { site: 'P1' };
-      data.materials.unshift({
+      liveDB = await getCloudMasterDB();
+      const w = liveDB.workers.find(x => x.phone === currentLabourUser.phone) || { site: 'P1' };
+      liveDB.materials.unshift({
         id: 'LBR' + Date.now(),
         type: 'manpower',
         category: 'Manpower / Karigar',
@@ -1004,21 +984,20 @@
         time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
         status: 'Pending'
       });
-      localStorage.setItem(MASTER_DB_KEY, JSON.stringify(data));
+      await saveCloudMasterDB(liveDB);
       document.getElementById('demLabWorkDetail').value = '';
       renderCombinedDemands();
       alert(currentLang === 'hi' ? "👷‍♂️ लेबर/कारीगर मांग एडमिन को भेज दी गई!" : "👷‍♂️ Manpower request sent to Admin!");
     }
 
     function renderCombinedDemands() {
-      const data = getMasterData();
       const container = document.getElementById('workerCombinedDemandList');
-      if (!data.materials || data.materials.length === 0) {
+      if (!liveDB.materials || liveDB.materials.length === 0) {
         container.innerHTML = `<div class="text-slate-400 p-2">${currentLang === 'hi' ? 'कोई पेंडिंग मांग नहीं है।' : 'No active requests.'}</div>`;
         return;
       }
 
-      container.innerHTML = data.materials.slice(0, 6).map(m => {
+      container.innerHTML = liveDB.materials.slice(0, 6).map(m => {
         const isManpower = m.type === 'manpower';
         return `
           <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 flex justify-between items-center border-l-4 ${isManpower ? 'border-emerald-500' : 'border-blue-500'}">
@@ -1034,14 +1013,13 @@
       }).join('');
     }
 
-    // 📸 Photo Proof Compression & Sync to Papa's Hub
     function processProofPhoto(event) {
       const file = event.target.files[0];
       if (!file) return;
       const reader = new FileReader();
       reader.onload = function(e) {
         const img = new Image();
-        img.onload = function() {
+        img.onload = async function() {
           const maxDim = 800;
           let w = img.width, h = img.height;
           if (w > maxDim || h > maxDim) {
@@ -1059,26 +1037,25 @@
           ctx.font = "bold 15px 'Plus Jakarta Sans', sans-serif";
           ctx.fillText(`VIJAY CONSTRUCTION • ${new Date().toLocaleTimeString('en-IN')}`, 14, canvas.height - 30);
           ctx.font = "11px 'Plus Jakarta Sans', sans-serif";
-          ctx.fillText(`📍 Dilshad Garden • Verified Pack-Up`, 14, canvas.height - 12);
+          ctx.fillText(`📍 Verified Site Pack-Up`, 14, canvas.height - 12);
 
           const finalData = canvas.toDataURL('image/jpeg', 0.65);
           document.getElementById('photoProofPreviewImg').src = finalData;
           document.getElementById('photoProofPreviewContainer').classList.remove('hidden');
 
-          // Sync Photo into Master Hub
-          const data = getMasterData();
-          if (!data.siteProofs) data.siteProofs = [];
-          const currentWorker = data.workers.find(x => x.phone === currentLabourUser.phone) || { site: 'P1' };
-          const projObj = (data.projects || []).find(p => p.id === currentWorker.site) || { name: 'Flat 309 (Dilshad Garden)' };
+          liveDB = await getCloudMasterDB();
+          if (!liveDB.siteProofs) liveDB.siteProofs = [];
+          const currentWorker = liveDB.workers.find(x => x.phone === currentLabourUser.phone) || { site: 'P1' };
+          const projObj = (liveDB.projects || []).find(p => p.id === currentWorker.site) || { name: 'Flat 309 (Dilshad Garden)' };
 
-          data.siteProofs.unshift({
+          liveDB.siteProofs.unshift({
             id: 'SP' + Date.now(),
             worker: currentLabourUser.name,
             site: projObj.name,
             time: `Today • ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`,
             img: finalData
           });
-          localStorage.setItem(MASTER_DB_KEY, JSON.stringify(data));
+          await saveCloudMasterDB(liveDB);
           alert(currentLang === 'hi' ? "📸 साइट फोटो पापा के कंट्रोल हब पर लाइव सेव हो गई!" : "📸 Site Photo synced to Papa's Master Hub!");
         };
         img.src = e.target.result;
@@ -1087,8 +1064,7 @@
     }
 
     function handleVoiceAudioLedger() {
-      const data = getMasterData();
-      const w = data.workers.find(x => x.phone === currentLabourUser.phone) || data.workers[0];
+      const w = (liveDB.workers || []).find(x => x.phone === currentLabourUser.phone) || liveDB.workers[0];
       let shifts = 0;
       Object.values(w.att || {}).forEach(r => {
         const st = typeof r === 'object' ? r.status : r;
@@ -1122,10 +1098,7 @@
       }
     }
 
-    function triggerCallDirect() {
-      window.location.href = "tel:+919268880221";
-    }
-
+    function triggerCallDirect() { window.location.href = "tel:+919268880221"; }
     function toggleTheme() {
       const root = document.documentElement;
       root.setAttribute('data-theme', root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
