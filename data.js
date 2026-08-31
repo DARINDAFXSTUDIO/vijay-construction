@@ -1,20 +1,59 @@
 // =========================================================================
-// 🏗️ VIJAY CONSTRUCTION - MEASUREMENT BOOK & CENTRAL ENGINE (data.js)
+// 🏗️ VIJAY CONSTRUCTION - CENTRAL DATABASE & CLIENT BILLING ENGINE (data.js)
 // =========================================================================
 
 const MASTER_DB_KEY = 'vijay_subadmin_master_v5';
 const PERSISTENT_DB_URL = "https://vijay-construction-50c0f-default-rtdb.firebaseio.com/master_db.json";
 
-// Default Master Template with Measurement Book (MB)
+// Default Master Template with Client Invoices, Milestones & Payments
 const defaultMasterDB = {
   projects: [
-    { id: 'P1', client: 'Sharma Ji', name: 'Flat 309 (Dilshad Garden)', lat: 28.6758, lng: 77.3214, totalValue: 500000, received: 180000, progress: 65, phase: 'Plaster & Electrical Piping' },
-    { id: 'P2', client: 'Gupta Ji', name: 'Villa 12 (Shahdara)', lat: 28.6692, lng: 77.2915, totalValue: 1200000, received: 400000, progress: 35, phase: 'Brickwork & Conduit Wiring' }
+    { 
+      id: 'P1', 
+      client: 'Sharma Ji', 
+      phone: '9811000009',
+      name: 'Flat 309 (Dilshad Garden)', 
+      lat: 28.6758, 
+      lng: 77.3214, 
+      totalValue: 500000, 
+      received: 180000, 
+      progress: 65, 
+      phase: 'Plaster & Electrical Piping',
+      milestones: [
+        { id: 'M1', name: 'Booking Advance', targetAmt: 100000, status: 'Received' },
+        { id: 'M2', name: 'Conduit & Electrical Piping', targetAmt: 150000, status: 'Received' },
+        { id: 'M3', name: 'Plaster & Flooring Complete', targetAmt: 150000, status: 'Pending' },
+        { id: 'M4', name: 'Final Paint & Handover', targetAmt: 100000, status: 'Pending' }
+      ]
+    },
+    { 
+      id: 'P2', 
+      client: 'Gupta Ji', 
+      phone: '9811000010',
+      name: 'Villa 12 (Shahdara)', 
+      lat: 28.6692, 
+      lng: 77.2915, 
+      totalValue: 1200000, 
+      received: 400000, 
+      progress: 35, 
+      phase: 'Brickwork & Conduit Wiring',
+      milestones: [
+        { id: 'M1', name: 'Site Agreement & Advance', targetAmt: 250000, status: 'Received' },
+        { id: 'M2', name: 'Structure & Brickwork', targetAmt: 350000, status: 'Partially Received' },
+        { id: 'M3', name: 'Sanitary & Electrical Rough-in', targetAmt: 350000, status: 'Pending' },
+        { id: 'M4', name: 'Finishing & Key Handover', targetAmt: 250000, status: 'Pending' }
+      ]
+    }
+  ],
+  clientPayments: [
+    { id: 'CPAY1', projectId: 'P1', amount: 100000, mode: 'Bank Transfer (NEFT)', milestone: 'Booking Advance', note: 'Token Advance', date: '2026-08-15' },
+    { id: 'CPAY2', projectId: 'P1', amount: 80000, mode: 'UPI (GooglePay)', milestone: 'Conduit & Piping', note: '2nd Stage Installment', date: '2026-08-28' },
+    { id: 'CPAY3', projectId: 'P2', amount: 250000, mode: 'Cheque', milestone: 'Agreement Advance', note: 'Cheque No. 441029', date: '2026-08-10' },
+    { id: 'CPAY4', projectId: 'P2', amount: 150000, mode: 'Bank Transfer (RTGS)', milestone: 'Structure Brickwork', note: 'Stage 2 payment', date: '2026-08-25' }
   ],
   suppliers: [
     { id: 'SUP1', name: 'Gupta Building Material', phone: '9811000005', category: 'Cement & Masonry', totalPurchased: 45000, totalPaid: 25000 },
-    { id: 'SUP2', name: 'Aggarwal Hardware & Tools', phone: '9811000006', category: 'Hardware & Tools', totalPurchased: 18500, totalPaid: 10000 },
-    { id: 'SUP3', name: 'Sharma Paint & Sanitary', phone: '9811000007', category: 'Paint & Plumbing', totalPurchased: 32000, totalPaid: 32000 }
+    { id: 'SUP2', name: 'Aggarwal Hardware & Tools', phone: '9811000006', category: 'Hardware & Tools', totalPurchased: 18500, totalPaid: 10000 }
   ],
   supplierBills: [],
   supplierPayments: [],
@@ -22,14 +61,7 @@ const defaultMasterDB = {
     { id: 'T1', name: 'Raju Electrical Thekedar', phone: '9811000002', pin: '1234', site: 'P2', work: 'Wiring & DB Dressing @ Villa 12', value: 85000, paid: 54200, progress: 60 },
     { id: 'T2', name: 'Manoj Tiles Thekedar', phone: '9811000008', pin: '1234', site: 'P1', work: 'Vitrified Flooring & Bathroom Tiles', value: 45000, paid: 20000, progress: 45 }
   ],
-  measurements: [
-    { id: 'MB1', thekedarId: 'T2', siteId: 'P1', location: 'Drawing Room Flooring', length: 18.5, width: 14.0, unit: 'Sq.Ft', totalArea: 259, rate: 22, amount: 5698, date: '2026-08-28' },
-    { id: 'MB2', thekedarId: 'T2', siteId: 'P1', location: 'Master Bedroom Flooring', length: 15.0, width: 12.0, unit: 'Sq.Ft', totalArea: 180, rate: 22, amount: 3960, date: '2026-08-29' },
-    { id: 'MB3', thekedarId: 'T2', siteId: 'P1', location: 'Kitchen Wall Tiles (Dado)', length: 24.0, width: 4.5, unit: 'Sq.Ft', totalArea: 108, rate: 25, amount: 2700, date: '2026-08-30' }
-  ],
-  thekedarPayments: [
-    { id: 'TP1', thekedarId: 'T2', amount: 20000, mode: 'UPI', note: 'Advance against Flooring', date: '2026-08-27' }
-  ],
+  measurements: [],
   workers: [
     { id: 'W1', name: 'Ramesh Mistri', role: 'Mistri', rate: 800, otRate: 100, site: 'P1', phone: '9811000001', pin: '1234', photo: '', att: {}, advance: 200, advanceList: [{ date: '2026-08-28', amount: 200, reason: 'Field Cash' }], bakaaya: 0, gpsMatch: true },
     { id: 'W2', name: 'Suresh Mazdoor', role: 'Mazdoor', rate: 500, otRate: 65, site: 'P1', phone: '9811000004', pin: '1234', photo: '', att: {}, advance: 100, advanceList: [{ date: '2026-08-28', amount: 100, reason: 'Field Cash' }], bakaaya: 0, gpsMatch: true }
@@ -37,7 +69,8 @@ const defaultMasterDB = {
   materials: [],
   siteProofs: [],
   ledger: [
-    { id: 'L1', site: 'P1', type: 'income', amount: 180000, note: 'Sharma Ji Advance (Flat 309)', date: '2026-08-29' }
+    { id: 'L1', site: 'P1', type: 'income', amount: 180000, note: 'Sharma Ji Advance (Flat 309)', date: '2026-08-28' },
+    { id: 'L2', site: 'P2', type: 'income', amount: 400000, note: 'Gupta Ji Inward (Villa 12)', date: '2026-08-25' }
   ],
   settlements: []
 };
@@ -48,7 +81,7 @@ async function getCloudMasterDB() {
     const res = await fetch(PERSISTENT_DB_URL, { cache: 'no-store' });
     if (res.ok) {
       const cloudData = await res.json();
-      if (cloudData && cloudData.thekedars) {
+      if (cloudData && cloudData.projects) {
         localStorage.setItem(MASTER_DB_KEY, JSON.stringify(cloudData));
         return cloudData;
       }
@@ -81,83 +114,94 @@ async function saveCloudMasterDB(data) {
   }
 }
 
-// 2. 📐 MEASUREMENT BOOK (MB) CALCULATION ENGINE
-function calcThekedarMBStats(db, thekedarId) {
-  const t = (db.thekedars || []).find(x => x.id === thekedarId);
-  if (!t) return { totalArea: 0, totalMBValue: 0, totalPaid: 0, netDue: 0, entriesCount: 0 };
-
-  const mbEntries = (db.measurements || []).filter(m => m.thekedarId === thekedarId);
-  const totalArea = mbEntries.reduce((sum, m) => sum + Number(m.totalArea || 0), 0);
-  const totalMBValue = mbEntries.reduce((sum, m) => sum + Number(m.amount || 0), 0);
+// 2. 🏛️ CLIENT BILLING & WHATSAPP RECEIPT GENERATORS
+function calcClientBillingStats(db, projectId) {
+  const p = (db.projects || []).find(x => x.id === projectId) || { totalValue: 0, received: 0, name: 'Site', client: 'Client' };
+  const payments = (db.clientPayments || []).filter(cp => cp.projectId === projectId);
   
-  // Total Paid (Contract based or MB payments)
-  const totalPaid = Number(t.paid || 0);
-  const effectiveContractVal = totalMBValue > 0 ? totalMBValue : Number(t.value || 0);
-  const netDue = Math.max(0, effectiveContractVal - totalPaid);
+  const totalReceived = payments.reduce((sum, cp) => sum + Number(cp.amount || 0), 0) || Number(p.received || 0);
+  const totalContract = Number(p.totalValue || 0);
+  const balanceRecovery = Math.max(0, totalContract - totalReceived);
+  const collectionPct = totalContract > 0 ? Math.round((totalReceived / totalContract) * 100) : 0;
 
   return {
-    totalArea: Math.round(totalArea * 100) / 100,
-    totalMBValue,
-    totalPaid,
-    netDue,
-    entriesCount: mbEntries.length,
-    mbEntries
+    totalContract,
+    totalReceived,
+    balanceRecovery,
+    collectionPct,
+    paymentsList: payments
   };
 }
 
-// 3. 📲 WHATSAPP MB PARCHA GENERATOR
-function generateThekedarMBWhatsAppSlip(t, db) {
-  const stats = calcThekedarMBStats(db, t.id);
-  const siteName = getProjectDetails(db, t.site).name;
+function generateClientWhatsAppReceipt(p, latestPayment, db) {
+  const stats = calcClientBillingStats(db, p.id);
   const dateStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 
-  let itemsListText = '';
-  stats.mbEntries.forEach((m, idx) => {
-    itemsListText += `${idx + 1}. *${m.location}*\n   📏 ${m.length} × ${m.width} = *${m.totalArea} ${m.unit}* @ ₹${m.rate} = *₹${m.amount.toLocaleString('en-IN')}*\n`;
-  });
-
-  if (!itemsListText) {
-    itemsListText = `1. *${t.work}* (Lump Sum Contract)\n   💵 Contract Value: ₹${t.value.toLocaleString('en-IN')}\n`;
-  }
-
   return encodeURIComponent(
-`*📐 VIJAY CONSTRUCTION - THEKEDAR MB BILL*
+`*🧾 VIJAY CONSTRUCTION - OFFICIAL PAYMENT RECEIPT*
 ---------------------------------------
-👤 *Thekedar:* ${t.name}
-🔨 *Work:* ${t.work}
-📍 *Site:* ${siteName}
-📅 *Date:* ${dateStr}
+👤 *Client Name:* ${p.client}
+📍 *Project / Site:* ${p.name}
+📅 *Receipt Date:* ${dateStr}
 ---------------------------------------
-*MEASUREMENT DETAILS (नाप-तोल हिसाब):*
-${itemsListText}---------------------------------------
-📐 *Total Measured Area:* ${stats.totalArea} Sq.Ft
-💰 *Total Work Value:* ₹${(stats.totalMBValue || t.value).toLocaleString('en-IN')}
-🔻 *Total Paid So Far:* -₹${stats.totalPaid.toLocaleString('en-IN')}
+💵 *Amount Received:* ₹${Number(latestPayment.amount).toLocaleString('en-IN')}
+💳 *Payment Mode:* ${latestPayment.mode || 'Online Transfer'}
+📌 *Stage / Milestone:* ${latestPayment.milestone || 'Project Installment'}
+${latestPayment.note ? `📝 *Note:* ${latestPayment.note}\n` : ''}---------------------------------------
+📊 *CONTRACT ACCOUNT SUMMARY:*
+• *Total Project Value:* ₹${stats.totalContract.toLocaleString('en-IN')}
+• *Total Received to Date:* ₹${stats.totalReceived.toLocaleString('en-IN')} (${stats.collectionPct}%)
+🟢 *OUTSTANDING BALANCE (बाकी): ₹${stats.balanceRecovery.toLocaleString('en-IN')}*
 ---------------------------------------
-🟢 *NET PAYABLE BALANCE (बाकी): ₹${stats.netDue.toLocaleString('en-IN')}*
----------------------------------------
-_Verified & Certified by: Vijay Sir_`
+_Thank you for your business!_
+*VIJAY CONSTRUCTION*
+📞 Phone: +91 9268880221 | Dilshad Garden, Delhi`
   );
 }
 
-// 4. 📊 1-CLICK EXCEL MB EXPORT
-function exportThekedarMBReportCSV(db) {
-  const list = db.measurements || [];
-  const dateStr = new Date().toISOString().slice(0, 10);
-  let csv = "VIJAY CONSTRUCTION - THEKEDAR MEASUREMENT BOOK (MB) REPORT\n";
-  csv += `Generated Date,${dateStr}\n\n`;
-  csv += "Entry ID,Thekedar Name,Site Name,Room / Location,Length (Ft),Width (Ft),Unit,Total Area,Rate (Rs),Total Amount (Rs),Date\n";
+function generateClientPaymentReminder(p, db) {
+  const stats = calcClientBillingStats(db, p.id);
+  const nextMilestone = (p.milestones || []).find(m => m.status === 'Pending') || { name: 'Next Work Stage', targetAmt: stats.balanceRecovery };
 
-  list.forEach(m => {
-    const thek = (db.thekedars || []).find(t => t.id === m.thekedarId) || { name: 'Thekedar' };
-    const site = getProjectDetails(db, m.siteId).name.replace(/,/g, ' ');
-    csv += `"${m.id}","${thek.name}","${site}","${m.location.replace(/,/g, ' ')}",${m.length},${m.width},"${m.unit}",${m.totalArea},${m.rate},${m.amount},"${m.date}"\n`;
-  });
+  return encodeURIComponent(
+`*🏗️ VIJAY CONSTRUCTION - PAYMENT INTIMATION*
+---------------------------------------
+Namaste ${p.client} Ji,
 
-  downloadCSVFile(csv, `Vijay_Construction_Thekedar_MB_${dateStr}.csv`);
+Aapke project (*${p.name}*) par *${p.phase || 'running work stage'}* ka kaam schedule ke mutabiq chal raha hai.
+
+📌 *Upcoming Milestone:* ${nextMilestone.name}
+💰 *Installment Due:* ₹${Number(nextMilestone.targetAmt || stats.balanceRecovery).toLocaleString('en-IN')}
+📊 *Total Outstanding Balance:* ₹${stats.balanceRecovery.toLocaleString('en-IN')}
+
+Kripya agla installment release karne ki kripa karein taaki material aur field operations smoothly continue rahein.
+
+*Bank / UPI Details:*
+📱 GooglePay / PhonePe: *9268880221*
+
+_Regards,_
+*Vijay Sir*
+VIJAY CONSTRUCTION`
+  );
 }
 
-// 5. STANDARD CALCULATION & WAGE UTILITIES
+// 3. 📊 1-CLICK CLIENT EXCEL REPORT
+function exportClientBillingReportCSV(db) {
+  const projects = db.projects || [];
+  const dateStr = new Date().toISOString().slice(0, 10);
+  let csv = "VIJAY CONSTRUCTION - CLIENT BILLING & RECOVERY REPORT\n";
+  csv += `Generated Date,${dateStr}\n\n`;
+  csv += "Project ID,Client Name,Site Name,Mobile,Contract Value (Rs),Total Received (Rs),Recovery Balance (Rs),Collection (%),Current Phase\n";
+
+  projects.forEach(p => {
+    const stats = calcClientBillingStats(db, p.id);
+    csv += `"${p.id}","${p.client.replace(/,/g, ' ')}","${p.name.replace(/,/g, ' ')}","${p.phone || ''}",${stats.totalContract},${stats.totalReceived},${stats.balanceRecovery},${stats.collectionPct}%,"${p.phase || 'Ongoing'}"\n`;
+  });
+
+  downloadCSVFile(csv, `Vijay_Construction_Client_Billing_${dateStr}.csv`);
+}
+
+// 4. SHARED CALCULATION & WAGE UTILITIES
 function calcWorkerShifts(w) {
   if (!w || !w.att) return 0;
   return Object.values(w.att).reduce((acc, v) => acc + ((typeof v === 'object' ? v.status : v) === 'P' ? 1.0 : ((typeof v === 'object' ? v.status : v) === 'HD' ? 0.5 : 0)), 0);
@@ -219,20 +263,15 @@ function calcSupplierBalance(db, supId) {
   return { totalPurchased, totalPaid, balanceDue: Math.max(0, totalPurchased - totalPaid), billsCount: bills.length, paymentsCount: payments.length };
 }
 
-function generateSupplierWhatsAppSlip(sup, db) {
-  const fin = calcSupplierBalance(db, sup.id);
-  const dateStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-  return encodeURIComponent(`*📦 VIJAY CONSTRUCTION - SUPPLIER KHATA*\nSupplier: ${sup.name}\nDate: ${dateStr}\nTotal Billed: ₹${fin.totalPurchased}\nTotal Paid: ₹${fin.totalPaid}\n*Outstanding Due: ₹${fin.balanceDue}*\nManaged by: Vijay Sir`);
-}
-
-function generateWorkerWhatsAppSlip(w, siteName) {
-  const shifts = calcWorkerShifts(w);
-  const otPay = calcWorkerOTPay(w);
-  const earned = shifts * (w.rate || 0);
-  const gross = earned + otPay + (w.bakaaya || 0);
-  const netPayable = Math.max(0, gross - (w.advance || 0));
-  const dateStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-  return encodeURIComponent(`*🔨 VIJAY CONSTRUCTION - HAFTAWRI SLIP*\nWorker: ${w.name} (${w.role})\nSite: ${siteName}\nDate: ${dateStr}\nShifts: ${shifts} D (₹${w.rate}/D)\nGross: ₹${gross}\nAdvance Cut: -₹${w.advance || 0}\n*NET PAYABLE: ₹${netPayable}*\nApproved by: Vijay Sir`);
+function calcThekedarMBStats(db, thekedarId) {
+  const t = (db.thekedars || []).find(x => x.id === thekedarId);
+  if (!t) return { totalArea: 0, totalMBValue: 0, totalPaid: 0, netDue: 0, entriesCount: 0, mbEntries: [] };
+  const mbEntries = (db.measurements || []).filter(m => m.thekedarId === thekedarId);
+  const totalArea = mbEntries.reduce((sum, m) => sum + Number(m.totalArea || 0), 0);
+  const totalMBValue = mbEntries.reduce((sum, m) => sum + Number(m.amount || 0), 0);
+  const totalPaid = Number(t.paid || 0);
+  const effectiveContractVal = totalMBValue > 0 ? totalMBValue : Number(t.value || 0);
+  return { totalArea: Math.round(totalArea * 100) / 100, totalMBValue, totalPaid, netDue: Math.max(0, effectiveContractVal - totalPaid), entriesCount: mbEntries.length, mbEntries };
 }
 
 function downloadCSVFile(csvContent, filename) {
@@ -249,33 +288,32 @@ function downloadCSVFile(csvContent, filename) {
 function exportLabourReportCSV(db) {
   const workers = db.workers || [];
   const dateStr = new Date().toISOString().slice(0, 10);
-  let csv = "VIJAY CONSTRUCTION - LABOUR MUSTER & WAGE REPORT\nGenerated Date," + dateStr + "\n\nWorker ID,Name,Role,Assigned Site,Daily Rate,Shifts,OT Pay,Gross,Advance Cut,Saturday Net Due,Phone\n";
+  let csv = "VIJAY CONSTRUCTION - LABOUR REPORT\nDate," + dateStr + "\n\nID,Name,Role,Site,Rate,Shifts,OT Pay,Gross,Advance,Due,Phone\n";
   workers.forEach(w => {
-    const site = getProjectDetails(db, w.site).name.replace(/,/g, ' ');
-    csv += `"${w.id}","${w.name}","${w.role}","${site}",${w.rate},${calcWorkerShifts(w)},${calcWorkerOTPay(w)},${(calcWorkerShifts(w)*w.rate)+calcWorkerOTPay(w)},${w.advance || 0},${calcWorkerDue(w)},"${w.phone}"\n`;
+    csv += `"${w.id}","${w.name}","${w.role}","${getProjectDetails(db, w.site).name.replace(/,/g, ' ')}",${w.rate},${calcWorkerShifts(w)},${calcWorkerOTPay(w)},${(calcWorkerShifts(w)*w.rate)+calcWorkerOTPay(w)},${w.advance || 0},${calcWorkerDue(w)},"${w.phone}"\n`;
   });
   downloadCSVFile(csv, `Vijay_Construction_Labour_${dateStr}.csv`);
+}
+
+function exportThekedarMBReportCSV(db) {
+  const list = db.measurements || [];
+  const dateStr = new Date().toISOString().slice(0, 10);
+  let csv = "VIJAY CONSTRUCTION - THEKEDAR MB REPORT\nDate," + dateStr + "\n\nID,Thekedar,Site,Location,L,W,Unit,Area,Rate,Amount,Date\n";
+  list.forEach(m => {
+    const thek = (db.thekedars || []).find(t => t.id === m.thekedarId) || { name: 'Thekedar' };
+    csv += `"${m.id}","${thek.name}","${getProjectDetails(db, m.siteId).name.replace(/,/g, ' ')}","${m.location.replace(/,/g, ' ')}",${m.length},${m.width},"${m.unit}",${m.totalArea},${m.rate},${m.amount},"${m.date}"\n`;
+  });
+  downloadCSVFile(csv, `Vijay_Construction_MB_${dateStr}.csv`);
 }
 
 function exportSupplierReportCSV(db) {
   const suppliers = db.suppliers || [];
   const dateStr = new Date().toISOString().slice(0, 10);
-  let csv = "VIJAY CONSTRUCTION - SUPPLIER KHATA REPORT\nGenerated Date," + dateStr + "\n\nID,Supplier Name,Category,Mobile,Total Purchased,Total Paid,Balance Due\n";
+  let csv = "VIJAY CONSTRUCTION - SUPPLIER KHATA\nDate," + dateStr + "\n\nID,Supplier,Category,Phone,Purchased,Paid,Balance\n";
   suppliers.forEach(s => {
     const supObj = typeof s === 'object' ? s : { id: s, name: s, phone: '', category: 'General' };
     const fin = calcSupplierBalance(db, supObj.id);
     csv += `"${supObj.id}","${supObj.name}","${supObj.category}","${supObj.phone}",${fin.totalPurchased},${fin.totalPaid},${fin.balanceDue}\n`;
   });
   downloadCSVFile(csv, `Vijay_Construction_Suppliers_${dateStr}.csv`);
-}
-
-function exportProjectMarginsCSV(db) {
-  const projects = db.projects || [];
-  const dateStr = new Date().toISOString().slice(0, 10);
-  let csv = "VIJAY CONSTRUCTION - PROJECT MARGINS SUMMARY\nGenerated Date," + dateStr + "\n\nID,Client,Site,Contract Value,Inward Received,Total Cost,Net Profit,Margin Pct\n";
-  projects.forEach(p => {
-    const fin = calcProjectMargin(db, p.id);
-    csv += `"${p.id}","${p.client}","${p.name}",${fin.contractValue},${fin.inwardReceived},${fin.totalCost},${fin.netProfit},${fin.profitMarginPct}%\n`;
-  });
-  downloadCSVFile(csv, `Vijay_Construction_Margins_${dateStr}.csv`);
 }

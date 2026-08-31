@@ -242,7 +242,7 @@
       </div>
     </header>
 
-    <!-- Main Body -->
+    <!-- Main Body Container -->
     <main class="flex-1 overflow-y-auto no-scrollbar px-4 pt-3 pb-28 space-y-4" id="mainAppScroll">
 
       <!-- ========================================== -->
@@ -251,7 +251,7 @@
       <section id="view-dashboard" class="space-y-4">
         
         <!-- 📊 1-CLICK EXCEL / CSV REPORT DOWNLOAD BAR -->
-        <div class="b-card flex items-center justify-between py-2.5 px-3.5 bg-gradient-to-r from-emerald-500/10 via-purple-500/10 to-transparent border border-emerald-500/20">
+        <div class="b-card flex items-center justify-between py-2.5 px-3.5 bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-transparent border border-emerald-500/20">
           <div class="flex items-center gap-2">
             <span class="text-xl">📊</span>
             <div>
@@ -261,14 +261,14 @@
           </div>
           
           <div class="flex items-center gap-1.5">
-            <button onclick="triggerHaptic(); exportLabourReportCSV(db)" class="px-2 py-1.5 rounded-xl bg-emerald-600 text-white font-extrabold text-[10.5px] flex items-center gap-1 active:scale-95 shadow-sm">
-              <span>👷</span> <span>Labour</span>
+            <button onclick="triggerHaptic(); exportClientBillingReportCSV(db)" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white font-extrabold text-[10.5px] flex items-center gap-1 active:scale-95 shadow-sm">
+              <span>🏛️</span> <span>Clients</span>
             </button>
             <button onclick="triggerHaptic(); exportThekedarMBReportCSV(db)" class="px-2 py-1.5 rounded-xl bg-purple-600 text-white font-extrabold text-[10.5px] flex items-center gap-1 active:scale-95 shadow-sm">
               <span>📐</span> <span>MB</span>
             </button>
-            <button onclick="triggerHaptic(); exportSupplierReportCSV(db)" class="px-2 py-1.5 rounded-xl bg-orange-600 text-white font-extrabold text-[10.5px] flex items-center gap-1 active:scale-95 shadow-sm">
-              <span>📦</span> <span>Suppliers</span>
+            <button onclick="triggerHaptic(); exportLabourReportCSV(db)" class="px-2 py-1.5 rounded-xl bg-slate-800 text-white font-extrabold text-[10.5px] flex items-center gap-1 active:scale-95 shadow-sm">
+              <span>👷</span> <span>Labour</span>
             </button>
           </div>
         </div>
@@ -298,10 +298,17 @@
           </div>
         </div>
 
-        <!-- Direct Field Controls -->
+        <!-- Direct Controls -->
         <div class="space-y-2.5">
           <span class="text-[11.5px] font-extrabold uppercase tracking-wider px-1" style="color: var(--text-sub);">Direct Field Controls</span>
           <div class="tile-grid">
+            <div class="b-tile" onclick="triggerHaptic(); switchTab('client')">
+              <span class="text-3xl">🏛️</span>
+              <div>
+                <span class="text-[14px] font-black block leading-tight text-emerald-600">Client Billing</span>
+                <span class="text-[10.5px] font-medium" style="color: var(--text-sub);">Receipts & Recovery</span>
+              </div>
+            </div>
             <div class="b-tile" onclick="triggerHaptic(); switchTab('thekedar')">
               <span class="text-3xl">📐</span>
               <div>
@@ -323,56 +330,61 @@
                 <span class="text-[10.5px] font-medium" style="color: var(--text-sub);">Material Bills & Kharcha</span>
               </div>
             </div>
-            <div class="b-tile" onclick="triggerHaptic(); switchTab('client')">
-              <span class="text-3xl">📊</span>
-              <div>
-                <span class="text-[14px] font-black block leading-tight" style="color: var(--text-main);">Site Margins</span>
-                <span class="text-[10.5px] font-medium" style="color: var(--text-sub);">Cost & Profit Analysis</span>
-              </div>
-            </div>
           </div>
         </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- TAB 2: ⚡ THEKEDAR MEASUREMENT BOOK (MB) -->
+      <!-- TAB 2: 🏛️ CLIENT BILLING & MILESTONES -->
+      <!-- ========================================== -->
+      <section id="view-client" class="hidden space-y-3.5">
+        <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
+          <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
+          <h2 class="text-[14.5px] font-black text-emerald-600">Client Billing & Recovery Hub</h2>
+          <div class="flex gap-1.5">
+            <button onclick="triggerHaptic(); openModal('modalAddClientPayment')" class="px-3 py-2 rounded-xl bg-emerald-600 text-white text-[11px] font-black">+ Inward Payment</button>
+            <button onclick="triggerHaptic(); openModal('modalAddProject')" class="px-3 py-2 rounded-xl bg-slate-800 text-white text-[11px] font-black">+ Project</button>
+          </div>
+        </div>
+
+        <!-- HERO BANNER: CLIENT MARKET RECOVERY -->
+        <div class="hero-pulse space-y-3" style="background: var(--neo-hero-client);">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-200">Total Market Recovery (वसूली बाकी)</span>
+              <div class="text-[34px] font-black tracking-tighter leading-none mt-1 text-emerald-200" id="cliHeroBakaaya">₹0</div>
+            </div>
+            <span class="px-2.5 py-1 rounded-full bg-emerald-500/30 text-emerald-100 text-[10px] font-extrabold" id="cliHeroCollectionRate">0% Collected</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 pt-2.5 text-[11px] font-black border-t border-white/15">
+            <div>
+              <span class="text-[9.5px] font-semibold text-emerald-200 block">Total Booked Contracts</span>
+              <span class="text-white text-[13.5px]" id="cliHeroBooked">₹0</span>
+            </div>
+            <div>
+              <span class="text-[9.5px] font-semibold text-emerald-200 block">Total Received Inward</span>
+              <span class="text-emerald-200 text-[13.5px]" id="cliHeroReceived">₹0</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="clientProjectsContainer" class="space-y-3 pb-8"></div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB 3: 📐 THEKEDAR MEASUREMENT BOOK -->
       <!-- ========================================== -->
       <section id="view-thekedar" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
           <h2 class="text-[14.5px] font-black text-purple-600">Thekedar Measurement Book (MB)</h2>
-          <div class="flex gap-1.5">
-            <button onclick="triggerHaptic(); openModal('modalAddMeasurement')" class="px-3 py-2 rounded-xl bg-purple-600 text-white text-[11px] font-black">+ MB Entry</button>
-            <button onclick="triggerHaptic(); openModal('modalThekedar')" class="px-3 py-2 rounded-xl bg-slate-800 text-white text-[11px] font-black">+ Thekedar</button>
-          </div>
+          <button onclick="triggerHaptic(); openModal('modalAddMeasurement')" class="px-3.5 py-2 rounded-xl bg-purple-600 text-white text-[11.5px] font-black">+ MB Entry</button>
         </div>
-
-        <!-- HERO BANNER: THEKEDAR MB OVERVIEW -->
-        <div class="hero-pulse space-y-3" style="background: var(--neo-hero-thekedar);">
-          <div class="flex justify-between items-start">
-            <div>
-              <span class="text-[10px] font-extrabold uppercase tracking-widest text-purple-200">Total Thekedar Liability (कुल बकाया)</span>
-              <div class="text-[34px] font-black tracking-tighter leading-none mt-1 text-purple-200" id="thekHeroBalance">₹0</div>
-            </div>
-            <span class="px-2.5 py-1 rounded-full bg-purple-500/30 text-purple-100 text-[10px] font-extrabold" id="thekHeroWorkCount">0 Running Works</span>
-          </div>
-          <div class="grid grid-cols-2 gap-2 pt-2.5 text-[11px] font-black border-t border-white/15">
-            <div>
-              <span class="text-[9.5px] font-semibold text-purple-200 block">Total Work Measured</span>
-              <span class="text-white text-[13.5px]" id="thekHeroContractVal">₹0</span>
-            </div>
-            <div>
-              <span class="text-[9.5px] font-semibold text-purple-200 block">Total Payment Released</span>
-              <span class="text-purple-200 text-[13.5px]" id="thekHeroPaidVal">₹0</span>
-            </div>
-          </div>
-        </div>
-
         <div id="thekedarListContainer" class="space-y-3 pb-8"></div>
       </section>
 
       <!-- ========================================== -->
-      <!-- TAB 3: 👷 LABOUR -->
+      <!-- TAB 4: 👷 LABOUR -->
       <!-- ========================================== -->
       <section id="view-labour" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
@@ -380,62 +392,19 @@
           <h2 class="text-[14.5px] font-black" style="color: var(--text-main);">Labour Haziri & Wages</h2>
           <button onclick="triggerHaptic(); openModal('modalAddWorker')" class="px-3.5 py-2 rounded-xl bg-blue-600 text-white text-[11.5px] font-black">+ Worker</button>
         </div>
-
-        <div class="hero-pulse space-y-3" style="background: var(--neo-hero-labour);">
-          <div class="flex justify-between items-start">
-            <div>
-              <span class="text-[10px] font-extrabold uppercase tracking-widest text-indigo-200">Saturday Cash Needed</span>
-              <div class="text-[34px] font-black tracking-tighter leading-none mt-1 text-indigo-300" id="labHeroNetDue">₹0</div>
-            </div>
-            <span class="px-2.5 py-1 rounded-full bg-indigo-500/30 text-indigo-200 text-[10px] font-extrabold" id="labHeroWorkerCount">0 Workers</span>
-          </div>
-        </div>
-
         <div id="workersListContainer" class="space-y-3 pb-8"></div>
       </section>
 
       <!-- ========================================== -->
-      <!-- TAB 4: 📦 SUPPLIER KHATA -->
+      <!-- TAB 5: 📦 SUPPLIER KHATA -->
       <!-- ========================================== -->
       <section id="view-suppliers" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
-          <h2 class="text-[14.5px] font-black text-orange-600">Supplier & Vendor Khata</h2>
+          <h2 class="text-[14.5px] font-black text-orange-600">Supplier Khata</h2>
           <button onclick="triggerHaptic(); openModal('modalAddSupplier')" class="px-3.5 py-2 rounded-xl bg-orange-600 text-white text-[11.5px] font-black">+ Vendor</button>
         </div>
-
-        <div class="hero-pulse space-y-3" style="background: var(--neo-hero-supplier);">
-          <div class="flex justify-between items-start">
-            <div>
-              <span class="text-[10px] font-extrabold uppercase tracking-widest text-orange-200">Total Supplier Outstanding</span>
-              <div class="text-[34px] font-black tracking-tighter leading-none mt-1 text-orange-100" id="supHeroBalance">₹0</div>
-            </div>
-          </div>
-        </div>
-
         <div id="suppliersListContainer" class="space-y-3 pb-8"></div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- TAB 5: 📊 SITE PROFIT MARGINS -->
-      <!-- ========================================== -->
-      <section id="view-client" class="hidden space-y-3.5">
-        <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
-          <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
-          <h2 class="text-[14.5px] font-black" style="color: var(--text-main);">Site Profit Margins</h2>
-          <button onclick="triggerHaptic(); openModal('modalAddProject')" class="px-3.5 py-2 rounded-xl bg-blue-600 text-white text-[11.5px] font-black">+ Project</button>
-        </div>
-
-        <div class="hero-pulse space-y-3" style="background: var(--neo-hero-client);">
-          <div class="flex justify-between items-start">
-            <div>
-              <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-200">Total Market Recovery</span>
-              <div class="text-[34px] font-black tracking-tighter leading-none mt-1 text-emerald-300" id="cliHeroBakaaya">₹0</div>
-            </div>
-          </div>
-        </div>
-
-        <div id="clientProjectsContainer" class="space-y-3 pb-8"></div>
       </section>
 
     </main>
@@ -444,6 +413,9 @@
     <nav class="b-nav">
       <button class="b-nav-btn active" id="tabNav-dashboard" onclick="triggerHaptic(); switchTab('dashboard')">
         <span class="icon-wrap text-2xl">🏠</span><span>Home</span>
+      </button>
+      <button class="b-nav-btn" id="tabNav-client" onclick="triggerHaptic(); switchTab('client')">
+        <span class="icon-wrap text-2xl">🏛️</span><span>Billing</span>
       </button>
       <button class="b-nav-btn" id="tabNav-thekedar" onclick="triggerHaptic(); switchTab('thekedar')">
         <span class="icon-wrap text-2xl">📐</span><span>Thekedar</span>
@@ -454,141 +426,123 @@
       <button class="b-nav-btn" id="tabNav-suppliers" onclick="triggerHaptic(); switchTab('suppliers')">
         <span class="icon-wrap text-2xl">📦</span><span>Suppliers</span>
       </button>
-      <button class="b-nav-btn" id="tabNav-client" onclick="triggerHaptic(); switchTab('client')">
-        <span class="icon-wrap text-2xl">📊</span><span>Margins</span>
-      </button>
     </nav>
 
     <!-- Modals Container -->
-    <!-- Modal: Add Measurement (MB Entry) -->
-    <div id="modalAddMeasurement" class="modal-backdrop hidden" onclick="closeAllModals()">
+    <!-- Modal: Add Inward Client Payment -->
+    <div id="modalAddClientPayment" class="modal-backdrop hidden" onclick="closeAllModals()">
       <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
         <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
-          <h3 class="text-[16px] font-black text-purple-600">📐 Add Measurement (MB Entry)</h3>
-          <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-black/5 text-xs font-bold">✕</button>
-        </div>
-        
-        <div>
-          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Select Thekedar</label>
-          <select id="mbThekedarSelect" class="w-full h-12 px-3 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"></select>
-        </div>
-
-        <div>
-          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Room / Item Location</label>
-          <input id="mbLocationInput" type="text" placeholder="e.g. Master Bedroom Flooring or Drawing Room Plaster" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Length (लंबाई in Feet)</label>
-            <input id="mbLengthInput" oninput="autoCalculateMBAmount()" type="number" step="0.1" placeholder="18.5" class="w-full h-12 px-3.5 rounded-2xl font-black text-[16px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
-          </div>
-          <div>
-            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Width / Height (चौड़ाई in Feet)</label>
-            <input id="mbWidthInput" oninput="autoCalculateMBAmount()" type="number" step="0.1" placeholder="14.0" class="w-full h-12 px-3.5 rounded-2xl font-black text-[16px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Rate per Sq.Ft (₹)</label>
-            <input id="mbRateInput" oninput="autoCalculateMBAmount()" type="number" value="22" class="w-full h-12 px-3.5 rounded-2xl font-black text-[16px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
-          </div>
-          <div>
-            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Unit Type</label>
-            <select id="mbUnitSelect" class="w-full h-12 px-3 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);">
-              <option value="Sq.Ft">Sq.Ft (स्क्वायर फीट)</option>
-              <option value="R.Ft">R.Ft (रनिंग फीट)</option>
-              <option value="Cu.Ft">Cu.Ft (घन फीट)</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Real-Time Calculation Preview Card -->
-        <div class="p-3.5 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex justify-between items-center text-[12px]">
-          <div>
-            <span class="text-slate-500 font-bold block">Total Measured Area:</span>
-            <span class="text-[16px] font-black text-purple-600" id="mbLiveAreaPreview">0 Sq.Ft</span>
-          </div>
-          <div class="text-right">
-            <span class="text-slate-500 font-bold block">Calculated Total:</span>
-            <span class="text-[18px] font-black text-emerald-600" id="mbLiveAmountPreview">₹0</span>
-          </div>
-        </div>
-
-        <button onclick="triggerHaptic(); submitMeasurementEntry()" class="b-btn-primary text-[13.5px] bg-purple-600 hover:bg-purple-700">Save Measurement to MB 📐</button>
-      </div>
-    </div>
-
-    <!-- Modal: Add Thekedar -->
-    <div id="modalThekedar" class="modal-backdrop hidden" onclick="closeAllModals()">
-      <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
-        <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
-          <h3 class="text-[16px] font-black text-purple-600">+ Add New Thekedar</h3>
+          <h3 class="text-[16px] font-black text-emerald-600">💳 Receive Client Payment (Inward)</h3>
           <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-black/5 text-xs font-bold">✕</button>
         </div>
         <div>
-          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Thekedar Name</label>
-          <input id="newThekName" type="text" placeholder="e.g. Manoj Tiles Thekedar" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Select Project / Client</label>
+          <select id="payClientProjectSelect" class="w-full h-12 px-3 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"></select>
         </div>
         <div>
-          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Work Scope (काम का प्रकार)</label>
-          <input id="newThekWork" type="text" placeholder="e.g. Vitrified Flooring & Bathroom Tiles" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Payment Amount Received (₹)</label>
+          <input id="payClientAmountInput" type="number" placeholder="100000" class="w-full h-12 px-3.5 rounded-2xl font-black text-[20px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
         </div>
         <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Assign Site</label>
-            <select id="newThekSite" class="w-full h-12 px-3 rounded-2xl font-bold text-[12.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"></select>
-          </div>
-          <div>
-            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Mobile Number</label>
-            <input id="newThekPhone" type="tel" maxlength="10" placeholder="98XXXXXXXX" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
-          </div>
-        </div>
-        <button onclick="triggerHaptic(); submitNewThekedar()" class="b-btn-primary text-[13.5px] bg-purple-600 hover:bg-purple-700">Save Thekedar ✓</button>
-      </div>
-    </div>
-
-    <!-- Modal: Pay Thekedar -->
-    <div id="modalPayThekedar" class="modal-backdrop hidden" onclick="closeAllModals()">
-      <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
-        <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
-          <div>
-            <h3 class="text-[16px] font-black text-purple-600">💳 Pay Thekedar</h3>
-            <span id="payThekName" class="text-[12px] font-bold text-slate-500">Thekedar Name</span>
-          </div>
-          <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-black/5 text-xs font-bold">✕</button>
-        </div>
-        <div class="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex justify-between items-center">
-          <span class="text-[13px] font-bold text-purple-900 dark:text-purple-200">Current Balance:</span>
-          <span class="text-[22px] font-black text-purple-600" id="payThekCurrentBal">₹0</span>
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Payment Amount (₹)</label>
-          <input id="thekPayAmountInput" type="number" class="w-full h-12 px-3.5 rounded-2xl font-black text-[20px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
-        </div>
-        <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Payment Mode</label>
-            <select id="thekPayModeSelect" class="w-full h-12 px-3 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);">
-              <option value="UPI">📱 UPI / GooglePay</option>
+            <select id="payClientModeSelect" class="w-full h-12 px-3 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);">
+              <option value="Bank Transfer (NEFT/RTGS)">🏦 Bank NEFT/RTGS</option>
+              <option value="UPI (GooglePay/PhonePe)">📱 GooglePay / UPI</option>
+              <option value="Cheque">📄 Cheque</option>
               <option value="Cash">💵 Cash</option>
-              <option value="Bank">🏦 Bank Transfer</option>
             </select>
           </div>
           <div>
-            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Payment Stage / Note</label>
-            <input id="thekPayNoteInput" type="text" placeholder="e.g. Advance for Flooring" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Milestone / Stage</label>
+            <input id="payClientMilestoneInput" type="text" placeholder="e.g. Plaster Stage Advance" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
           </div>
         </div>
-        <button onclick="triggerHaptic(); submitThekedarPaymentOnly()" class="b-btn-primary text-[13.5px] bg-purple-600 hover:bg-purple-700">Save Payment ✓</button>
+        <div>
+          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Transaction Note / Cheque No.</label>
+          <input id="payClientNoteInput" type="text" placeholder="e.g. Axis Bank Cheque #304911" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+        </div>
+        <button onclick="triggerHaptic(); submitClientInwardPayment()" class="b-btn-primary text-[13.5px] bg-emerald-600 hover:bg-emerald-700">
+          Save Inward & Generate Receipt 🧾
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal: Add New Project -->
+    <div id="modalAddProject" class="modal-backdrop hidden" onclick="closeAllModals()">
+      <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
+        <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
+          <h3 class="text-[16px] font-black text-emerald-600">+ Add New Project / Client</h3>
+          <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-black/5 text-xs font-bold">✕</button>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Client Name</label>
+          <input id="newCName" type="text" placeholder="e.g. Sharma Ji" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Client Mobile</label>
+            <input id="newCPhone" type="tel" maxlength="10" placeholder="98XXXXXXXX" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Contract Value (₹)</label>
+            <input id="newCValue" type="number" placeholder="500000" class="w-full h-12 px-3.5 rounded-2xl font-black text-[15px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+          </div>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Site Address / Title</label>
+          <input id="newCSite" type="text" placeholder="e.g. Flat 309 (Dilshad Garden)" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+        </div>
+        <button onclick="triggerHaptic(); submitNewProject()" class="b-btn-primary text-[13.5px] bg-emerald-600 hover:bg-emerald-700">Save Project ✓</button>
+      </div>
+    </div>
+
+    <!-- Modal: Add Worker -->
+    <div id="modalAddWorker" class="modal-backdrop hidden" onclick="closeAllModals()">
+      <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
+        <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
+          <h3 class="text-[16px] font-black" style="color: var(--text-main);">+ Add New Worker</h3>
+          <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-black/5 text-xs font-bold">✕</button>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Worker Name</label>
+          <input id="newWName" type="text" placeholder="e.g. Sonu Mistri" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Role</label>
+            <select id="newWRole" class="w-full h-12 px-3 rounded-2xl font-bold text-[12.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);">
+              <option value="Mistri">Mistri (मिस्त्री)</option>
+              <option value="Mazdoor">Mazdoor (मजदूर)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Daily Rate (₹)</label>
+            <input id="newWRate" type="number" value="800" class="w-full h-12 px-3.5 rounded-2xl font-black text-[15px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+          </div>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Assign Site</label>
+          <select id="newWSite" class="w-full h-12 px-3 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"></select>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Mobile Number</label>
+            <input id="newWPhone" type="tel" maxlength="10" placeholder="98XXXXXXXX" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Worker PIN</label>
+            <input id="newWPin" type="password" maxlength="4" value="1234" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+          </div>
+        </div>
+        <button onclick="triggerHaptic(); submitNewWorker()" class="b-btn-primary text-[13.5px] mt-2">Save Worker ✓</button>
       </div>
     </div>
 
   </div>
 
   <script>
-    let currentThekedarPayId = null;
     let db = defaultMasterDB;
 
     function triggerHaptic() { if ('vibrate' in navigator) navigator.vibrate([15]); }
@@ -617,7 +571,7 @@
     function getTodayString() { return new Date().toISOString().slice(0, 10); }
 
     function switchTab(tabKey) {
-      ['dashboard', 'thekedar', 'labour', 'suppliers', 'client'].forEach(t => {
+      ['dashboard', 'client', 'thekedar', 'labour', 'suppliers'].forEach(t => {
         const v = document.getElementById(`view-${t}`);
         const n = document.getElementById(`tabNav-${t}`);
         if (v) v.classList.add('hidden');
@@ -632,8 +586,10 @@
 
     function renderAllViews() {
       renderDashboardView();
+      renderClientBillingView();
       renderThekedarsView();
       renderWorkersList();
+      renderSuppliersView();
       populateDropdowns();
     }
 
@@ -651,220 +607,233 @@
     }
 
     // ==========================================
-    // 📐 THEKEDAR MEASUREMENT BOOK RENDERER
+    // 🏛️ CLIENT BILLING & RECOVERY VIEW
     // ==========================================
-    function renderThekedarsView() {
-      const thekedars = db.thekedars || [];
-      let totalMBVal = 0;
-      let totalPaid = 0;
-      let totalDue = 0;
+    function renderClientBillingView() {
+      const projects = db.projects || [];
+      let totalBooked = 0;
+      let totalReceived = 0;
+      let totalRecovery = 0;
 
-      thekedars.forEach(t => {
-        const stats = calcThekedarMBStats(db, t.id);
-        totalMBVal += stats.totalMBValue || t.value;
-        totalPaid += stats.totalPaid;
-        totalDue += stats.netDue;
+      projects.forEach(p => {
+        const stats = calcClientBillingStats(db, p.id);
+        totalBooked += stats.totalContract;
+        totalReceived += stats.totalReceived;
+        totalRecovery += stats.balanceRecovery;
       });
 
-      document.getElementById('thekHeroBalance').innerText = `₹${totalDue.toLocaleString('en-IN')}`;
-      document.getElementById('thekHeroContractVal').innerText = `₹${totalMBVal.toLocaleString('en-IN')}`;
-      document.getElementById('thekHeroPaidVal').innerText = `₹${totalPaid.toLocaleString('en-IN')}`;
-      document.getElementById('thekHeroWorkCount').innerText = `${thekedars.length} Works Running`;
+      const overallCollectionPct = totalBooked > 0 ? Math.round((totalReceived / totalBooked) * 100) : 0;
 
-      const container = document.getElementById('thekedarListContainer');
-      if (thekedars.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center text-sm font-bold text-slate-400 b-card">No thekedars active.</div>`;
+      document.getElementById('cliHeroBakaaya').innerText = `₹${totalRecovery.toLocaleString('en-IN')}`;
+      document.getElementById('cliHeroBooked').innerText = `₹${totalBooked.toLocaleString('en-IN')}`;
+      document.getElementById('cliHeroReceived').innerText = `₹${totalReceived.toLocaleString('en-IN')}`;
+      document.getElementById('cliHeroCollectionRate').innerText = `${overallCollectionPct}% Recovered`;
+
+      const container = document.getElementById('clientProjectsContainer');
+      if (projects.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-sm font-bold text-slate-400 b-card">No projects found.</div>`;
         return;
       }
 
-      container.innerHTML = thekedars.map(t => {
-        const stats = calcThekedarMBStats(db, t.id);
+      container.innerHTML = projects.map(p => {
+        const stats = calcClientBillingStats(db, p.id);
+        const latestTxn = stats.paymentsList[0];
 
         return `
-          <div class="b-card space-y-3 border-l-4 ${stats.netDue > 0 ? 'border-purple-600' : 'border-emerald-500'}">
+          <div class="b-card space-y-3.5 border-l-4 ${stats.balanceRecovery > 0 ? 'border-emerald-600' : 'border-blue-600'}">
             <div class="flex justify-between items-start">
               <div>
-                <span class="font-black text-[15px] block" style="color: var(--text-main);">${t.name}</span>
-                <span class="text-[11.5px] font-bold text-purple-600">${t.work}</span>
-                <span class="text-[10px] font-bold text-slate-400 block">📍 ${getProjectDetails(db, t.site).name} • 📱 ${t.phone || 'N/A'}</span>
+                <span class="font-black text-[16px] block" style="color: var(--text-main);">${p.client}</span>
+                <span class="text-[11.5px] font-bold text-emerald-600">📍 ${p.name}</span>
+                <span class="text-[10.5px] font-bold text-slate-400 block">📱 ${p.phone || 'N/A'} • Phase: <b>${p.phase || 'Ongoing'}</b></span>
               </div>
               <div class="text-right">
-                <span class="text-[14px] font-black text-purple-600">₹${stats.netDue.toLocaleString('en-IN')} Due</span>
-                <span class="text-[9.5px] font-bold text-slate-400 block">${stats.entriesCount} MB Measurements</span>
+                <span class="text-[14.5px] font-black text-amber-500">₹${stats.balanceRecovery.toLocaleString('en-IN')} Due</span>
+                <span class="text-[10px] font-extrabold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full block mt-0.5">${stats.collectionPct}% Paid</span>
               </div>
             </div>
 
-            <!-- Itemized Measurement Book Entries -->
-            <div class="space-y-1.5 bg-black/5 dark:bg-white/5 p-2.5 rounded-xl text-[11.5px]">
-              <div class="flex justify-between font-extrabold text-slate-400 text-[10px] uppercase">
-                <span>Room / Description</span>
-                <span>Naap (L × W) = Sq.Ft</span>
-                <span>Amount</span>
+            <!-- Milestone Progress Bar -->
+            <div class="space-y-1 bg-black/5 dark:bg-white/5 p-3 rounded-2xl">
+              <div class="flex justify-between text-[11px] font-black">
+                <span class="text-slate-400">Payment Collection Progress:</span>
+                <span class="text-emerald-600">₹${stats.totalReceived.toLocaleString('en-IN')} / ₹${stats.totalContract.toLocaleString('en-IN')}</span>
               </div>
-              ${stats.mbEntries.length > 0 ? stats.mbEntries.map(m => `
-                <div class="flex justify-between text-slate-600 dark:text-slate-300 font-bold border-t border-black/5 dark:border-white/5 pt-1">
-                  <span>📏 ${m.location}</span>
-                  <span>${m.length} × ${m.width} = <b>${m.totalArea} ${m.unit}</b></span>
-                  <span class="text-emerald-600 font-black">₹${m.amount.toLocaleString('en-IN')}</span>
-                </div>
-              `).join('') : '<span class="text-slate-400">No detailed MB entries yet (Using Lump Sum)</span>'}
+              <div class="w-full h-2.5 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
+                <div class="h-full bg-emerald-600 rounded-full transition-all" style="width: ${stats.collectionPct}%"></div>
+              </div>
             </div>
 
+            <!-- Client Action Buttons -->
             <div class="grid grid-cols-2 gap-2 pt-1">
-              <button onclick="triggerHaptic(); openThekedarPayModal('${t.id}')" class="b-btn-primary h-11 text-[12px] bg-purple-600 hover:bg-purple-700">
-                💳 Log Payment
+              <button onclick="triggerHaptic(); openClientInwardModal('${p.id}')" class="b-btn-primary h-11 text-[12.5px] bg-emerald-600 hover:bg-emerald-700">
+                💳 + Inward Payment
               </button>
-              <button onclick="triggerHaptic(); sendThekedarMBWhatsApp('${t.id}')" class="b-btn-secondary h-11 text-[12px] text-purple-600 border-purple-500/30">
-                📲 WhatsApp MB Bill
+              <button onclick="triggerHaptic(); sendClientPaymentReminderWhatsApp('${p.id}')" class="b-btn-secondary h-11 text-[12px] text-emerald-700 dark:text-emerald-300 border-emerald-500/30">
+                ⏰ Send Reminder
               </button>
             </div>
+
+            ${latestTxn ? `
+              <div class="flex justify-between items-center p-2 rounded-xl bg-black/5 dark:bg-white/5 text-[11px]">
+                <span class="text-slate-400 font-bold">Latest Payment: ₹${Number(latestTxn.amount).toLocaleString('en-IN')} (${latestTxn.date})</span>
+                <button onclick="triggerHaptic(); sendClientLatestReceiptWhatsApp('${p.id}')" class="font-extrabold text-blue-600 underline">
+                  📲 Share Receipt
+                </button>
+              </div>
+            ` : ''}
           </div>
         `;
       }).join('');
     }
 
-    // Auto calculate MB Area & Amount in Modal
-    function autoCalculateMBAmount() {
-      const l = parseFloat(document.getElementById('mbLengthInput').value) || 0;
-      const w = parseFloat(document.getElementById('mbWidthInput').value) || 0;
-      const r = parseFloat(document.getElementById('mbRateInput').value) || 0;
-      const area = Math.round((l * w) * 100) / 100;
-      const totalAmt = Math.round(area * r);
-
-      document.getElementById('mbLiveAreaPreview').innerText = `${area} Sq.Ft`;
-      document.getElementById('mbLiveAmountPreview').innerText = `₹${totalAmt.toLocaleString('en-IN')}`;
+    function openClientInwardModal(projectId) {
+      document.getElementById('payClientProjectSelect').value = projectId;
+      openModal('modalAddClientPayment');
     }
 
-    async function submitMeasurementEntry() {
-      const thekedarId = document.getElementById('mbThekedarSelect').value;
-      const loc = document.getElementById('mbLocationInput').value.trim();
-      const l = parseFloat(document.getElementById('mbLengthInput').value) || 0;
-      const w = parseFloat(document.getElementById('mbWidthInput').value) || 0;
-      const r = parseFloat(document.getElementById('mbRateInput').value) || 0;
-      const unit = document.getElementById('mbUnitSelect').value;
+    async function submitClientInwardPayment() {
+      const projectId = document.getElementById('payClientProjectSelect').value;
+      const amt = parseFloat(document.getElementById('payClientAmountInput').value) || 0;
+      const mode = document.getElementById('payClientModeSelect').value;
+      const milestone = document.getElementById('payClientMilestoneInput').value.trim() || 'Running Installment';
+      const note = document.getElementById('payClientNoteInput').value.trim();
 
-      if (!loc || l <= 0 || w <= 0 || r <= 0) {
-        return alert("Kripya Location, Length, Width aur Rate sahi bharein!");
-      }
+      if (amt <= 0) return alert("Kripya valid payment amount bharein!");
 
-      const area = Math.round((l * w) * 100) / 100;
-      const amount = Math.round(area * r);
-      const thek = (db.thekedars || []).find(t => t.id === thekedarId) || { site: 'P1' };
+      const p = (db.projects || []).find(x => x.id === projectId);
+      if (!p) return;
 
-      if (!db.measurements) db.measurements = [];
-      db.measurements.push({
-        id: 'MB' + Date.now(),
-        thekedarId: thekedarId,
-        siteId: thek.site || 'P1',
-        location: loc,
-        length: l,
-        width: w,
-        unit: unit,
-        totalArea: area,
-        rate: r,
-        amount: amount,
+      const newPayment = {
+        id: 'CPAY' + Date.now(),
+        projectId: projectId,
+        amount: amt,
+        mode: mode,
+        milestone: milestone,
+        note: note,
+        date: getTodayString()
+      };
+
+      if (!db.clientPayments) db.clientPayments = [];
+      db.clientPayments.unshift(newPayment);
+
+      p.received = (p.received || 0) + amt;
+
+      if (!db.ledger) db.ledger = [];
+      db.ledger.push({
+        id: 'L' + Date.now(),
+        site: p.id,
+        type: 'income',
+        amount: amt,
+        note: `Client Inward (${p.client}) - ${mode} [${milestone}]`,
         date: getTodayString()
       });
 
       await saveCloudMasterDB(db);
-      document.getElementById('mbLocationInput').value = '';
-      document.getElementById('mbLengthInput').value = '';
-      document.getElementById('mbWidthInput').value = '';
+
+      // Auto-open WhatsApp receipt
+      const receiptMsg = generateClientWhatsAppReceipt(p, newPayment, db);
+      const phone = p.phone ? `91${p.phone}` : '';
+
       closeAllModals();
       renderAllViews();
-      alert(`✓ ${loc} (${area} Sq.Ft = ₹${amount}) Measurement Book mein save ho gaya!`);
+      window.open(`https://api.whatsapp.com/send?${phone ? 'phone=' + phone + '&' : ''}text=${receiptMsg}`, '_blank');
+      alert(`✓ ₹${amt.toLocaleString('en-IN')} payment logged from ${p.client}!`);
     }
 
-    function sendThekedarMBWhatsApp(tId) {
+    function sendClientLatestReceiptWhatsApp(projectId) {
       triggerHaptic();
-      const t = (db.thekedars || []).find(x => x.id === tId);
-      if (!t) return;
-      const msg = generateThekedarMBWhatsAppSlip(t, db);
-      const phone = t.phone ? `91${t.phone}` : '';
-      window.open(`https://api.whatsapp.com/send?${phone ? 'phone=' + phone + '&' : ''}text=${msg}`, '_blank');
+      const p = (db.projects || []).find(x => x.id === projectId);
+      const payments = (db.clientPayments || []).filter(cp => cp.projectId === projectId);
+      if (!p || payments.length === 0) return alert("Is project par abhi koi payment record nahi hai!");
+      
+      const receiptMsg = generateClientWhatsAppReceipt(p, payments[0], db);
+      const phone = p.phone ? `91${p.phone}` : '';
+      window.open(`https://api.whatsapp.com/send?${phone ? 'phone=' + phone + '&' : ''}text=${receiptMsg}`, '_blank');
     }
 
-    function openThekedarPayModal(tId) {
-      currentThekedarPayId = tId;
-      const t = (db.thekedars || []).find(x => x.id === tId);
-      const stats = calcThekedarMBStats(db, tId);
-      document.getElementById('payThekName').innerText = `${t.name} (${t.work})`;
-      document.getElementById('payThekCurrentBal').innerText = `₹${stats.netDue.toLocaleString('en-IN')}`;
-      document.getElementById('thekPayAmountInput').value = stats.netDue > 0 ? stats.netDue : '';
-      openModal('modalPayThekedar');
+    function sendClientPaymentReminderWhatsApp(projectId) {
+      triggerHaptic();
+      const p = (db.projects || []).find(x => x.id === projectId);
+      if (!p) return;
+      const reminderMsg = generateClientPaymentReminder(p, db);
+      const phone = p.phone ? `91${p.phone}` : '';
+      window.open(`https://api.whatsapp.com/send?${phone ? 'phone=' + phone + '&' : ''}text=${reminderMsg}`, '_blank');
     }
 
-    async function submitThekedarPaymentOnly() {
-      const amt = parseFloat(document.getElementById('thekPayAmountInput').value) || 0;
-      const mode = document.getElementById('thekPayModeSelect').value;
-      const note = document.getElementById('thekPayNoteInput').value.trim() || 'MB Stage Payment';
-      if (amt <= 0) return alert("Valid payment amount daalein!");
+    async function submitNewProject() {
+      const client = document.getElementById('newCName').value.trim();
+      const phone = document.getElementById('newCPhone').value.trim();
+      const name = document.getElementById('newCSite').value.trim();
+      const totalValue = parseFloat(document.getElementById('newCValue').value) || 0;
 
-      const t = (db.thekedars || []).find(x => x.id === currentThekedarPayId);
-      if (t) {
-        t.paid = (t.paid || 0) + amt;
-        if (!db.ledger) db.ledger = [];
-        db.ledger.push({
-          id: 'L' + Date.now(),
-          site: t.site || 'P1',
-          type: 'expense',
-          amount: amt,
-          note: `Thekedar Payment (${t.name}) - ${mode} [${note}]`,
-          date: getTodayString()
-        });
+      if (!client || !name || totalValue <= 0) return alert("Client name, site address aur contract value bharein!");
 
-        await saveCloudMasterDB(db);
-        closeAllModals();
-        renderAllViews();
-        alert(`✓ ₹${amt.toLocaleString('en-IN')} payment logged to ${t.name}!`);
-      }
-    }
-
-    async function submitNewThekedar() {
-      const name = document.getElementById('newThekName').value.trim();
-      const work = document.getElementById('newThekWork').value.trim();
-      const site = document.getElementById('newThekSite').value;
-      const phone = document.getElementById('newThekPhone').value.trim();
-
-      if (!name || !work) return alert("Thekedar ka naam aur kaam ka type bharein!");
-
-      if (!db.thekedars) db.thekedars = [];
-      db.thekedars.unshift({
-        id: 'T' + Date.now(),
-        name,
-        work,
-        site,
+      if (!db.projects) db.projects = [];
+      db.projects.push({
+        id: 'P' + Date.now(),
+        client,
         phone,
-        value: 0,
-        paid: 0,
-        progress: 0
+        name,
+        totalValue,
+        received: 0,
+        progress: 10,
+        phase: 'Site Layout & Demolition',
+        milestones: [
+          { id: 'M1', name: 'Booking Advance', targetAmt: Math.round(totalValue * 0.2), status: 'Pending' },
+          { id: 'M2', name: 'Piping & Brickwork', targetAmt: Math.round(totalValue * 0.3), status: 'Pending' },
+          { id: 'M3', name: 'Plaster & Flooring', targetAmt: Math.round(totalValue * 0.3), status: 'Pending' },
+          { id: 'M4', name: 'Final Paint & Handover', targetAmt: Math.round(totalValue * 0.2), status: 'Pending' }
+        ]
       });
 
       await saveCloudMasterDB(db);
       closeAllModals();
       renderAllViews();
-      alert(`✓ ${name} Thekedar add ho gaya!`);
+      alert(`✓ ${client} (${name}) project add ho gaya!`);
+    }
+
+    function renderThekedarsView() {
+      const container = document.getElementById('thekedarListContainer');
+      container.innerHTML = (db.thekedars || []).map(t => {
+        const stats = calcThekedarMBStats(db, t.id);
+        return `
+          <div class="b-card flex justify-between items-center">
+            <div><span class="font-black text-[14px]">${t.name}</span><span class="text-xs text-purple-600 block">${t.work}</span></div>
+            <span class="font-black text-purple-600">₹${stats.netDue} Due</span>
+          </div>
+        `;
+      }).join('');
     }
 
     function renderWorkersList() {
-      const totalNetDue = (db.workers || []).reduce((a, w) => a + calcWorkerDue(w), 0);
-      document.getElementById('labHeroNetDue').innerText = `₹${totalNetDue.toLocaleString('en-IN')}`;
-      document.getElementById('labHeroWorkerCount').innerText = `${(db.workers || []).length} Active Workers`;
       const container = document.getElementById('workersListContainer');
       container.innerHTML = (db.workers || []).map(w => `
         <div class="b-card flex justify-between items-center">
-          <div><span class="font-black">${w.name} (${w.role})</span><span class="text-xs text-slate-400 block">${w.phone}</span></div>
+          <div><span class="font-black text-[14px]">${w.name} (${w.role})</span><span class="text-xs text-slate-400 block">${w.phone}</span></div>
           <span class="font-black text-amber-500">₹${calcWorkerDue(w)} Due</span>
         </div>
       `).join('');
     }
 
-    function populateDropdowns() {
-      const thekOpts = (db.thekedars || []).map(t => `<option value="${t.id}">${t.name} (${t.work})</option>`).join('');
-      const siteOpts = (db.projects || []).map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    function renderSuppliersView() {
+      const container = document.getElementById('suppliersListContainer');
+      container.innerHTML = (db.suppliers || []).map(s => {
+        const supObj = typeof s === 'object' ? s : { id: s, name: s };
+        const fin = calcSupplierBalance(db, supObj.id);
+        return `
+          <div class="b-card flex justify-between items-center">
+            <div><span class="font-black text-[14px]">${supObj.name}</span><span class="text-xs text-orange-600 block">${supObj.category || 'Vendor'}</span></div>
+            <span class="font-black text-orange-600">₹${fin.balanceDue} Due</span>
+          </div>
+        `;
+      }).join('');
+    }
 
-      if (document.getElementById('mbThekedarSelect')) document.getElementById('mbThekedarSelect').innerHTML = thekOpts;
-      if (document.getElementById('newThekSite')) document.getElementById('newThekSite').innerHTML = siteOpts;
+    function populateDropdowns() {
+      const projectOpts = (db.projects || []).map(p => `<option value="${p.id}">${p.client} - ${p.name}</option>`).join('');
+      if (document.getElementById('payClientProjectSelect')) document.getElementById('payClientProjectSelect').innerHTML = projectOpts;
+      if (document.getElementById('newWSite')) document.getElementById('newWSite').innerHTML = (db.projects || []).map(p => `<option value="${p.id}">${p.name}</option>`).join('');
     }
 
     function closeAllModals() { document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.add('hidden')); }
