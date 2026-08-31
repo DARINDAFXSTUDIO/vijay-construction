@@ -13,6 +13,30 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <style>
+    /* ⚡ 1. 300ms Touch Lag & Bounce Removal */
+* {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ⚡ 2. GPU Acceleration on Cards & Modals */
+.card, .modal, .modal-content, .btn, .stat-card, input, select {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* ⚡ 3. Remove Laggy Backdrop Blur */
+.glass-effect, .modal, header {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(15, 23, 42, 0.96) !important;
+}
     :root {
       --bg-app: #f4f6f9;
       --card-bg: rgba(255, 255, 255, 0.95);
