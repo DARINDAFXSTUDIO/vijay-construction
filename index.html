@@ -205,7 +205,7 @@
 </head>
 
 <body>
-  <!-- Master Security Lock Screen -->
+  <!-- Server-Protected Lock Screen -->
   <div id="adminLockOverlay" class="fixed inset-0 bg-slate-950/95 backdrop-blur-xl z-[999] flex flex-col items-center justify-center p-6 text-white text-center">
     <div class="w-16 h-16 rounded-3xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-3xl mb-4 shadow-lg shadow-emerald-500/20">🔒</div>
     <h2 class="text-xl font-black tracking-tight mb-1">VIJAY CONSTRUCTION</h2>
@@ -213,10 +213,10 @@
     
     <div class="w-full max-w-xs space-y-4">
       <input id="adminPinInput" type="password" maxlength="4" placeholder="••••" class="w-full h-14 rounded-2xl bg-white/10 border border-white/20 text-center font-black text-2xl tracking-[12px] outline-none focus:border-emerald-400 text-white placeholder:text-slate-600" />
-      <button onclick="verifyAdminPIN()" class="w-full h-12 rounded-2xl bg-emerald-600 font-extrabold text-sm active:scale-95 shadow-lg shadow-emerald-600/30">
+      <button onclick="verifyAdminPIN()" class="w-full h-12 rounded-2xl bg-emerald-600 font-extrabold text-sm active:scale-95 shadow-lg shadow-emerald-600/30" id="btnUnlockHub">
         Unlock Hub ⚡
       </button>
-      <p class="text-[10px] text-slate-500 font-semibold">Security PIN: <b>2026</b></p>
+      <p class="text-[10px] text-slate-500 font-semibold">Security Master PIN: <b>2026</b></p>
     </div>
   </div>
 
@@ -233,6 +233,9 @@
       </div>
 
       <div class="flex items-center gap-2">
+        <button onclick="triggerHaptic(); refreshAdminData()" class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-xs active:scale-90" title="Sync Cloud Live">
+          🔄
+        </button>
         <button onclick="triggerHaptic(); toggleAdminLanguage()" class="px-2.5 py-1 rounded-full text-[11px] font-black bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 active:scale-95" id="adminLangToggleBtn">
           🌐 हिन्दी
         </button>
@@ -242,7 +245,7 @@
       </div>
     </header>
 
-    <!-- Main Dynamic Body Container -->
+    <!-- Main Body Container -->
     <main class="flex-1 overflow-y-auto no-scrollbar px-4 pt-3 pb-28 space-y-4" id="mainAppScroll">
 
       <!-- TAB 1: 🏠 DASHBOARD -->
@@ -812,7 +815,6 @@
   </div>
 
   <script>
-    const MASTER_ADMIN_PIN = "2026";
     let currentAdminLang = localStorage.getItem('vj_admin_lang') || 'hi';
     let expandedWorkerIds = new Set();
     let currentChuktaWorkerId = null;
@@ -823,15 +825,42 @@
 
     function triggerHaptic() { if ('vibrate' in navigator) navigator.vibrate([15]); }
 
+    // INITIALIZE ADMIN HUB VIA SECURE API
     async function initAdminApp() {
-      db = await getCloudMasterDB();
+      const res = await apiGetAdminData();
+      if (res && res.success && res.data) {
+        db = res.data;
+      } else {
+        db = await getCloudMasterDB();
+      }
       renderAllViews();
     }
 
-    async function saveState() {
-      await saveCloudMasterDB(db);
-      renderAllViews();
+    async function refreshAdminData() {
+      await initAdminApp();
+      alert("☁️ Live Master Data Refreshed!");
     }
+
+    // SERVER-AUTHENTICATED ADMIN LOGIN
+    async function verifyAdminPIN() {
+      const pin = document.getElementById('adminPinInput').value.trim();
+      const btn = document.getElementById('btnUnlockHub');
+      btn.innerText = "Verifying 🔒...";
+
+      const res = await apiLoginAdmin(pin);
+      btn.innerText = "Unlock Hub ⚡";
+
+      if (res && res.success) {
+        document.getElementById('adminLockOverlay').classList.add('hidden');
+        sessionStorage.setItem('vijay_admin_token', res.token);
+        await initAdminApp();
+      } else {
+        alert(res?.message || "Galat Master PIN!");
+        document.getElementById('adminPinInput').value = '';
+      }
+    }
+
+    function getTodayString() { return new Date().toISOString().slice(0, 10); }
 
     function toggleAdminLanguage() {
       currentAdminLang = currentAdminLang === 'hi' ? 'en' : 'hi';
@@ -893,20 +922,6 @@
       document.getElementById('lblCliSites').innerText = t.cliSites;
     }
 
-    function verifyAdminPIN() {
-      const pin = document.getElementById('adminPinInput').value.trim();
-      if (pin === MASTER_ADMIN_PIN) {
-        document.getElementById('adminLockOverlay').classList.add('hidden');
-        sessionStorage.setItem('vijay_admin_auth', 'true');
-        saveState();
-      } else {
-        alert("Galat Master PIN! '2026' enter karein.");
-        document.getElementById('adminPinInput').value = '';
-      }
-    }
-
-    function getTodayString() { return new Date().toISOString().slice(0, 10); }
-
     function updateNavBadges() {
       const pendingCount = (db.materials || []).filter(m => m.status === 'Pending').length;
       const badge = document.getElementById('navBadgeDemand');
@@ -938,7 +953,7 @@
     function renderDashboardView() {
       const filterSite = document.getElementById('dashSiteFilterSelect')?.value || 'ALL';
       const filteredLedger = filterSite === 'ALL' ? (db.ledger || []) : (db.ledger || []).filter(l => l.site === filterSite);
-      const filteredWorkers = filterSite === 'ALL' ? db.workers : db.workers.filter(w => w.site === filterSite);
+      const filteredWorkers = filterSite === 'ALL' ? (db.workers || []) : (db.workers || []).filter(w => w.site === filterSite);
 
       const tIncome = filteredLedger.filter(x => x.type === 'income').reduce((a, b) => a + b.amount, 0);
       const tExpense = filteredLedger.filter(x => x.type === 'expense').reduce((a, b) => a + b.amount, 0);
@@ -955,18 +970,18 @@
       document.getElementById('satCashBagDisplay').innerText = `₹${totalSaturdayCashBag.toLocaleString('en-IN')}`;
 
       const today = getTodayString();
-      const onDuty = db.workers.filter(w => ['P', 'HD'].includes(w.att[today]?.status || w.att[today])).length;
-      const absent = db.workers.filter(w => (w.att[today]?.status || w.att[today]) === 'A').length;
-      const unmarked = db.workers.filter(w => !w.att[today]).length;
+      const onDuty = (db.workers || []).filter(w => ['P', 'HD'].includes(w.att && (w.att[today]?.status || w.att[today]))).length;
+      const absent = (db.workers || []).filter(w => w.att && ((w.att[today]?.status || w.att[today]) === 'A')).length;
+      const unmarked = (db.workers || []).filter(w => !w.att || !w.att[today]).length;
 
       document.getElementById('dbOnDutyCount').innerText = onDuty;
       document.getElementById('dbAbsentCount').innerText = absent;
       document.getElementById('dbPendingAttCount').innerText = unmarked;
-      document.getElementById('dbActiveSitesCount').innerText = `${db.projects.length} Sites Active`;
+      document.getElementById('dbActiveSitesCount').innerText = `${(db.projects || []).length} Sites Active`;
 
-      document.getElementById('dbSiteRadarList').innerHTML = db.projects.map(p => {
-        const siteWorkers = db.workers.filter(w => w.site === p.id);
-        const presentCount = siteWorkers.filter(w => ['P', 'HD'].includes(w.att[today]?.status || w.att[today])).length;
+      document.getElementById('dbSiteRadarList').innerHTML = (db.projects || []).map(p => {
+        const siteWorkers = (db.workers || []).filter(w => w.site === p.id);
+        const presentCount = siteWorkers.filter(w => ['P', 'HD'].includes(w.att && (w.att[today]?.status || w.att[today]))).length;
         return `
           <div class="flex justify-between items-center p-2.5 rounded-xl bg-black/5 dark:bg-white/5 text-[11.5px]">
             <span class="font-black" style="color: var(--text-main);">📍 ${p.name}</span>
@@ -1027,90 +1042,79 @@
       recognition.start();
     }
 
-    function reassignWorkerSite(wId, newSiteId) {
+    async function reassignWorkerSite(workerId, siteId) {
       triggerHaptic();
-      const w = db.workers.find(x => x.id === wId);
-      if (w) {
-        w.site = newSiteId;
-        saveState();
-        alert(`✓ ${w.name} ko ${getProjectObj(newSiteId).name} par assign kar diya gaya!`);
-      }
+      await apiAdminAction('reassign_site', { workerId, siteId });
+      await initAdminApp();
+      alert(`✓ Worker site updated and synced to Worker App!`);
     }
 
-    function lockAllAttendance() {
+    async function lockAllAttendance() {
       triggerHaptic();
       const today = getTodayString();
-      let lockedCount = 0;
-      db.workers.forEach(w => {
-        if (w.att[today]) {
-           const curSt = typeof w.att[today] === 'object' ? w.att[today].status : w.att[today];
-           const curOt = typeof w.att[today] === 'object' ? (w.att[today].ot || 0) : 0;
-           w.att[today] = { status: curSt, ot: curOt, locked: true };
-           lockedCount++;
-        }
-      });
-      if (lockedCount > 0) {
-        saveState();
-        alert(`✅ ${lockedCount} workers ki haaziri Lock aur Cloud par Sync ho gayi!`);
-      } else {
-        alert("⚠️ Pehle haaziri (P/HD/A) lagayein!");
+      const res = await apiAdminAction('lock_attendance', { date: today });
+      if (res && res.success) {
+        await initAdminApp();
+        alert(`✅ Today's attendance locked on server!`);
       }
     }
 
     function unlockAttendance(wId) {
       triggerHaptic();
       const today = getTodayString();
-      const w = db.workers.find(x => x.id === wId);
-      if (w && w.att[today]) {
+      const w = (db.workers || []).find(x => x.id === wId);
+      if (w && w.att && w.att[today]) {
         w.att[today].locked = false;
-        saveState();
+        apiAdminAction('set_attendance', { workerId: wId, date: today, status: w.att[today].status, ot: w.att[today].ot }).then(initAdminApp);
       }
     }
 
-    function setAttendanceQuick(wId, status) {
+    async function setAttendanceQuick(workerId, status) {
       const today = getTodayString();
-      const w = db.workers.find(x => x.id === wId);
+      const w = (db.workers || []).find(x => x.id === workerId);
       if (!w) return;
-      const cur = w.att[today];
+      const cur = w.att && w.att[today];
       if (cur && cur.locked) return;
 
       const curSt = typeof cur === 'object' ? cur.status : cur;
       const curOt = typeof cur === 'object' ? (cur.ot || 0) : 0;
       const newSt = (curSt === status) ? '' : status;
-      w.att[today] = { status: newSt, ot: curOt, locked: false };
-      saveState();
+
+      await apiAdminAction('set_attendance', { workerId, date: today, status: newSt, ot: curOt });
+      await initAdminApp();
     }
 
-    function adjustOT(wId, delta) {
+    async function adjustOT(workerId, delta) {
       const today = getTodayString();
-      const w = db.workers.find(x => x.id === wId);
+      const w = (db.workers || []).find(x => x.id === workerId);
       if (!w) return;
-      const cur = w.att[today];
+      const cur = w.att && w.att[today];
       if (cur && cur.locked) return alert("Pehle 'Update ✏️' dabakar unlock karein.");
       
       const curSt = typeof cur === 'object' ? cur.status : (cur || 'P');
       const curOt = Math.max(0, (typeof cur === 'object' ? (cur.ot || 0) : 0) + delta);
-      w.att[today] = { status: curSt, ot: curOt, locked: false };
-      saveState();
+      
+      await apiAdminAction('set_attendance', { workerId, date: today, status: curSt, ot: curOt });
+      await initAdminApp();
     }
 
     function renderWorkersList() {
-      const totalNetDue = db.workers.reduce((a, w) => a + getWorkerDue(w), 0);
-      const totalGross = db.workers.reduce((a, w) => a + (getWorkerShifts(w) * w.rate) + getWorkerOTPay(w), 0);
-      const totalAdvances = db.workers.reduce((a, w) => a + (w.advance || 0), 0);
-      const totalShifts = db.workers.reduce((a, w) => a + getWorkerShifts(w), 0);
+      const totalNetDue = (db.workers || []).reduce((a, w) => a + getWorkerDue(w), 0);
+      const totalGross = (db.workers || []).reduce((a, w) => a + (getWorkerShifts(w) * w.rate) + getWorkerOTPay(w), 0);
+      const totalAdvances = (db.workers || []).reduce((a, w) => a + (w.advance || 0), 0);
+      const totalShifts = (db.workers || []).reduce((a, w) => a + getWorkerShifts(w), 0);
 
       document.getElementById('labHeroNetDue').innerText = `₹${totalNetDue.toLocaleString('en-IN')}`;
       document.getElementById('labHeroGrossEarned').innerText = `₹${totalGross.toLocaleString('en-IN')}`;
       document.getElementById('labHeroAdvances').innerText = `-₹${totalAdvances.toLocaleString('en-IN')}`;
       document.getElementById('labHeroTotalShifts').innerText = `${totalShifts} Shifts`;
-      document.getElementById('labHeroWorkerCount').innerText = `${db.workers.length} Active Workers`;
+      document.getElementById('labHeroWorkerCount').innerText = `${(db.workers || []).length} Active Workers`;
 
       const q = (document.getElementById('workerSearchInput')?.value || '').toLowerCase();
       const container = document.getElementById('workersListContainer');
       const today = getTodayString();
 
-      const filtered = db.workers.filter(w => (w.name + ' ' + w.role + ' ' + (w.phone || '')).toLowerCase().includes(q));
+      const filtered = (db.workers || []).filter(w => (w.name + ' ' + w.role + ' ' + (w.phone || '')).toLowerCase().includes(q));
 
       if (filtered.length === 0) {
         container.innerHTML = `<div class="p-6 text-center text-sm font-bold text-slate-400 b-card">No worker matching search.</div>`;
@@ -1122,12 +1126,12 @@
         const shifts = getWorkerShifts(w);
         const otPay = getWorkerOTPay(w);
         const due = getWorkerDue(w);
-        const curRecord = w.att[today];
+        const curRecord = w.att && w.att[today];
         const curAtt = typeof curRecord === 'object' ? curRecord.status : curRecord;
         const curOt = typeof curRecord === 'object' ? (curRecord.ot || 0) : 0;
         const isLocked = typeof curRecord === 'object' && curRecord.locked === true;
 
-        const siteOptionsHtml = db.projects.map(p => `
+        const siteOptionsHtml = (db.projects || []).map(p => `
           <option value="${p.id}" ${w.site === p.id ? 'selected' : ''}>${p.name}</option>
         `).join('');
 
@@ -1212,7 +1216,7 @@
 
     function openThekedarPayModal(tId) {
       currentThekedarPayId = tId;
-      const t = db.thekedars.find(x => x.id === tId);
+      const t = (db.thekedars || []).find(x => x.id === tId);
       const bal = Math.max(0, t.value - t.paid);
       document.getElementById('payThekName').innerText = `${t.name} (${t.work})`;
       document.getElementById('payThekCurrentBal').innerText = `₹${bal.toLocaleString('en-IN')}`;
@@ -1220,48 +1224,37 @@
       openModal('modalPayThekedar');
     }
 
-    function submitThekedarPaymentOnly() {
+    async function submitThekedarPaymentOnly() {
       const amt = parseFloat(document.getElementById('thekPayAmountInput').value) || 0;
       const mode = document.getElementById('thekPayModeSelect').value;
       const note = document.getElementById('thekPayNoteInput').value.trim() || 'RA Stage Payment';
       if (amt <= 0) return alert("Enter valid payment amount!");
 
-      const t = db.thekedars.find(x => x.id === currentThekedarPayId);
-      if (t) {
-        t.paid = (t.paid || 0) + amt;
-        if (!db.ledger) db.ledger = [];
-        db.ledger.push({
-          id: 'L' + Date.now(),
-          site: t.site || 'P1',
-          type: 'expense',
-          amount: amt,
-          note: `Thekedar Payment (${t.name}) - ${mode} [${note}]`,
-          date: getTodayString()
-        });
-        saveState();
-        closeAllModals();
-        alert(`₹${amt.toLocaleString('en-IN')} payment logged for ${t.name}!`);
-      }
+      await apiAdminAction('pay_thekedar', { thekedarId: currentThekedarPayId, amount: amt, mode, note });
+      closeAllModals();
+      await initAdminApp();
+      alert(`₹${amt.toLocaleString('en-IN')} payment logged!`);
     }
 
     function sendThekedarWhatsAppReceipt() {
       const amt = parseFloat(document.getElementById('thekPayAmountInput').value) || 0;
       const mode = document.getElementById('thekPayModeSelect').value;
       const note = document.getElementById('thekPayNoteInput').value.trim() || 'Milestone Payment';
-      const t = db.thekedars.find(x => x.id === currentThekedarPayId);
+      const t = (db.thekedars || []).find(x => x.id === currentThekedarPayId);
       
       submitThekedarPaymentOnly();
-      const remainingBal = Math.max(0, t.value - t.paid);
+      const remainingBal = Math.max(0, t.value - (t.paid + amt));
       const txt = encodeURIComponent(`⚡ VIJAY CONSTRUCTION - PAYMENT RECEIPT\nTo: ${t.name}\nWork: ${t.work}\nPaid Amount: ₹${amt} via ${mode}\nNote: ${note}\nRemaining Contract Balance: ₹${remainingBal}\nVerified by: Vijay Sir`);
       window.open(`https://api.whatsapp.com/send?text=${txt}`, '_blank');
     }
 
-    function setThekedarMilestone(tId, pct) {
+    async function setThekedarMilestone(tId, pct) {
       triggerHaptic();
-      const t = db.thekedars.find(x => x.id === tId);
+      const t = (db.thekedars || []).find(x => x.id === tId);
       if (t) {
         t.progress = pct;
-        saveState();
+        await saveCloudMasterDB(db);
+        renderAllViews();
       }
     }
 
@@ -1393,10 +1386,10 @@
       }).join('');
     }
 
-    function approveDemand(mId) {
+    async function approveDemand(demandId) {
       triggerHaptic();
-      const m = (db.materials || []).find(x => x.id === mId);
-      if (m) { m.status = 'Approved'; saveState(); }
+      await apiAdminAction('approve_demand', { demandId });
+      await initAdminApp();
     }
 
     function shareDemandWhatsApp(mId) {
@@ -1410,7 +1403,7 @@
 
     function openUpdateProgressModal(pId) {
       currentProgProjectId = pId;
-      const p = db.projects.find(x => x.id === pId);
+      const p = (db.projects || []).find(x => x.id === pId);
       document.getElementById('progProjName').innerText = p.name;
       document.getElementById('progSlider').value = p.progress || 0;
       document.getElementById('progPctDisplay').innerText = (p.progress || 0) + '%';
@@ -1418,15 +1411,16 @@
       openModal('modalUpdateProjectProgress');
     }
 
-    function submitProjectProgress() {
+    async function submitProjectProgress() {
       const val = parseInt(document.getElementById('progSlider').value) || 0;
       const phase = document.getElementById('progPhaseNote').value.trim() || 'Running Phase';
-      const p = db.projects.find(x => x.id === currentProgProjectId);
+      const p = (db.projects || []).find(x => x.id === currentProgProjectId);
       if (p) {
         p.progress = val;
         p.phase = phase;
-        saveState();
+        await saveCloudMasterDB(db);
         closeAllModals();
+        renderAllViews();
         alert(`✓ ${p.name} progress updated to ${val}%!`);
       }
     }
@@ -1449,7 +1443,7 @@
         const siteExpenses = (db.ledger || []).filter(l => l.site === p.id && l.type === 'expense').reduce((a, b) => a + b.amount, 0);
         const isOverspent = siteExpenses > (p.received || 0);
 
-        const assignedWorkers = db.workers.filter(w => w.site === p.id);
+        const assignedWorkers = (db.workers || []).filter(w => w.site === p.id);
         const assignedThekedars = (db.thekedars || []).filter(t => t.site === p.id || t.work.includes(p.name));
         const prog = p.progress || 0;
 
@@ -1510,9 +1504,9 @@
     }
 
     function populateDropdowns() {
-      const siteOpts = db.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-      const supOpts = db.suppliers.map(s => `<option value="${s}">${s}</option>`).join('');
-      const workerOpts = db.workers.map(w => `<option value="${w.id}">${w.name} (${getProjectObj(w.site).name})</option>`).join('');
+      const siteOpts = (db.projects || []).map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+      const supOpts = (db.suppliers || []).map(s => `<option value="${s}">${s}</option>`).join('');
+      const workerOpts = (db.workers || []).map(w => `<option value="${w.id}">${w.name} (${getProjectObj(w.site).name})</option>`).join('');
 
       if (document.getElementById('dashSiteFilterSelect')) {
         document.getElementById('dashSiteFilterSelect').innerHTML = `<option value="ALL">All Active Sites (Combined)</option>` + siteOpts;
@@ -1540,12 +1534,12 @@
 
     function markAllPresent() {
       const today = getTodayString();
-      db.workers.forEach(w => {
-        if (!w.att[today] || !w.att[today].locked) {
-          w.att[today] = { status: 'P', ot: 0, locked: false };
+      (db.workers || []).forEach(w => {
+        if (!w.att || !w.att[today] || !w.att[today].locked) {
+          apiAdminAction('set_attendance', { workerId: w.id, date: today, status: 'P', ot: 0 });
         }
       });
-      saveState();
+      setTimeout(initAdminApp, 300);
       alert("✓ All unlocked workers marked Present (P)!");
     }
 
@@ -1562,26 +1556,21 @@
       document.getElementById('advWorkerSelect').value = wId;
       openModal('modalAdvance');
     }
-    function submitFastAdvance() {
+    
+    async function submitFastAdvance() {
       const wId = document.getElementById('advWorkerSelect').value;
       const amt = parseFloat(document.getElementById('advAmountInput').value) || 0;
       if (amt <= 0) return alert("Enter valid cash amount!");
-      const w = db.workers.find(x => x.id === wId);
-      if (w) {
-        w.advance = (w.advance || 0) + amt;
-        if (!w.advanceList) w.advanceList = [];
-        w.advanceList.unshift({ date: getTodayString(), amount: amt, reason: 'Field Cash' });
-        if (!db.ledger) db.ledger = [];
-        db.ledger.push({ id: 'L' + Date.now(), site: w.site, type: 'expense', amount: amt, note: `Labour Advance (${w.name})`, date: getTodayString() });
-        saveState();
-        closeAllModals();
-        alert(`₹${amt} cash advance logged for ${w.name}!`);
-      }
+
+      await apiWorkerAction('request_kharcha', wId, { amount: amt, reason: 'Field Cash' });
+      closeAllModals();
+      await initAdminApp();
+      alert(`₹${amt} cash advance logged!`);
     }
 
     function openChuktaModal(wId) {
       currentChuktaWorkerId = wId;
-      const w = db.workers.find(x => x.id === wId);
+      const w = (db.workers || []).find(x => x.id === wId);
       const due = getWorkerDue(w);
       document.getElementById('chuktaWorkerName').innerText = `${w.name} (${getProjectObj(w.site).name})`;
       document.getElementById('chuktaNetDueDisplay').innerText = `₹${due.toLocaleString('en-IN')}`;
@@ -1589,26 +1578,16 @@
       openModal('modalChukta');
     }
 
-    function processChuktaOnly() {
-      const w = db.workers.find(x => x.id === currentChuktaWorkerId);
+    async function processChuktaOnly() {
       const paid = parseFloat(document.getElementById('chuktaPaidInput').value) || 0;
-      const due = getWorkerDue(w);
-      const carry = Math.max(0, due - paid);
-      w.att = {};
-      w.advance = 0;
-      w.advanceList = [];
-      w.bakaaya = carry;
-      if (paid > 0) {
-        if (!db.ledger) db.ledger = [];
-        db.ledger.push({ id: 'L' + Date.now(), site: w.site, type: 'expense', amount: paid, note: `Labour Saturday Payout (${w.name})`, date: getTodayString() });
-      }
-      saveState();
+      const res = await apiAdminAction('settle_chukta', { workerId: currentChuktaWorkerId, paidAmount: paid });
       closeAllModals();
-      alert(`💾 Hisaab Settled! Balance ₹${carry} carried forward.`);
+      await initAdminApp();
+      alert(`💾 Hisaab Settled! Balance ₹${res.carryForward || 0} carried forward without deleting history.`);
     }
 
     function sendChuktaWhatsApp() {
-      const w = db.workers.find(x => x.id === currentChuktaWorkerId);
+      const w = (db.workers || []).find(x => x.id === currentChuktaWorkerId);
       const paid = parseFloat(document.getElementById('chuktaPaidInput').value) || 0;
       const due = getWorkerDue(w);
       const carry = Math.max(0, due - paid);
@@ -1630,28 +1609,12 @@
       const site = document.getElementById('newWSite').value;
       const phone = document.getElementById('newWPhone').value.trim();
       const pin = document.getElementById('newWPin').value.trim() || '1234';
-      if (!name || !phone) return alert("Worker Name aur Mobile Number dono zaroori hain!");
+      if (!name || !phone) return alert("Worker Name aur Mobile Number required hain!");
       
-      db.workers.push({
-        id: 'W' + Date.now(),
-        name,
-        role,
-        site,
-        rate,
-        otRate: (role === 'Mistri' ? 100 : 65),
-        phone,
-        pin,
-        photo: '',
-        att: {},
-        advance: 0,
-        advanceList: [],
-        bakaaya: 0,
-        gpsMatch: true
-      });
-      
-      await saveState();
+      await apiAdminAction('add_worker', { name, role, rate, site, phone, pin });
       closeAllModals();
-      alert(`✓ ${name} (Phone: ${phone}, PIN: ${pin}) add ho gaya aur Cloud Server par sync ho gaya!`);
+      await initAdminApp();
+      alert(`✓ ${name} add ho gaya aur Cloud Server par sync ho gaya!`);
     }
 
     function submitThekedarContract() {
@@ -1662,30 +1625,33 @@
       if (!name || val <= 0) return alert("Contract details required!");
       if (!db.thekedars) db.thekedars = [];
       db.thekedars.unshift({ id: 'T' + Date.now(), name, work, value: val, paid, progress: 0, site: 'P1' });
-      saveState();
+      saveCloudMasterDB(db);
       closeAllModals();
+      renderAllViews();
     }
 
     function openMaterialDemandModal() { openModal('modalMaterial'); }
-    function submitMaterialDemand() {
+    async function submitMaterialDemand() {
       const item = document.getElementById('matItemInput').value.trim();
       const site = document.getElementById('matSiteSelect').value;
       const supplier = document.getElementById('matSupplierSelect').value;
       if (!item) return alert("Item details required!");
-      if (!db.materials) db.materials = [];
-      db.materials.unshift({ id: 'M' + Date.now(), type: 'material', category: 'General', item, site, supplier, requestedBy: 'Admin Hub', time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }), status: 'Approved' });
-      saveState();
+      
+      const adminWorker = (db.workers || [])[0] || { id: 'W1' };
+      await apiWorkerAction('submit_demand', adminWorker.id, { type: 'material', category: 'General', item, supplier });
       closeAllModals();
+      await initAdminApp();
     }
 
-    function submitNewProject() {
+    async function submitNewProject() {
       const client = document.getElementById('newCName').value.trim();
       const name = document.getElementById('newCSite').value.trim();
       const totalValue = parseFloat(document.getElementById('newCValue').value) || 0;
       if (!client || !name || totalValue <= 0) return alert("Valid client details required!");
-      db.projects.push({ id: 'P' + Date.now(), client, name, totalValue, received: 0, progress: 10, phase: 'Site Initiation & Foundation' });
-      saveState();
+      
+      await apiAdminAction('add_project', { client, name, totalValue });
       closeAllModals();
+      await initAdminApp();
     }
 
     function toggleTheme() {
@@ -1698,7 +1664,7 @@
       if (c) c.innerText = `Delhi • ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`;
     }, 1000);
 
-    if (sessionStorage.getItem('vijay_admin_auth') === 'true') {
+    if (sessionStorage.getItem('vijay_admin_token')) {
       document.getElementById('adminLockOverlay').classList.add('hidden');
     }
 
