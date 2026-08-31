@@ -1,5 +1,12 @@
-// Central DB Seed & Shared State
-let globalDB = {
+// =========================================================================
+// 🗄️ PERSISTENT CLOUD DATABASE CONNECTOR (api/_db.js)
+// =========================================================================
+
+// Aapka exact Firebase Realtime Database URL:
+const PERSISTENT_DB_URL = "https://vijay-construction-50c0f-default-rtdb.firebaseio.com/master_db.json";
+
+// Default Master Seed Data
+const initialSeedData = {
   projects: [
     { id: 'P1', client: 'Sharma Ji', name: 'Flat 309 (Dilshad Garden)', totalValue: 500000, received: 180000, progress: 65, phase: 'Plaster & Electrical Piping' },
     { id: 'P2', client: 'Gupta Ji', name: 'Villa 12 (Shahdara)', totalValue: 1200000, received: 400000, progress: 35, phase: 'Brickwork & Conduit Wiring' }
@@ -17,15 +24,47 @@ let globalDB = {
   ],
   siteProofs: [],
   ledger: [
-    { id: 'L1', site: 'P1', type: 'income', amount: 180000, note: 'Sharma Ji Advance (Flat 309)', date: '2026-08-29' }
+    { id: 'L1', site: 'P1', type: 'income', amount: 180000, note: 'Sharma Ji Advance (Flat 309)', date: new Date().toISOString().slice(0, 10) }
   ],
-  settlements: [] // Immutable settlement audit log
+  settlements: []
 };
 
-export function getGlobalDB() {
-  return globalDB;
+let cachedMemoryDB = null;
+
+export async function getGlobalDB() {
+  try {
+    const res = await fetch(PERSISTENT_DB_URL, { cache: 'no-store' });
+    if (res.ok) {
+      const cloudData = await res.json();
+      if (cloudData && cloudData.workers) {
+        cachedMemoryDB = cloudData;
+        return cloudData;
+      }
+    }
+  } catch (err) {
+    console.warn("Cloud DB fetch fallback:", err.message);
+  }
+
+  if (!cachedMemoryDB) {
+    cachedMemoryDB = initialSeedData;
+    // First time automatic seed creation on your Firebase
+    await setGlobalDB(initialSeedData);
+  }
+  return cachedMemoryDB;
 }
 
-export function setGlobalDB(newDB) {
-  globalDB = newDB;
+export async function setGlobalDB(newDB) {
+  if (!newDB) return;
+  cachedMemoryDB = newDB;
+
+  try {
+    await fetch(PERSISTENT_DB_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newDB)
+    });
+    console.log("☁️ Successfully Saved to Firebase Cloud!");
+  } catch (err) {
+    console.error("Firebase write error:", err.message);
+  }
 }
