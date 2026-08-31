@@ -338,7 +338,7 @@
               <span class="text-3xl">👷‍♂️</span>
               <div>
                 <span class="text-[14px] font-black block leading-tight" style="color: var(--text-main);" id="tileLabour">Labour Haziri</span>
-                <span class="text-[10.5px] font-medium" style="color: var(--text-sub);">Muster Roll & Site Assign</span>
+                <span class="text-[10.5px] font-medium" style="color: var(--text-sub);">Muster Roll & Parcha</span>
               </div>
             </div>
             <div class="b-tile" onclick="triggerHaptic(); openFastAdvanceModal()">
@@ -364,10 +364,10 @@
             </div>
             <div class="b-tile col-span-2" onclick="triggerHaptic(); switchTab('client')">
               <div class="flex items-center gap-3.5">
-                <span class="text-3xl">📢</span>
+                <span class="text-3xl">📊</span>
                 <div>
-                  <span class="text-[14.5px] font-black block leading-tight" style="color: var(--text-main);" id="tileClient">Client Projects Hub</span>
-                  <span class="text-[11px] font-medium" style="color: var(--text-sub);">Work Progress & Team Allocations</span>
+                  <span class="text-[14.5px] font-black block leading-tight" style="color: var(--text-main);" id="tileClient">Site Profit & Margins</span>
+                  <span class="text-[11px] font-medium" style="color: var(--text-sub);">Live Margin Engine & Cost Tracking</span>
                 </div>
               </div>
             </div>
@@ -375,15 +375,18 @@
         </div>
       </section>
 
-      <!-- TAB 2: 👷 LABOUR -->
+      <!-- TAB 2: 👷 LABOUR (WITH 1-CLICK WHATSAPP PARCHA) -->
       <section id="view-labour" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
           <h2 class="text-[14.5px] font-black" style="color: var(--text-main);" id="lblHaziriMatrix">Labour Haziri & OT Matrix</h2>
-          <button onclick="triggerHaptic(); openAddWorkerModal()" class="px-3.5 py-2 rounded-xl bg-blue-600 text-white text-[11.5px] font-black">+ Worker</button>
+          <div class="flex gap-1.5">
+            <button onclick="triggerHaptic(); openAuditLogModal()" class="px-3 py-2 rounded-xl bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[11px] font-black">📜 Audit Log</button>
+            <button onclick="triggerHaptic(); openAddWorkerModal()" class="px-3.5 py-2 rounded-xl bg-blue-600 text-white text-[11.5px] font-black">+ Worker</button>
+          </div>
         </div>
 
-        <!-- HERO BANNER 2: LABOUR CALCULATOR -->
+        <!-- HERO BANNER 2: LABOUR FINANCIAL CALCULATOR -->
         <div class="hero-pulse space-y-3" style="background: var(--neo-hero-labour);">
           <div class="flex justify-between items-start">
             <div>
@@ -507,15 +510,15 @@
         <div id="materialsListContainer" class="space-y-3 pb-8"></div>
       </section>
 
-      <!-- TAB 5: 📢 CLIENT & PROJECT PROGRESS -->
+      <!-- TAB 5: 📊 PHASE 3 SITE PROFIT MARGIN & CLIENT ENGINE -->
       <section id="view-client" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
-          <h2 class="text-[14.5px] font-black" style="color: var(--text-main);" id="lblClientTitle">Client Hub & Projects</h2>
+          <h2 class="text-[14.5px] font-black" style="color: var(--text-main);" id="lblClientTitle">Site Profit Margins & Hub</h2>
           <button onclick="triggerHaptic(); openModal('modalAddProject')" class="px-3.5 py-2 rounded-xl bg-blue-600 text-white text-[11.5px] font-black">+ Project</button>
         </div>
 
-        <!-- HERO BANNER 5: CLIENT CALCULATOR -->
+        <!-- HERO BANNER 5: CLIENT RECOVERY CALCULATOR -->
         <div class="hero-pulse space-y-3" style="background: var(--neo-hero-client);">
           <div class="flex justify-between items-start">
             <div>
@@ -561,11 +564,25 @@
         <span id="navBadgeDemand" class="absolute top-1 right-2 w-4 h-4 bg-rose-500 rounded-full text-white text-[9px] font-black flex items-center justify-center hidden">0</span>
       </button>
       <button class="b-nav-btn" id="tabNav-client" onclick="triggerHaptic(); switchTab('client')">
-        <span class="icon-wrap text-2xl">📢</span><span id="navClient">Client</span>
+        <span class="icon-wrap text-2xl">📊</span><span id="navClient">Margins</span>
       </button>
     </nav>
 
     <!-- Modals -->
+    <!-- Modal: Settlement Audit Log -->
+    <div id="modalAuditLog" class="modal-backdrop hidden" onclick="closeAllModals()">
+      <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
+        <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
+          <div>
+            <h3 class="text-[16px] font-black" style="color: var(--text-main);">📜 Settlement & Payout Audit Trail</h3>
+            <span class="text-[11px] font-bold text-slate-400">Permanent financial records log</span>
+          </div>
+          <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-black/5 text-xs font-bold">✕</button>
+        </div>
+        <div id="auditLogListContainer" class="space-y-2 max-h-96 overflow-y-auto pr-1"></div>
+      </div>
+    </div>
+
     <!-- Modal: Pay Thekedar -->
     <div id="modalPayThekedar" class="modal-backdrop hidden" onclick="closeAllModals()">
       <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
@@ -602,31 +619,6 @@
           <button onclick="triggerHaptic(); submitThekedarPaymentOnly()" class="b-btn-primary h-12 text-[13px] bg-purple-600 hover:bg-purple-700">💾 Save Payment</button>
           <button onclick="triggerHaptic(); sendThekedarWhatsAppReceipt()" class="b-btn-secondary h-12 text-[13px] text-emerald-600 border-emerald-500/30">📲 WhatsApp Receipt</button>
         </div>
-      </div>
-    </div>
-
-    <!-- Modal: Update Project Progress -->
-    <div id="modalUpdateProjectProgress" class="modal-backdrop hidden" onclick="closeAllModals()">
-      <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
-        <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
-          <div>
-            <h3 class="text-[16px] font-black" style="color: var(--text-main);">🏗️ Update Site Progress</h3>
-            <span id="progProjName" class="text-[12px] font-bold text-emerald-600">Site Title</span>
-          </div>
-          <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-black/5 text-xs font-bold">✕</button>
-        </div>
-        <div class="space-y-2">
-          <div class="flex justify-between items-center font-black">
-            <span class="text-xs text-slate-500">Site Work Completion %:</span>
-            <span class="text-lg text-emerald-600 font-black" id="progPctDisplay">50%</span>
-          </div>
-          <input id="progSlider" type="range" min="0" max="100" step="5" value="50" oninput="document.getElementById('progPctDisplay').innerText = this.value + '%'" class="w-full h-3 bg-black/10 rounded-lg appearance-none cursor-pointer accent-emerald-600"/>
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Current Work Phase / Note</label>
-          <input id="progPhaseNote" type="text" placeholder="e.g. Tile work started, Plaster done" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
-        </div>
-        <button onclick="triggerHaptic(); submitProjectProgress()" class="b-btn-primary text-[13.5px]">Save Progress ✓</button>
       </div>
     </div>
 
@@ -669,7 +661,7 @@
         </div>
         <div class="grid grid-cols-2 gap-2.5 pt-1">
           <button onclick="triggerHaptic(); processChuktaOnly()" class="b-btn-primary h-12 text-[13px] bg-blue-600 hover:bg-blue-700">💾 Settle Hisaab</button>
-          <button onclick="triggerHaptic(); sendChuktaWhatsApp()" class="b-btn-secondary h-12 text-[13px] text-emerald-600 border-emerald-500/30">📲 WhatsApp Parcha</button>
+          <button onclick="triggerHaptic(); sendChuktaWhatsApp()" class="b-btn-secondary h-12 text-[13px] text-emerald-600 border-emerald-500/30">📲 WhatsApp Slip</button>
         </div>
       </div>
     </div>
@@ -748,36 +740,6 @@
       </div>
     </div>
 
-    <!-- Modal: Material Demand -->
-    <div id="modalMaterial" class="modal-backdrop hidden" onclick="closeAllModals()">
-      <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
-        <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
-          <h3 class="text-[16px] font-black" style="color: var(--text-main);">📦 Create Demand</h3>
-          <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-black/5 text-xs font-bold">✕</button>
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Item / Karigar Details</label>
-          <div class="flex gap-2">
-            <input id="matItemInput" type="text" placeholder="e.g. 10 Bags Ultratech Cement or 2 Mazdoor" class="flex-1 h-12 px-3.5 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
-            <button onclick="triggerHaptic(); startVoiceInput('matItemInput')" class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-lg active:scale-90" title="Bolkar Likhein">
-              🎤
-            </button>
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Supplier / Vendor</label>
-            <select id="matSupplierSelect" class="w-full h-12 px-3 rounded-2xl font-bold text-[12.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"></select>
-          </div>
-          <div>
-            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Site</label>
-            <select id="matSiteSelect" class="w-full h-12 px-3 rounded-2xl font-bold text-[12.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"></select>
-          </div>
-        </div>
-        <button onclick="triggerHaptic(); submitMaterialDemand()" class="b-btn-primary text-[13.5px] mt-2">Add to Demand Queue 📦</button>
-      </div>
-    </div>
-
     <!-- Modal: Add Project -->
     <div id="modalAddProject" class="modal-backdrop hidden" onclick="closeAllModals()">
       <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
@@ -819,19 +781,15 @@
     let expandedWorkerIds = new Set();
     let currentChuktaWorkerId = null;
     let currentThekedarPayId = null;
-    let currentProgProjectId = null;
     let currentDemandFilter = 'ALL';
     let db = defaultMasterDB;
 
     function triggerHaptic() { if ('vibrate' in navigator) navigator.vibrate([15]); }
 
-    // INITIALIZE ADMIN HUB VIA SECURE API
     async function initAdminApp() {
       const res = await apiGetAdminData();
       if (res && res.success && res.data) {
         db = res.data;
-      } else {
-        db = await getCloudMasterDB();
       }
       renderAllViews();
     }
@@ -841,7 +799,6 @@
       alert("☁️ Live Master Data Refreshed!");
     }
 
-    // SERVER-AUTHENTICATED ADMIN LOGIN
     async function verifyAdminPIN() {
       const pin = document.getElementById('adminPinInput').value.trim();
       const btn = document.getElementById('btnUnlockHub');
@@ -1046,7 +1003,7 @@
       triggerHaptic();
       await apiAdminAction('reassign_site', { workerId, siteId });
       await initAdminApp();
-      alert(`✓ Worker site updated and synced to Worker App!`);
+      alert(`✓ Worker site updated and synced!`);
     }
 
     async function lockAllAttendance() {
@@ -1096,6 +1053,16 @@
       
       await apiAdminAction('set_attendance', { workerId, date: today, status: curSt, ot: curOt });
       await initAdminApp();
+    }
+
+    // PHASE 3: 1-CLICK WHATSAPP WEEKLY SLIP SENDER
+    function sendWorkerWhatsAppSlip(wId) {
+      triggerHaptic();
+      const w = (db.workers || []).find(x => x.id === wId);
+      if (!w) return;
+      const siteName = getProjectObj(w.site).name;
+      const msg = generateWorkerWhatsAppSlip(w, siteName);
+      window.open(`https://api.whatsapp.com/send?phone=91${w.phone}&text=${msg}`, '_blank');
     }
 
     function renderWorkersList() {
@@ -1168,7 +1135,7 @@
                 <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 space-y-1">
                   <div class="flex justify-between items-center">
                     <span class="text-[10.5px] font-bold text-slate-500 uppercase">Change Assigned Site:</span>
-                    <span class="text-[10px] font-black text-emerald-600">Syncs to Worker App</span>
+                    <span class="text-[10px] font-black text-emerald-600">Syncs Live</span>
                   </div>
                   <select onchange="reassignWorkerSite('${w.id}', this.value)" class="w-full h-9 px-2.5 rounded-lg font-bold text-[12px] bg-white dark:bg-slate-800 text-blue-600 border border-black/10 outline-none">
                     ${siteOptionsHtml}
@@ -1203,15 +1170,42 @@
                   </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2">
-                  <button onclick="triggerHaptic(); openWorkerAdvanceModal('${w.id}')" class="b-btn-secondary text-[12px] h-11 font-black">+ Advance 💵</button>
-                  <button onclick="triggerHaptic(); openChuktaModal('${w.id}')" class="b-btn-primary text-[12px] h-11 font-black">Chukta Settlement ✓</button>
+                <div class="grid grid-cols-3 gap-1.5">
+                  <button onclick="triggerHaptic(); openWorkerAdvanceModal('${w.id}')" class="b-btn-secondary text-[11.5px] h-11 font-black">+ Advance</button>
+                  <button onclick="triggerHaptic(); openChuktaModal('${w.id}')" class="b-btn-primary text-[11.5px] h-11 font-black bg-emerald-600">Settle Hisaab</button>
+                  <button onclick="triggerHaptic(); sendWorkerWhatsAppSlip('${w.id}')" class="b-btn-secondary text-[11.5px] h-11 font-black text-emerald-600 border-emerald-500/30">📲 Parcha</button>
                 </div>
               </div>
             ` : ''}
           </div>
         `;
       }).join('');
+    }
+
+    // PHASE 3: SETTLEMENT AUDIT LOG VIEWER
+    function openAuditLogModal() {
+      const container = document.getElementById('auditLogListContainer');
+      const list = db.settlements || [];
+      if (list.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-sm font-bold text-slate-400">Abhi tak koi chukta settlement log nahi hua hai.</div>`;
+      } else {
+        container.innerHTML = list.map(s => `
+          <div class="p-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 space-y-1 text-[12px]">
+            <div class="flex justify-between font-black" style="color: var(--text-main);">
+              <span>👤 ${s.workerName}</span>
+              <span class="text-emerald-600">Paid: ₹${(s.paidAmount || 0).toLocaleString('en-IN')}</span>
+            </div>
+            <div class="flex justify-between text-[10.5px] text-slate-500">
+              <span>Gross: ₹${(s.grossEarned || 0).toLocaleString('en-IN')} | Adv Cut: -₹${(s.advanceCut || 0).toLocaleString('en-IN')}</span>
+              <span>Carry: ₹${(s.carryForward || 0).toLocaleString('en-IN')}</span>
+            </div>
+            <div class="text-[9.5px] text-slate-400 font-bold pt-0.5">
+              🕒 ${new Date(s.settledAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+            </div>
+          </div>
+        `).join('');
+      }
+      openModal('modalAuditLog');
     }
 
     function openThekedarPayModal(tId) {
@@ -1401,30 +1395,7 @@
       window.open(`https://api.whatsapp.com/send?text=${txt}`, '_blank');
     }
 
-    function openUpdateProgressModal(pId) {
-      currentProgProjectId = pId;
-      const p = (db.projects || []).find(x => x.id === pId);
-      document.getElementById('progProjName').innerText = p.name;
-      document.getElementById('progSlider').value = p.progress || 0;
-      document.getElementById('progPctDisplay').innerText = (p.progress || 0) + '%';
-      document.getElementById('progPhaseNote').value = p.phase || '';
-      openModal('modalUpdateProjectProgress');
-    }
-
-    async function submitProjectProgress() {
-      const val = parseInt(document.getElementById('progSlider').value) || 0;
-      const phase = document.getElementById('progPhaseNote').value.trim() || 'Running Phase';
-      const p = (db.projects || []).find(x => x.id === currentProgProjectId);
-      if (p) {
-        p.progress = val;
-        p.phase = phase;
-        await saveCloudMasterDB(db);
-        closeAllModals();
-        renderAllViews();
-        alert(`✓ ${p.name} progress updated to ${val}%!`);
-      }
-    }
-
+    // PHASE 3: LIVE SITE PROFITABILITY & MARGIN BREAKDOWN RENDERER
     function renderClientProjectsView() {
       const projects = db.projects || [];
       const totalBooked = projects.reduce((a, p) => a + (p.totalValue || 0), 0);
@@ -1440,63 +1411,52 @@
 
       const container = document.getElementById('clientProjectsContainer');
       container.innerHTML = projects.map(p => {
-        const siteExpenses = (db.ledger || []).filter(l => l.site === p.id && l.type === 'expense').reduce((a, b) => a + b.amount, 0);
-        const isOverspent = siteExpenses > (p.received || 0);
-
-        const assignedWorkers = (db.workers || []).filter(w => w.site === p.id);
-        const assignedThekedars = (db.thekedars || []).filter(t => t.site === p.id || t.work.includes(p.name));
-        const prog = p.progress || 0;
+        const fin = calcProjectMargin(db, p.id);
 
         return `
           <div class="b-card space-y-3">
             <div class="flex justify-between items-start">
               <div>
-                <span class="text-[15px] font-black block" style="color: var(--text-main);">${p.client}</span>
+                <span class="text-[15.5px] font-black block" style="color: var(--text-main);">${p.client}</span>
                 <span class="text-[11.5px] font-bold text-slate-500">📍 ${p.name}</span>
               </div>
-              <span class="text-[11px] font-black text-emerald-600 bg-emerald-500/10 px-2.5 py-1 rounded-full">
-                ₹${(p.received || 0).toLocaleString('en-IN')} Inward
-              </span>
-            </div>
-
-            <div class="space-y-1.5 p-3 rounded-2xl bg-black/5 dark:bg-white/5 cursor-pointer" onclick="triggerHaptic(); openUpdateProgressModal('${p.id}')">
-              <div class="flex justify-between text-[11.5px] font-black">
-                <span class="text-slate-500">${p.phase || 'Work Progress'}:</span>
-                <span class="text-emerald-600 font-extrabold">${prog}% Complete ✏️</span>
-              </div>
-              <div class="w-full h-2.5 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
-                <div class="h-full bg-emerald-500 rounded-full transition-all" style="width: ${prog}%"></div>
+              <div class="text-right">
+                <span class="text-[12px] font-black ${fin.isLoss ? 'text-rose-600 bg-rose-500/10' : 'text-emerald-600 bg-emerald-500/10'} px-2.5 py-1 rounded-full block">
+                  ${fin.isLoss ? 'Loss Risk' : fin.profitMarginPct + '% Net Margin'}
+                </span>
+                <span class="text-[9.5px] font-extrabold text-slate-400">₹${fin.netProfit.toLocaleString('en-IN')} Profit</span>
               </div>
             </div>
 
-            <div class="space-y-1.5 pt-1">
-              <span class="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wider">Active Team Assigned:</span>
-              <div class="flex flex-wrap gap-1.5">
-                ${assignedWorkers.length > 0 ? assignedWorkers.map(w => `
-                  <span class="px-2.5 py-1 rounded-lg text-[10.5px] font-bold bg-blue-500/10 text-blue-600 border border-blue-500/20">
-                    👷 ${w.name.split(' ')[0]} (${w.role})
-                  </span>
-                `).join('') : '<span class="text-[10.5px] text-slate-400">No labour assigned</span>'}
-                
-                ${assignedThekedars.map(t => `
-                  <span class="px-2.5 py-1 rounded-lg text-[10.5px] font-bold bg-purple-500/10 text-purple-600 border border-purple-500/20">
-                    ⚡ ${t.name.split(' ')[0]} (Thekedar)
-                  </span>
-                `).join('')}
+            <!-- Visual Cost Stack Bar -->
+            <div class="space-y-1 bg-black/5 dark:bg-white/5 p-3 rounded-2xl">
+              <div class="flex justify-between text-[11px] font-black">
+                <span class="text-slate-500">Expenses vs Inward:</span>
+                <span class="${fin.isLoss ? 'text-rose-600' : 'text-emerald-600'}">₹${fin.totalCost.toLocaleString('en-IN')} / ₹${fin.inwardReceived.toLocaleString('en-IN')}</span>
+              </div>
+              <div class="w-full h-2.5 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden flex">
+                <div style="width: ${Math.min(100, Math.round((fin.materialExpense / (fin.inwardReceived || 1)) * 100))}%" class="h-full bg-blue-500" title="Material Cost"></div>
+                <div style="width: ${Math.min(100, Math.round((fin.labourExpense / (fin.inwardReceived || 1)) * 100))}%" class="h-full bg-indigo-500" title="Labour Cost"></div>
+                <div style="width: ${Math.min(100, Math.round((fin.thekedarExpense / (fin.inwardReceived || 1)) * 100))}%" class="h-full bg-purple-500" title="Thekedar Cost"></div>
+              </div>
+              <div class="flex justify-between text-[9.5px] font-bold text-slate-400 pt-1">
+                <span>📦 Saman: ₹${fin.materialExpense.toLocaleString('en-IN')}</span>
+                <span>👷 Mazdoor: ₹${fin.labourExpense.toLocaleString('en-IN')}</span>
+                <span>⚡ Thekedar: ₹${fin.thekedarExpense.toLocaleString('en-IN')}</span>
               </div>
             </div>
 
-            ${isOverspent ? `
+            ${fin.isLoss ? `
               <div class="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 text-[11px] font-bold flex items-center justify-between">
-                <span>⚠️ Kharcha (₹${siteExpenses.toLocaleString('en-IN')}) Received se zyada hai!</span>
-                <span class="font-black underline cursor-pointer" onclick="alert('Client se installment mangiye!')">Alert</span>
+                <span>⚠️ Kharcha Client Inward se zyada hai!</span>
+                <span class="font-black underline cursor-pointer" onclick="alert('Client se agla installment jaldi mangiye!')">Alert</span>
               </div>
             ` : ''}
 
             <div class="grid grid-cols-3 gap-1.5 p-2.5 rounded-xl bg-black/5 dark:bg-white/5 text-center text-[11px] font-black">
-              <div><span class="text-[9px] text-slate-400 block font-normal">Contract</span>₹${p.totalValue.toLocaleString('en-IN')}</div>
-              <div><span class="text-[9px] text-slate-400 block font-normal">Site Expense</span>₹${siteExpenses.toLocaleString('en-IN')}</div>
-              <div><span class="text-[9px] text-slate-400 block font-normal text-amber-500">Recovery Due</span>₹${Math.max(0, p.totalValue - (p.received || 0)).toLocaleString('en-IN')}</div>
+              <div><span class="text-[9px] text-slate-400 block font-normal">Contract</span>₹${fin.contractValue.toLocaleString('en-IN')}</div>
+              <div><span class="text-[9px] text-slate-400 block font-normal text-emerald-600">Received</span>₹${fin.inwardReceived.toLocaleString('en-IN')}</div>
+              <div><span class="text-[9px] text-slate-400 block font-normal text-amber-500">Recovery Due</span>₹${fin.dueFromClient.toLocaleString('en-IN')}</div>
             </div>
           </div>
         `;
@@ -1512,8 +1472,6 @@
         document.getElementById('dashSiteFilterSelect').innerHTML = `<option value="ALL">All Active Sites (Combined)</option>` + siteOpts;
       }
       if (document.getElementById('newWSite')) document.getElementById('newWSite').innerHTML = siteOpts;
-      if (document.getElementById('matSiteSelect')) document.getElementById('matSiteSelect').innerHTML = siteOpts;
-      if (document.getElementById('matSupplierSelect')) document.getElementById('matSupplierSelect').innerHTML = supOpts;
       if (document.getElementById('advWorkerSelect')) document.getElementById('advWorkerSelect').innerHTML = workerOpts;
     }
 
@@ -1628,19 +1586,6 @@
       saveCloudMasterDB(db);
       closeAllModals();
       renderAllViews();
-    }
-
-    function openMaterialDemandModal() { openModal('modalMaterial'); }
-    async function submitMaterialDemand() {
-      const item = document.getElementById('matItemInput').value.trim();
-      const site = document.getElementById('matSiteSelect').value;
-      const supplier = document.getElementById('matSupplierSelect').value;
-      if (!item) return alert("Item details required!");
-      
-      const adminWorker = (db.workers || [])[0] || { id: 'W1' };
-      await apiWorkerAction('submit_demand', adminWorker.id, { type: 'material', category: 'General', item, supplier });
-      closeAllModals();
-      await initAdminApp();
     }
 
     async function submitNewProject() {
