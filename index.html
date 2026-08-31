@@ -205,7 +205,7 @@
 </head>
 
 <body>
-  <!-- Server-Protected Lock Screen -->
+  <!-- Master Security Lock Screen -->
   <div id="adminLockOverlay" class="fixed inset-0 bg-slate-950/95 backdrop-blur-xl z-[999] flex flex-col items-center justify-center p-6 text-white text-center">
     <div class="w-16 h-16 rounded-3xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-3xl mb-4 shadow-lg shadow-emerald-500/20">🔒</div>
     <h2 class="text-xl font-black tracking-tight mb-1">VIJAY CONSTRUCTION</h2>
@@ -216,7 +216,7 @@
       <button onclick="verifyAdminPIN()" class="w-full h-12 rounded-2xl bg-emerald-600 font-extrabold text-sm active:scale-95 shadow-lg shadow-emerald-600/30" id="btnUnlockHub">
         Unlock Hub ⚡
       </button>
-      <p class="text-[10px] text-slate-500 font-semibold">Security Master PIN: <b>2026</b></p>
+      <p class="text-[10px] text-slate-500 font-semibold">Security PIN: <b>2026</b></p>
     </div>
   </div>
 
@@ -245,17 +245,43 @@
       </div>
     </header>
 
-    <!-- Main Body Container -->
+    <!-- Main Dynamic Body Container -->
     <main class="flex-1 overflow-y-auto no-scrollbar px-4 pt-3 pb-28 space-y-4" id="mainAppScroll">
 
+      <!-- ========================================== -->
       <!-- TAB 1: 🏠 DASHBOARD -->
+      <!-- ========================================== -->
       <section id="view-dashboard" class="space-y-4">
         
+        <!-- Site Filter Selector -->
         <div class="flex items-center justify-between p-2 rounded-2xl bg-black/5 dark:bg-white/5">
           <span class="text-[11.5px] font-black px-2 text-slate-500" id="lblFilterSite">Filter Site:</span>
           <select id="dashSiteFilterSelect" onchange="renderDashboardView()" class="h-9 px-3 rounded-xl font-black text-[12px] bg-white dark:bg-slate-800 text-blue-600 border border-black/10 outline-none">
             <option value="ALL">All Active Sites (Combined)</option>
           </select>
+        </div>
+
+        <!-- 📊 1-CLICK EXCEL / CSV REPORT DOWNLOAD BAR -->
+        <div class="b-card flex items-center justify-between py-2.5 px-3.5 bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-transparent border border-emerald-500/20">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">📊</span>
+            <div>
+              <span class="text-[12.5px] font-black block leading-none" style="color: var(--text-main);">Excel Hisaab</span>
+              <span class="text-[10px] font-bold text-slate-500">1-Click Full Backup Download</span>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-1.5">
+            <button onclick="triggerHaptic(); exportLabourReportCSV(db)" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white font-extrabold text-[11px] flex items-center gap-1 active:scale-95 shadow-sm" title="Labour Hisaab Download">
+              <span>👷</span> <span>Labour</span>
+            </button>
+            <button onclick="triggerHaptic(); exportLedgerReportCSV(db)" class="px-2.5 py-1.5 rounded-xl bg-blue-600 text-white font-extrabold text-[11px] flex items-center gap-1 active:scale-95 shadow-sm" title="Ledger Download">
+              <span>💵</span> <span>Ledger</span>
+            </button>
+            <button onclick="triggerHaptic(); exportProjectMarginsCSV(db)" class="px-2.5 py-1.5 rounded-xl bg-slate-800 text-white font-extrabold text-[11px] flex items-center gap-1 active:scale-95 shadow-sm" title="Profit Margins Download">
+              <span>📈</span> <span>Margins</span>
+            </button>
+          </div>
         </div>
 
         <!-- HERO BANNER 1: MASTER PROFIT & LOSS -->
@@ -375,7 +401,9 @@
         </div>
       </section>
 
-      <!-- TAB 2: 👷 LABOUR (WITH 1-CLICK WHATSAPP PARCHA) -->
+      <!-- ========================================== -->
+      <!-- TAB 2: 👷 LABOUR (WITH DELETE & 1-CLICK PARCHA) -->
+      <!-- ========================================== -->
       <section id="view-labour" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
@@ -432,7 +460,9 @@
         <div id="workersListContainer" class="space-y-3 pb-8"></div>
       </section>
 
+      <!-- ========================================== -->
       <!-- TAB 3: ⚡ THEKEDAR -->
+      <!-- ========================================== -->
       <section id="view-thekedar" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
@@ -440,7 +470,6 @@
           <button onclick="triggerHaptic(); openModal('modalThekedar')" class="px-3.5 py-2 rounded-xl bg-purple-600 text-white text-[11.5px] font-black">+ Contract</button>
         </div>
 
-        <!-- HERO BANNER 3: THEKEDAR CALCULATOR -->
         <div class="hero-pulse space-y-3" style="background: var(--neo-hero-thekedar);">
           <div class="flex justify-between items-start">
             <div>
@@ -468,7 +497,9 @@
         <div id="thekedarListContainer" class="space-y-3 pb-8"></div>
       </section>
 
+      <!-- ========================================== -->
       <!-- TAB 4: 📦 DEMANDS HUB -->
+      <!-- ========================================== -->
       <section id="view-materials" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
@@ -476,7 +507,6 @@
           <button onclick="triggerHaptic(); openMaterialDemandModal()" class="px-3.5 py-2 rounded-xl bg-emerald-600 text-white text-[11.5px] font-black">+ Demand</button>
         </div>
 
-        <!-- HERO BANNER 4: DEMANDS CALCULATOR -->
         <div class="hero-pulse space-y-3" style="background: var(--neo-hero-demand);">
           <div class="flex justify-between items-start">
             <div>
@@ -510,7 +540,9 @@
         <div id="materialsListContainer" class="space-y-3 pb-8"></div>
       </section>
 
-      <!-- TAB 5: 📊 PHASE 3 SITE PROFIT MARGIN & CLIENT ENGINE -->
+      <!-- ========================================== -->
+      <!-- TAB 5: 📊 SITE PROFIT MARGINS & CLIENTS -->
+      <!-- ========================================== -->
       <section id="view-client" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
@@ -518,7 +550,6 @@
           <button onclick="triggerHaptic(); openModal('modalAddProject')" class="px-3.5 py-2 rounded-xl bg-blue-600 text-white text-[11.5px] font-black">+ Project</button>
         </div>
 
-        <!-- HERO BANNER 5: CLIENT RECOVERY CALCULATOR -->
         <div class="hero-pulse space-y-3" style="background: var(--neo-hero-client);">
           <div class="flex justify-between items-start">
             <div>
@@ -666,7 +697,7 @@
       </div>
     </div>
 
-    <!-- Modal: Add Worker -->
+    <!-- Modal: Add Worker (With Duplicate Check) -->
     <div id="modalAddWorker" class="modal-backdrop hidden" onclick="closeAllModals()">
       <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
         <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
@@ -699,7 +730,7 @@
         </div>
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Mobile Number</label>
+            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Mobile Number (10 Digits)</label>
             <input id="newWPhone" type="tel" maxlength="10" placeholder="98XXXXXXXX" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
           </div>
           <div>
@@ -707,7 +738,9 @@
             <input id="newWPin" type="password" maxlength="4" value="1234" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
           </div>
         </div>
-        <button onclick="triggerHaptic(); submitNewWorker()" class="b-btn-primary text-[13.5px] mt-2">Save Worker ✓</button>
+        <button id="btnSaveNewWorker" onclick="triggerHaptic(); submitNewWorker()" class="b-btn-primary text-[13.5px] mt-2">
+          Save Worker ✓
+        </button>
       </div>
     </div>
 
@@ -737,6 +770,36 @@
           </div>
         </div>
         <button onclick="triggerHaptic(); submitThekedarContract()" class="b-btn-primary text-[13.5px] mt-2">Save RA Contract ✓</button>
+      </div>
+    </div>
+
+    <!-- Modal: Material Demand -->
+    <div id="modalMaterial" class="modal-backdrop hidden" onclick="closeAllModals()">
+      <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
+        <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
+          <h3 class="text-[16px] font-black" style="color: var(--text-main);">📦 Create Demand</h3>
+          <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-black/5 text-xs font-bold">✕</button>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Item / Karigar Details</label>
+          <div class="flex gap-2">
+            <input id="matItemInput" type="text" placeholder="e.g. 10 Bags Ultratech Cement or 2 Mazdoor" class="flex-1 h-12 px-3.5 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+            <button onclick="triggerHaptic(); startVoiceInput('matItemInput')" class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-lg active:scale-90" title="Bolkar Likhein">
+              🎤
+            </button>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Supplier / Vendor</label>
+            <select id="matSupplierSelect" class="w-full h-12 px-3 rounded-2xl font-bold text-[12.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"></select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Site</label>
+            <select id="matSiteSelect" class="w-full h-12 px-3 rounded-2xl font-bold text-[12.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"></select>
+          </div>
+        </div>
+        <button onclick="triggerHaptic(); submitMaterialDemand()" class="b-btn-primary text-[13.5px] mt-2">Add to Demand Queue 📦</button>
       </div>
     </div>
 
@@ -786,11 +849,9 @@
 
     function triggerHaptic() { if ('vibrate' in navigator) navigator.vibrate([15]); }
 
+    // INITIALIZE ADMIN HUB VIA DIRECT FIREBASE & CACHE
     async function initAdminApp() {
-      const res = await apiGetAdminData();
-      if (res && res.success && res.data) {
-        db = res.data;
-      }
+      db = await getCloudMasterDB();
       renderAllViews();
     }
 
@@ -804,15 +865,13 @@
       const btn = document.getElementById('btnUnlockHub');
       btn.innerText = "Verifying 🔒...";
 
-      const res = await apiLoginAdmin(pin);
-      btn.innerText = "Unlock Hub ⚡";
-
-      if (res && res.success) {
+      if (pin === "2026") {
         document.getElementById('adminLockOverlay').classList.add('hidden');
-        sessionStorage.setItem('vijay_admin_token', res.token);
+        sessionStorage.setItem('vijay_admin_token', 'vj_admin_auth_active');
         await initAdminApp();
       } else {
-        alert(res?.message || "Galat Master PIN!");
+        btn.innerText = "Unlock Hub ⚡";
+        alert("Galat Master PIN! '2026' enter karein.");
         document.getElementById('adminPinInput').value = '';
       }
     }
@@ -1001,19 +1060,28 @@
 
     async function reassignWorkerSite(workerId, siteId) {
       triggerHaptic();
-      await apiAdminAction('reassign_site', { workerId, siteId });
-      await initAdminApp();
-      alert(`✓ Worker site updated and synced!`);
+      const w = (db.workers || []).find(x => x.id === workerId);
+      if (w) {
+        w.site = siteId;
+        await saveCloudMasterDB(db);
+        renderAllViews();
+        alert(`✓ Worker site updated and synced!`);
+      }
     }
 
     async function lockAllAttendance() {
       triggerHaptic();
       const today = getTodayString();
-      const res = await apiAdminAction('lock_attendance', { date: today });
-      if (res && res.success) {
-        await initAdminApp();
-        alert(`✅ Today's attendance locked on server!`);
-      }
+      let count = 0;
+      (db.workers || []).forEach(w => {
+        if (w.att && w.att[today]) {
+          w.att[today].locked = true;
+          count++;
+        }
+      });
+      await saveCloudMasterDB(db);
+      renderAllViews();
+      alert(`✅ ${count} records locked on server!`);
     }
 
     function unlockAttendance(wId) {
@@ -1022,7 +1090,7 @@
       const w = (db.workers || []).find(x => x.id === wId);
       if (w && w.att && w.att[today]) {
         w.att[today].locked = false;
-        apiAdminAction('set_attendance', { workerId: wId, date: today, status: w.att[today].status, ot: w.att[today].ot }).then(initAdminApp);
+        saveCloudMasterDB(db).then(renderAllViews);
       }
     }
 
@@ -1030,32 +1098,37 @@
       const today = getTodayString();
       const w = (db.workers || []).find(x => x.id === workerId);
       if (!w) return;
-      const cur = w.att && w.att[today];
+      if (!w.att) w.att = {};
+
+      const cur = w.att[today];
       if (cur && cur.locked) return;
 
       const curSt = typeof cur === 'object' ? cur.status : cur;
       const curOt = typeof cur === 'object' ? (cur.ot || 0) : 0;
       const newSt = (curSt === status) ? '' : status;
 
-      await apiAdminAction('set_attendance', { workerId, date: today, status: newSt, ot: curOt });
-      await initAdminApp();
+      w.att[today] = { status: newSt, ot: curOt, locked: false };
+      await saveCloudMasterDB(db);
+      renderAllViews();
     }
 
     async function adjustOT(workerId, delta) {
       const today = getTodayString();
       const w = (db.workers || []).find(x => x.id === workerId);
       if (!w) return;
-      const cur = w.att && w.att[today];
+      if (!w.att) w.att = {};
+
+      const cur = w.att[today];
       if (cur && cur.locked) return alert("Pehle 'Update ✏️' dabakar unlock karein.");
       
       const curSt = typeof cur === 'object' ? cur.status : (cur || 'P');
       const curOt = Math.max(0, (typeof cur === 'object' ? (cur.ot || 0) : 0) + delta);
       
-      await apiAdminAction('set_attendance', { workerId, date: today, status: curSt, ot: curOt });
-      await initAdminApp();
+      w.att[today] = { status: curSt, ot: curOt, locked: false };
+      await saveCloudMasterDB(db);
+      renderAllViews();
     }
 
-    // PHASE 3: 1-CLICK WHATSAPP WEEKLY SLIP SENDER
     function sendWorkerWhatsAppSlip(wId) {
       triggerHaptic();
       const w = (db.workers || []).find(x => x.id === wId);
@@ -1063,6 +1136,21 @@
       const siteName = getProjectObj(w.site).name;
       const msg = generateWorkerWhatsAppSlip(w, siteName);
       window.open(`https://api.whatsapp.com/send?phone=91${w.phone}&text=${msg}`, '_blank');
+    }
+
+    // 🗑️ DELETE WORKER LOGIC
+    async function deleteWorkerAccount(workerId) {
+      triggerHaptic();
+      const w = (db.workers || []).find(x => x.id === workerId);
+      if (!w) return;
+
+      const confirmDelete = confirm(`⚠️ Kya aap sach me '${w.name}' ko delete karna chahte hain? Iska hisaab aur attendance record hat jayega.`);
+      if (!confirmDelete) return;
+
+      db.workers = db.workers.filter(x => x.id !== workerId);
+      await saveCloudMasterDB(db);
+      renderAllViews();
+      alert(`✓ ${w.name} ko database se delete kar diya gaya.`);
     }
 
     function renderWorkersList() {
@@ -1114,7 +1202,7 @@
                     <span class="font-black text-[14px]" style="color: var(--text-main);">${w.name}</span>
                     <span class="text-[10px] font-extrabold text-blue-600">(${w.role})</span>
                   </div>
-                  <span class="text-[10.5px] font-bold text-slate-500">📍 ${getProjectObj(w.site).name} • PIN: <b>${w.pin || '1234'}</b></span>
+                  <span class="text-[10.5px] font-bold text-slate-500">📍 ${getProjectObj(w.site).name} • 📱 ${w.phone}</span>
                 </div>
               </div>
 
@@ -1132,10 +1220,20 @@
 
             ${isExp ? `
               <div class="pt-2.5 border-t border-black/5 dark:border-white/10 space-y-2.5" onclick="event.stopPropagation()">
+                
+                <div class="grid grid-cols-2 gap-2">
+                  <a href="tel:${w.phone}" class="h-9 rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-extrabold text-[11.5px] border border-emerald-500/20 flex items-center justify-center gap-1">
+                    <span>📞</span> Call Worker
+                  </a>
+                  <button onclick="deleteWorkerAccount('${w.id}')" class="h-9 rounded-xl bg-rose-500/10 text-rose-600 font-extrabold text-[11.5px] border border-rose-500/20 flex items-center justify-center gap-1 active:scale-95">
+                    <span>🗑️</span> Delete Worker
+                  </button>
+                </div>
+
                 <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 space-y-1">
                   <div class="flex justify-between items-center">
                     <span class="text-[10.5px] font-bold text-slate-500 uppercase">Change Assigned Site:</span>
-                    <span class="text-[10px] font-black text-emerald-600">Syncs Live</span>
+                    <span class="text-[10px] font-black text-emerald-600">PIN: ${w.pin || '1234'}</span>
                   </div>
                   <select onchange="reassignWorkerSite('${w.id}', this.value)" class="w-full h-9 px-2.5 rounded-lg font-bold text-[12px] bg-white dark:bg-slate-800 text-blue-600 border border-black/10 outline-none">
                     ${siteOptionsHtml}
@@ -1182,7 +1280,6 @@
       }).join('');
     }
 
-    // PHASE 3: SETTLEMENT AUDIT LOG VIEWER
     function openAuditLogModal() {
       const container = document.getElementById('auditLogListContainer');
       const list = db.settlements || [];
@@ -1224,10 +1321,23 @@
       const note = document.getElementById('thekPayNoteInput').value.trim() || 'RA Stage Payment';
       if (amt <= 0) return alert("Enter valid payment amount!");
 
-      await apiAdminAction('pay_thekedar', { thekedarId: currentThekedarPayId, amount: amt, mode, note });
-      closeAllModals();
-      await initAdminApp();
-      alert(`₹${amt.toLocaleString('en-IN')} payment logged!`);
+      const thek = (db.thekedars || []).find(t => t.id === currentThekedarPayId);
+      if (thek) {
+        thek.paid = (thek.paid || 0) + amt;
+        if (!db.ledger) db.ledger = [];
+        db.ledger.push({
+          id: 'L' + Date.now(),
+          site: thek.site || 'P1',
+          type: 'expense',
+          amount: amt,
+          note: `Thekedar Payment (${thek.name}) - ${mode} [${note}]`,
+          date: getTodayString()
+        });
+        await saveCloudMasterDB(db);
+        closeAllModals();
+        renderAllViews();
+        alert(`₹${amt.toLocaleString('en-IN')} payment logged!`);
+      }
     }
 
     function sendThekedarWhatsAppReceipt() {
@@ -1382,8 +1492,12 @@
 
     async function approveDemand(demandId) {
       triggerHaptic();
-      await apiAdminAction('approve_demand', { demandId });
-      await initAdminApp();
+      const m = (db.materials || []).find(x => x.id === demandId);
+      if (m) {
+        m.status = 'Approved';
+        await saveCloudMasterDB(db);
+        renderAllViews();
+      }
     }
 
     function shareDemandWhatsApp(mId) {
@@ -1395,7 +1509,6 @@
       window.open(`https://api.whatsapp.com/send?text=${txt}`, '_blank');
     }
 
-    // PHASE 3: LIVE SITE PROFITABILITY & MARGIN BREAKDOWN RENDERER
     function renderClientProjectsView() {
       const projects = db.projects || [];
       const totalBooked = projects.reduce((a, p) => a + (p.totalValue || 0), 0);
@@ -1428,7 +1541,6 @@
               </div>
             </div>
 
-            <!-- Visual Cost Stack Bar -->
             <div class="space-y-1 bg-black/5 dark:bg-white/5 p-3 rounded-2xl">
               <div class="flex justify-between text-[11px] font-black">
                 <span class="text-slate-500">Expenses vs Inward:</span>
@@ -1493,11 +1605,12 @@
     function markAllPresent() {
       const today = getTodayString();
       (db.workers || []).forEach(w => {
-        if (!w.att || !w.att[today] || !w.att[today].locked) {
-          apiAdminAction('set_attendance', { workerId: w.id, date: today, status: 'P', ot: 0 });
+        if (!w.att) w.att = {};
+        if (!w.att[today] || !w.att[today].locked) {
+          w.att[today] = { status: 'P', ot: 0, locked: false };
         }
       });
-      setTimeout(initAdminApp, 300);
+      saveCloudMasterDB(db).then(renderAllViews);
       alert("✓ All unlocked workers marked Present (P)!");
     }
 
@@ -1520,10 +1633,18 @@
       const amt = parseFloat(document.getElementById('advAmountInput').value) || 0;
       if (amt <= 0) return alert("Enter valid cash amount!");
 
-      await apiWorkerAction('request_kharcha', wId, { amount: amt, reason: 'Field Cash' });
-      closeAllModals();
-      await initAdminApp();
-      alert(`₹${amt} cash advance logged!`);
+      const w = (db.workers || []).find(x => x.id === wId);
+      if (w) {
+        w.advance = (w.advance || 0) + amt;
+        if (!w.advanceList) w.advanceList = [];
+        w.advanceList.unshift({ date: getTodayString(), amount: amt, reason: 'Field Cash' });
+        if (!db.ledger) db.ledger = [];
+        db.ledger.push({ id: 'L' + Date.now(), site: w.site, type: 'expense', amount: amt, note: `Labour Advance (${w.name})`, date: getTodayString() });
+        await saveCloudMasterDB(db);
+        closeAllModals();
+        renderAllViews();
+        alert(`₹${amt} cash advance logged!`);
+      }
     }
 
     function openChuktaModal(wId) {
@@ -1538,10 +1659,36 @@
 
     async function processChuktaOnly() {
       const paid = parseFloat(document.getElementById('chuktaPaidInput').value) || 0;
-      const res = await apiAdminAction('settle_chukta', { workerId: currentChuktaWorkerId, paidAmount: paid });
+      const w = (db.workers || []).find(x => x.id === currentChuktaWorkerId);
+      if (!w) return;
+
+      const due = getWorkerDue(w);
+      const carry = Math.max(0, due - paid);
+
+      if (!db.settlements) db.settlements = [];
+      db.settlements.unshift({
+        id: 'SETTL_' + Date.now(),
+        workerId: w.id,
+        workerName: w.name,
+        grossEarned: due + (w.advance || 0),
+        advanceCut: w.advance || 0,
+        paidAmount: paid,
+        carryForward: carry,
+        settledAt: new Date().toISOString()
+      });
+
+      if (paid > 0) {
+        if (!db.ledger) db.ledger = [];
+        db.ledger.push({ id: 'L' + Date.now(), site: w.site, type: 'expense', amount: paid, note: `Saturday Payout (${w.name})`, date: getTodayString() });
+      }
+
+      w.bakaaya = carry;
+      w.advance = 0;
+
+      await saveCloudMasterDB(db);
       closeAllModals();
-      await initAdminApp();
-      alert(`💾 Hisaab Settled! Balance ₹${res.carryForward || 0} carried forward without deleting history.`);
+      renderAllViews();
+      alert(`💾 Hisaab Settled! Balance ₹${carry} carried forward.`);
     }
 
     function sendChuktaWhatsApp() {
@@ -1560,19 +1707,58 @@
       document.getElementById('newWRate').value = (r === 'Mistri' || r === 'Plumber' || r === 'Electrician') ? 800 : 500;
     }
     
+    // 🛡️ WORKER ADDITION WITH VALIDATION & DUPLICATE NUMBER CHECK
     async function submitNewWorker() {
       const name = document.getElementById('newWName').value.trim();
       const role = document.getElementById('newWRole').value;
       const rate = parseFloat(document.getElementById('newWRate').value) || 500;
       const site = document.getElementById('newWSite').value;
-      const phone = document.getElementById('newWPhone').value.trim();
+      const rawPhone = document.getElementById('newWPhone').value.trim();
+      const cleanPhone = rawPhone.replace(/\D/g, '');
       const pin = document.getElementById('newWPin').value.trim() || '1234';
-      if (!name || !phone) return alert("Worker Name aur Mobile Number required hain!");
-      
-      await apiAdminAction('add_worker', { name, role, rate, site, phone, pin });
+
+      if (!name) return alert("Kripya worker ka naam bharein!");
+      if (cleanPhone.length !== 10) return alert("Mobile number 10 digits ka hona chahiye!");
+
+      // Duplicate Check
+      const existingWorker = (db.workers || []).find(w => String(w.phone).replace(/\D/g, '') === cleanPhone);
+      if (existingWorker) {
+        return alert(`⚠️ Ye mobile number pehle se "${existingWorker.name}" ke naam par registered hai! Kripya doosra number daalein.`);
+      }
+
+      const saveBtn = document.getElementById('btnSaveNewWorker');
+      saveBtn.innerText = "Saving ⏳...";
+      saveBtn.disabled = true;
+
+      if (!db.workers) db.workers = [];
+      db.workers.push({
+        id: 'W' + Date.now(),
+        name,
+        role,
+        site,
+        rate,
+        otRate: (role === 'Mistri' ? 100 : 65),
+        phone: cleanPhone,
+        pin,
+        photo: '',
+        att: {},
+        advance: 0,
+        advanceList: [],
+        bakaaya: 0,
+        gpsMatch: true
+      });
+
+      await saveCloudMasterDB(db);
+
+      // Reset form
+      document.getElementById('newWName').value = '';
+      document.getElementById('newWPhone').value = '';
+      saveBtn.innerText = "Save Worker ✓";
+      saveBtn.disabled = false;
+
       closeAllModals();
-      await initAdminApp();
-      alert(`✓ ${name} add ho gaya aur Cloud Server par sync ho gaya!`);
+      renderAllViews();
+      alert(`✓ ${name} (Mobile: ${cleanPhone}) add ho gaya aur Cloud Server par sync ho gaya!`);
     }
 
     function submitThekedarContract() {
@@ -1594,9 +1780,11 @@
       const totalValue = parseFloat(document.getElementById('newCValue').value) || 0;
       if (!client || !name || totalValue <= 0) return alert("Valid client details required!");
       
-      await apiAdminAction('add_project', { client, name, totalValue });
+      if (!db.projects) db.projects = [];
+      db.projects.push({ id: 'P' + Date.now(), client, name, totalValue, received: 0 });
+      await saveCloudMasterDB(db);
       closeAllModals();
-      await initAdminApp();
+      renderAllViews();
     }
 
     function toggleTheme() {

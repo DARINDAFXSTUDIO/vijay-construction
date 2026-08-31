@@ -1,59 +1,75 @@
 // =========================================================================
-// 🌐 FRONTEND API CONNECTOR & PHASE 3 REPORTING ENGINE (data.js)
+// 🏗️ VIJAY CONSTRUCTION - CENTRAL DATABASE & REPORTING ENGINE (data.js)
 // =========================================================================
 
-const API_AUTH = '/api/auth';
-const API_WORKER = '/api/worker';
-const API_ADMIN = '/api/admin';
+const MASTER_DB_KEY = 'vijay_subadmin_master_v5';
+const PERSISTENT_DB_URL = "https://vijay-construction-50c0f-default-rtdb.firebaseio.com/master_db.json";
 
-// 1. API CALLS
-async function apiLoginAdmin(adminPin) {
-  const res = await fetch(API_AUTH, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'admin_login', adminPin })
-  });
-  return await res.json();
+// Default Master Template
+const defaultMasterDB = {
+  projects: [
+    { id: 'P1', client: 'Sharma Ji', name: 'Flat 309 (Dilshad Garden)', totalValue: 500000, received: 180000, progress: 65, phase: 'Plaster & Electrical Piping' },
+    { id: 'P2', client: 'Gupta Ji', name: 'Villa 12 (Shahdara)', totalValue: 1200000, received: 400000, progress: 35, phase: 'Brickwork & Conduit Wiring' }
+  ],
+  suppliers: ["Gupta Building Material", "Aggarwal Hardware", "Sharma Paint & Sanitary"],
+  workers: [
+    { id: 'W1', name: 'Ramesh Mistri', role: 'Mistri', rate: 800, otRate: 100, site: 'P1', phone: '9811000001', pin: '1234', photo: '', att: {}, advance: 200, advanceList: [{ date: '2026-08-28', amount: 200, reason: 'Field Cash' }], bakaaya: 0, gpsMatch: true },
+    { id: 'W2', name: 'Suresh Mazdoor', role: 'Mazdoor', rate: 500, otRate: 65, site: 'P1', phone: '9811000004', pin: '1234', photo: '', att: {}, advance: 100, advanceList: [{ date: '2026-08-28', amount: 100, reason: 'Field Cash' }], bakaaya: 0, gpsMatch: true }
+  ],
+  thekedars: [
+    { id: 'T1', name: 'Raju Electrical Thekedar', phone: '9811000002', pin: '1234', site: 'P2', work: 'Wiring & DB Dressing @ Villa 12', value: 85000, paid: 54200, progress: 60 }
+  ],
+  materials: [
+    { id: 'M1', type: 'material', category: 'Cement & Masonry', item: 'Ultratech PPC Cement (10 Bags)', site: 'P1', supplier: 'Gupta Building Material', requestedBy: 'Ramesh Mistri', time: '09:30 AM', status: 'Pending' }
+  ],
+  siteProofs: [],
+  ledger: [
+    { id: 'L1', site: 'P1', type: 'income', amount: 180000, note: 'Sharma Ji Advance (Flat 309)', date: '2026-08-29' }
+  ],
+  settlements: []
+};
+
+// 1. DATA FETCH (CLOUD + LOCAL CACHE FALLBACK)
+async function getCloudMasterDB() {
+  try {
+    const res = await fetch(PERSISTENT_DB_URL, { cache: 'no-store' });
+    if (res.ok) {
+      const cloudData = await res.json();
+      if (cloudData && cloudData.workers) {
+        localStorage.setItem(MASTER_DB_KEY, JSON.stringify(cloudData));
+        return cloudData;
+      }
+    }
+  } catch (err) {
+    console.warn("Cloud DB fetch fallback to local cache:", err.message);
+  }
+
+  const local = localStorage.getItem(MASTER_DB_KEY);
+  if (local) {
+    try { return JSON.parse(local); } catch (e) {}
+  }
+
+  localStorage.setItem(MASTER_DB_KEY, JSON.stringify(defaultMasterDB));
+  return defaultMasterDB;
 }
 
-async function apiLoginWorker(phone, pin) {
-  const res = await fetch(API_AUTH, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'worker_login', phone, pin })
-  });
-  return await res.json();
+// 2. DATA SAVE (PUSH TO CLOUD & CACHE)
+async function saveCloudMasterDB(data) {
+  if (!data) return;
+  localStorage.setItem(MASTER_DB_KEY, JSON.stringify(data));
+
+  try {
+    await fetch(PERSISTENT_DB_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  } catch (err) {
+    console.error("Cloud DB write failed:", err.message);
+  }
 }
 
-async function apiGetWorkerPortal(workerId) {
-  const res = await fetch(`${API_WORKER}?workerId=${workerId}`, { cache: 'no-store' });
-  return await res.json();
-}
-
-async function apiWorkerAction(action, workerId, payload) {
-  const res = await fetch(API_WORKER, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action, workerId, payload })
-  });
-  return await res.json();
-}
-
-async function apiGetAdminData() {
-  const res = await fetch(API_ADMIN, { cache: 'no-store' });
-  return await res.json();
-}
-
-async function apiAdminAction(action, payload) {
-  const res = await fetch(API_ADMIN, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action, payload })
-  });
-  return await res.json();
-}
-
-// 2. FINANCIAL & WAGE CALCULATION HELPERS
+// 3. CALCULATION HELPERS
 function calcWorkerShifts(w) {
   if (!w || !w.att) return 0;
   return Object.values(w.att).reduce((acc, v) => {
@@ -82,20 +98,16 @@ function getProjectDetails(db, projectId) {
   return db.projects.find(p => p.id === projectId) || { name: 'General Site', client: 'Client' };
 }
 
-// 3. PHASE 3: PROJECT-WISE PROFIT MARGIN ENGINE
 function calcProjectMargin(db, projectId) {
   const project = (db.projects || []).find(p => p.id === projectId) || { totalValue: 0, received: 0, name: 'Site' };
   const inward = Number(project.received || 0);
 
-  // A. Material & Direct Site Expenses from Ledger
   const siteLedger = (db.ledger || []).filter(l => l.site === projectId && l.type === 'expense');
   const materialAndDirectExp = siteLedger.reduce((sum, item) => sum + Number(item.amount || 0), 0);
 
-  // B. Labour Cost on this site
   const siteWorkers = (db.workers || []).filter(w => w.site === projectId);
   const labourCost = siteWorkers.reduce((sum, w) => sum + (calcWorkerShifts(w) * w.rate) + calcWorkerOTPay(w), 0);
 
-  // C. Thekedar Cost on this site
   const siteThekedars = (db.thekedars || []).filter(t => t.site === projectId || (t.work && t.work.includes(project.name)));
   const thekedarCost = siteThekedars.reduce((sum, t) => sum + Number(t.paid || 0), 0);
 
@@ -118,7 +130,6 @@ function calcProjectMargin(db, projectId) {
   };
 }
 
-// 4. PHASE 3: FORMATTED WHATSAPP WEEKLY PARCHA GENERATOR
 function generateWorkerWhatsAppSlip(w, siteName) {
   const shifts = calcWorkerShifts(w);
   const otPay = calcWorkerOTPay(w);
@@ -145,4 +156,79 @@ ${w.bakaaya > 0 ? `⏮️ *Pichhla Bakaaya:* +₹${w.bakaaya.toLocaleString('en-
 ---------------------------------------
 _Verified & Approved by: Vijay Sir_`
   );
+}
+
+// 4. 1-CLICK EXCEL / CSV EXPORT UTILITIES
+function downloadCSVFile(csvContent, filename) {
+  const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function exportLabourReportCSV(db) {
+  const workers = db.workers || [];
+  const dateStr = new Date().toISOString().slice(0, 10);
+  
+  let csv = "VIJAY CONSTRUCTION - LABOUR MUSTER & WAGE REPORT\n";
+  csv += `Generated Date,${dateStr}\n\n`;
+  csv += "Worker ID,Name,Role,Assigned Site,Daily Rate (Rs),Total Shifts (Days),OT Hours,OT Pay (Rs),Gross Earned (Rs),Previous Bakaaya (Rs),Advance Cut (Rs),Saturday Net Payable (Rs),Phone\n";
+
+  workers.forEach(w => {
+    const siteName = getProjectDetails(db, w.site).name.replace(/,/g, ' ');
+    const shifts = calcWorkerShifts(w);
+    const otPay = calcWorkerOTPay(w);
+    let otHours = 0;
+    Object.values(w.att || {}).forEach(r => {
+      otHours += (typeof r === 'object' ? (r.ot || 0) : 0);
+    });
+    const regularPay = shifts * (w.rate || 0);
+    const gross = regularPay + otPay + (w.bakaaya || 0);
+    const advance = w.advance || 0;
+    const netDue = Math.max(0, gross - advance);
+
+    csv += `"${w.id}","${w.name}","${w.role}","${siteName}",${w.rate},${shifts},${otHours},${otPay},${gross},${w.bakaaya || 0},${advance},${netDue},"${w.phone}"\n`;
+  });
+
+  downloadCSVFile(csv, `Vijay_Construction_Labour_Report_${dateStr}.csv`);
+}
+
+function exportLedgerReportCSV(db) {
+  const ledger = db.ledger || [];
+  const dateStr = new Date().toISOString().slice(0, 10);
+
+  let csv = "VIJAY CONSTRUCTION - COMPANY LEDGER & EXPENSE REPORT\n";
+  csv += `Generated Date,${dateStr}\n\n`;
+  csv += "Entry ID,Date,Site Name,Type,Amount (Rs),Description / Note\n";
+
+  ledger.forEach(item => {
+    const siteName = getProjectDetails(db, item.site).name.replace(/,/g, ' ');
+    const note = (item.note || '').replace(/,/g, ' ');
+    csv += `"${item.id}","${item.date || dateStr}","${siteName}","${item.type.toUpperCase()}",${item.amount},"${note}"\n`;
+  });
+
+  downloadCSVFile(csv, `Vijay_Construction_Ledger_Report_${dateStr}.csv`);
+}
+
+function exportProjectMarginsCSV(db) {
+  const projects = db.projects || [];
+  const dateStr = new Date().toISOString().slice(0, 10);
+
+  let csv = "VIJAY CONSTRUCTION - PROJECT MARGINS & COST SUMMARY\n";
+  csv += `Generated Date,${dateStr}\n\n`;
+  csv += "Project ID,Client Name,Site Name,Contract Value (Rs),Inward Received (Rs),Material Expense (Rs),Labour Expense (Rs),Thekedar Expense (Rs),Total Cost (Rs),Net Profit (Rs),Net Margin (%),Client Recovery Due (Rs)\n";
+
+  projects.forEach(p => {
+    const fin = calcProjectMargin(db, p.id);
+    const siteName = p.name.replace(/,/g, ' ');
+    const client = p.client.replace(/,/g, ' ');
+
+    csv += `"${p.id}","${client}","${siteName}",${fin.contractValue},${fin.inwardReceived},${fin.materialExpense},${fin.labourExpense},${fin.thekedarExpense},${fin.totalCost},${fin.netProfit},${fin.profitMarginPct}%,${fin.dueFromClient}\n`;
+  });
+
+  downloadCSVFile(csv, `Vijay_Construction_Project_Margins_${dateStr}.csv`);
 }

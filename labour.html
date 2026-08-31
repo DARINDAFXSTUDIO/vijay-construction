@@ -225,7 +225,7 @@
       </div>
     </header>
 
-    <!-- Professional Login Form (Server-Side Authenticated) -->
+    <!-- Professional Login Form -->
     <div id="view-login" class="flex-1 px-4 py-8 flex flex-col justify-center max-w-sm mx-auto w-full space-y-5">
       <div class="glass-card space-y-4 shadow-xl border-t-4 border-blue-600">
         <div class="text-center pt-2 pb-1">
@@ -561,7 +561,56 @@
   <script>
     let currentLabourUser = null;
     let currentLang = localStorage.getItem('vj_lang') || 'hi';
-    let scopedWorkerData = null;
+    let liveDB = defaultMasterDB;
+
+    const i18n = {
+      hi: {
+        portalTag: "वर्कर्स और पार्टनर्स पोर्टल",
+        loginTitle: "वर्कर लॉगिन",
+        loginSub: "रजिस्टर्ड मोबाइल नंबर और 4-अंकों का PIN दर्ज करें",
+        phone: "मोबाइल नंबर",
+        pin: "4-अंकों का PIN",
+        loginBtn: "लॉगिन करें ⚡",
+        loginHelp: "PIN भूल गए? सीधे विजय सर को कॉल करें।",
+        netDue: "शनिवार बकाया (देना बाकी)",
+        satDue: "शनिवार हिसाब",
+        earned: "कमाई",
+        otPay: "ओटी कमाई",
+        advance: "एडवांस",
+        shifts: "हाजिरी",
+        assignedDuty: "आज की साइट ड्यूटी",
+        musterRoll: "🗓️ मासिक हाजिरी कैलेंडर",
+        reqKharcha: "मिड-वीक खर्चा एडवांस (Jeb Kharcha)",
+        advanceHist: "💵 एडवांस इतिहास",
+        tabAaj: "📅 हाजिरी व साइट",
+        tabHisaab: "💰 हिसाब",
+        tabDemand: "📦 मांग (लेबर व सामान)",
+        langBtn: "🌐 English"
+      },
+      en: {
+        portalTag: "Worker & Partner Portal",
+        loginTitle: "Worker Login",
+        loginSub: "Enter registered mobile number and PIN",
+        phone: "Mobile Number",
+        pin: "4-Digit PIN",
+        loginBtn: "Login Portal ⚡",
+        loginHelp: "Forgot PIN? Directly call Vijay Sir.",
+        netDue: "Saturday Net Due (Payable)",
+        satDue: "Saturday Due",
+        earned: "Earned",
+        otPay: "OT Pay",
+        advance: "Advance",
+        shifts: "Shifts",
+        assignedDuty: "Today's Assigned Site",
+        musterRoll: "🗓️ Attendance Calendar",
+        reqKharcha: "Request Mid-Week Cash Advance",
+        advanceHist: "💵 Cash Advance History",
+        tabAaj: "📅 Attendance & Site",
+        tabHisaab: "💰 Ledger",
+        tabDemand: "📦 Demands",
+        langBtn: "🌐 हिन्दी"
+      }
+    };
 
     function triggerHaptic() { if ('vibrate' in navigator) navigator.vibrate([15]); }
 
@@ -596,68 +645,49 @@
       if (currentLabourUser) setupNav();
     }
 
-    // SERVER-AUTHENTICATED WORKER LOGIN (Zero Data Leakage)
     async function handleLogin() {
-      const phone = document.getElementById('inpPhone').value.trim();
+      const p = document.getElementById('inpPhone').value.trim();
       const pin = document.getElementById('inpPin').value.trim();
       
       const btn = document.getElementById('btnLogin');
-      btn.innerText = "Verifying 🔄...";
-
-      const res = await apiLoginWorker(phone, pin);
+      btn.innerText = "Connecting 🔄...";
+      
+      liveDB = await getCloudMasterDB();
       btn.innerText = i18n[currentLang].loginBtn;
 
-      if (res && res.success) {
-        currentLabourUser = res.user;
-        sessionStorage.setItem('vj_worker_id', res.userId);
-        sessionStorage.setItem('vj_worker_token', res.token);
-        await syncLiveScopedData();
+      const workerMatch = (liveDB.workers || []).find(w => String(w.phone).trim() === p && String(w.pin || '1234').trim() === pin);
+      const thekMatch = (liveDB.thekedars || []).find(t => String(t.phone).trim() === p && String(t.pin || '1234').trim() === pin);
+
+      if (workerMatch) {
+        currentLabourUser = {
+          id: workerMatch.id,
+          phone: workerMatch.phone,
+          name: workerMatch.name,
+          role: 'labour',
+          trade: workerMatch.role,
+          photo: workerMatch.photo || '',
+          av: workerMatch.name.slice(0,2).toUpperCase(),
+          rate: `₹${workerMatch.rate}/Day (OT: ₹${workerMatch.otRate || 100}/hr)`
+        };
+        routePortal();
+      } else if (thekMatch) {
+        currentLabourUser = {
+          id: thekMatch.id,
+          phone: thekMatch.phone || p,
+          name: thekMatch.name,
+          role: 'subcon',
+          trade: thekMatch.work,
+          av: thekMatch.name.slice(0,2).toUpperCase(),
+          rate: 'RA Milestone Contract'
+        };
         routePortal();
       } else {
-        alert(res?.message || (currentLang === 'hi' ? "गलत मोबाइल नंबर या PIN!" : "Invalid Phone or PIN!"));
-      }
-    }
-
-    async function syncLiveScopedData() {
-      if (!currentLabourUser) return;
-      const res = await apiGetWorkerPortal(currentLabourUser.id);
-      if (res && res.success && res.worker) {
-        scopedWorkerData = res.worker;
-        renderScopedWorkerUI(res.worker, res.demands || []);
-      }
-    }
-
-    function renderScopedWorkerUI(w, demands) {
-      document.getElementById('userName').innerText = w.name;
-      document.getElementById('userRole').innerText = w.role;
-      document.getElementById('userRate').innerText = `₹${w.rate}/Day (OT: ₹${w.otRate}/hr)`;
-
-      const fin = w.financials || {};
-      document.getElementById('labourNetDueText').innerText = `₹${(fin.netDue || 0).toLocaleString('en-IN')}`;
-      document.getElementById('labourEarnedText').innerText = `₹${(fin.regularPay || 0).toLocaleString('en-IN')}`;
-      document.getElementById('labourOtEarningText').innerText = `+₹${(fin.otPay || 0).toLocaleString('en-IN')}`;
-      document.getElementById('labourAdvanceHero').innerText = `-₹${(fin.advance || 0).toLocaleString('en-IN')}`;
-      document.getElementById('labourShiftsCount').innerText = `${fin.shifts || 0} D`;
-      document.getElementById('labourAssignedSite').innerText = `📍 ${w.siteName || 'Assigned Site'}`;
-
-      renderAvatarDisplay(w.photo, w.name);
-      renderCalendarGrid(w);
-      renderAdvanceHistory(w.advanceList || []);
-      renderCombinedDemands(demands);
-    }
-
-    function renderAvatarDisplay(photo, name) {
-      const el = document.getElementById('userAvatarImg');
-      if (photo) {
-        el.innerHTML = `<img src="${photo}" class="w-full h-full object-cover"/>`;
-      } else {
-        el.innerText = (name || 'RM').slice(0,2).toUpperCase();
+        alert(currentLang === 'hi' ? "गलत मोबाइल नंबर या PIN! कृपया एडमिन में रजिस्टर्ड नंबर जांचें।" : "Invalid Phone or PIN!");
       }
     }
 
     function handleLogout() {
       currentLabourUser = null;
-      sessionStorage.clear();
       document.getElementById('view-portal').classList.add('hidden');
       document.getElementById('bottomNavWrapper').classList.add('hidden');
       document.getElementById('view-login').classList.remove('hidden');
@@ -668,11 +698,26 @@
       document.getElementById('view-portal').classList.remove('hidden');
       document.getElementById('bottomNavWrapper').classList.remove('hidden');
 
+      renderAvatarDisplay();
+      document.getElementById('userName').innerText = currentLabourUser.name;
+      document.getElementById('userRole').innerText = currentLabourUser.trade;
+      document.getElementById('userRate').innerText = currentLabourUser.rate;
+
       document.querySelectorAll('[id^="role-container-"]').forEach(el => el.classList.add('hidden'));
       document.getElementById(`role-container-${currentLabourUser.role}`).classList.remove('hidden');
 
       setupNav();
+      syncLiveRoleData();
       applyLanguage();
+    }
+
+    function renderAvatarDisplay() {
+      const el = document.getElementById('userAvatarImg');
+      if (currentLabourUser.photo) {
+        el.innerHTML = `<img src="${currentLabourUser.photo}" class="w-full h-full object-cover"/>`;
+      } else {
+        el.innerText = currentLabourUser.av || currentLabourUser.name.slice(0,2).toUpperCase();
+      }
     }
 
     async function handleProfilePicUpload(event) {
@@ -688,8 +733,15 @@
           ctx.drawImage(img, 0, 0, 200, 200);
           const photoData = canvas.toDataURL('image/jpeg', 0.8);
           
-          await apiWorkerAction('update_photo', currentLabourUser.id, { photo: photoData });
-          renderAvatarDisplay(photoData, currentLabourUser.name);
+          currentLabourUser.photo = photoData;
+          renderAvatarDisplay();
+
+          liveDB = await getCloudMasterDB();
+          const w = (liveDB.workers || []).find(x => x.phone === currentLabourUser.phone);
+          if (w) {
+            w.photo = photoData;
+            await saveCloudMasterDB(liveDB);
+          }
           alert(currentLang === 'hi' ? "✓ प्रोफाइल फोटो क्लाउड पर सेव हो गई!" : "✓ Profile photo updated!");
         };
         img.src = e.target.result;
@@ -754,6 +806,60 @@
       }
     }
 
+    function syncLiveRoleData() {
+      if (currentLabourUser.role === 'labour') {
+        const w = (liveDB.workers || []).find(x => x.phone === currentLabourUser.phone) || liveDB.workers[0];
+        
+        let shifts = 0;
+        let totalOtHours = 0;
+        Object.values(w.att || {}).forEach(record => {
+          const st = typeof record === 'object' ? record.status : record;
+          const ot = typeof record === 'object' ? (record.ot || 0) : 0;
+          if (st === 'P') shifts += 1;
+          else if (st === 'HD') shifts += 0.5;
+          totalOtHours += ot;
+        });
+
+        const otRate = w.otRate || 100;
+        const earned = shifts * w.rate;
+        const otEarning = totalOtHours * otRate;
+        const net = Math.max(0, earned + otEarning + (w.bakaaya || 0) - (w.advance || 0));
+
+        document.getElementById('labourNetDueText').innerText = `₹${net.toLocaleString('en-IN')}`;
+        document.getElementById('labourEarnedText').innerText = `₹${earned.toLocaleString('en-IN')}`;
+        document.getElementById('labourOtEarningText').innerText = `+₹${otEarning.toLocaleString('en-IN')}`;
+        document.getElementById('labourAdvanceHero').innerText = `-₹${(w.advance || 0).toLocaleString('en-IN')}`;
+        document.getElementById('labourShiftsCount').innerText = `${shifts} D`;
+        
+        const proj = (liveDB.projects || []).find(p => p.id === w.site) || { name: 'Flat 309 (Dilshad Garden)' };
+        document.getElementById('labourAssignedSite').innerText = `📍 ${proj.name}`;
+
+        renderCalendarGrid(w);
+        renderAdvanceHistory(w);
+        renderCombinedDemands();
+      } else if (currentLabourUser.role === 'subcon') {
+        const t = (liveDB.thekedars || []).find(x => x.name.includes(currentLabourUser.name) || x.id === currentLabourUser.id) || liveDB.thekedars[0];
+        const bal = Math.max(0, t.value - t.paid);
+        const prog = t.progress || 0;
+
+        document.getElementById('subconNetDueText').innerText = `₹${bal.toLocaleString('en-IN')}`;
+        document.getElementById('subconWorkTitle').innerText = `${t.work} (${t.name})`;
+        document.getElementById('subconProgText').innerText = `${prog}%`;
+        document.getElementById('subconProgBar').style.width = `${prog}%`;
+      }
+    }
+
+    async function logSubconMilestone(pct) {
+      liveDB = await getCloudMasterDB();
+      const t = (liveDB.thekedars || []).find(x => x.name.includes(currentLabourUser.name) || x.id === currentLabourUser.id) || liveDB.thekedars[0];
+      if (t) {
+        t.progress = pct;
+        await saveCloudMasterDB(liveDB);
+        syncLiveRoleData();
+        alert(`✓ Milestone ${pct}% logged & synced to Papa's Hub!`);
+      }
+    }
+
     function renderCalendarGrid(w) {
       const container = document.getElementById('workerCalendarGrid');
       const now = new Date();
@@ -764,7 +870,7 @@
       let html = '';
       for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const record = (w.att || {})[dateStr];
+        const record = w.att[dateStr];
         const status = typeof record === 'object' ? record.status : record;
         const ot = typeof record === 'object' ? (record.ot || 0) : 0;
 
@@ -774,7 +880,7 @@
         else if (status === 'A') cellClass = "cal-a";
 
         html += `
-          <div class="cal-day-cell ${cellClass}" onclick="showDayDetail('${dateStr}', '${status || 'No Mark'}', ${ot}, ${w.rate}, ${w.otRate})">
+          <div class="cal-day-cell ${cellClass}" onclick="showDayDetail('${dateStr}', '${status || 'No Mark'}', ${ot}, ${w.rate})">
             ${day}
             ${ot > 0 ? '<span class="ot-badge"></span>' : ''}
           </div>
@@ -783,22 +889,21 @@
       container.innerHTML = html;
     }
 
-    function showDayDetail(date, status, ot, rate, otRate) {
+    function showDayDetail(date, status, ot, rate) {
       triggerHaptic();
       const d = document.getElementById('calSelectedDayDetail');
       d.classList.remove('hidden');
       document.getElementById('calDetailDate').innerText = `Date: ${date}`;
       document.getElementById('calDetailStatus').innerText = status === 'P' ? 'Full Day (P)' : (status === 'HD' ? 'Half Day (HD)' : status);
-      
-      const realOtRate = otRate || 100;
-      document.getElementById('calDetailOT').innerText = `${ot} Hours (+₹${ot * realOtRate})`;
-      const earn = (status === 'P' ? rate : (status === 'HD' ? rate / 2 : 0)) + (ot * realOtRate);
+      document.getElementById('calDetailOT').innerText = `${ot} Hours (+₹${ot * 100})`;
+      const earn = (status === 'P' ? rate : (status === 'HD' ? rate / 2 : 0)) + (ot * 100);
       document.getElementById('calDetailEarn').innerText = `₹${earn}`;
     }
 
-    function renderAdvanceHistory(list) {
+    function renderAdvanceHistory(w) {
       const container = document.getElementById('workerAdvanceHistoryList');
-      if (!list || list.length === 0) {
+      const list = w.advanceList || [];
+      if (list.length === 0) {
         container.innerHTML = `<div class="text-slate-400 p-2">${currentLang === 'hi' ? 'कोई एडवांस नहीं लिया गया।' : 'No recent advances.'}</div>`;
         return;
       }
@@ -811,10 +916,20 @@
     }
 
     async function requestKharchaLabour(amt) {
-      await apiWorkerAction('request_kharcha', currentLabourUser.id, { amount: amt, reason: 'Field Cash' });
-      await syncLiveScopedData();
+      liveDB = await getCloudMasterDB();
+      const w = liveDB.workers.find(x => x.phone === currentLabourUser.phone) || liveDB.workers[0];
+      w.advance = (w.advance || 0) + amt;
+      if (!w.advanceList) w.advanceList = [];
+      const todayStr = new Date().toISOString().slice(0, 10);
+      w.advanceList.unshift({ date: todayStr, amount: amt, reason: 'Field Cash' });
       
-      const txt = encodeURIComponent(`Namaste Vijay Sir, Mujhe ₹${amt} ka cash kharcha mila hai. Name: ${currentLabourUser.name}`);
+      if (!liveDB.ledger) liveDB.ledger = [];
+      liveDB.ledger.push({ id: 'L' + Date.now(), site: w.site, type: 'expense', amount: amt, note: `Field Kharcha Request (${w.name})`, date: todayStr });
+      
+      await saveCloudMasterDB(liveDB);
+      syncLiveRoleData();
+      
+      const txt = encodeURIComponent(`Namaste Vijay Sir, Mujhe ₹${amt} ka cash kharcha mila hai. Name: ${w.name}`);
       window.open(`https://api.whatsapp.com/send?phone=919268880221&text=${txt}`, '_blank');
     }
 
@@ -825,14 +940,23 @@
 
       if (!item) return alert(currentLang === 'hi' ? "सामान का नाम व क्वांटिटी लिखें!" : "Enter item details!");
       
-      await apiWorkerAction('submit_demand', currentLabourUser.id, {
+      liveDB = await getCloudMasterDB();
+      const w = liveDB.workers.find(x => x.phone === currentLabourUser.phone) || { site: 'P1' };
+      liveDB.materials.unshift({
+        id: 'M' + Date.now(),
         type: 'material',
         category: cat,
         item: item,
-        urgency: urgency
+        urgency: urgency,
+        site: w.site || 'P1',
+        supplier: 'Gupta Building Material',
+        requestedBy: currentLabourUser.name,
+        time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+        status: 'Pending'
       });
+      await saveCloudMasterDB(liveDB);
       document.getElementById('workerDemandItem').value = '';
-      await syncLiveScopedData();
+      renderCombinedDemands();
       alert(currentLang === 'hi' ? "📦 सामान मांग एडमिन को भेज दी गई!" : "📦 Material request sent to Admin!");
     }
 
@@ -844,26 +968,34 @@
 
       if (!desc) return alert(currentLang === 'hi' ? "काम का विवरण दर्ज करें!" : "Enter work description!");
 
-      await apiWorkerAction('submit_demand', currentLabourUser.id, {
+      liveDB = await getCloudMasterDB();
+      const w = liveDB.workers.find(x => x.phone === currentLabourUser.phone) || { site: 'P1' };
+      liveDB.materials.unshift({
+        id: 'LBR' + Date.now(),
         type: 'manpower',
         category: 'Manpower / Karigar',
         item: `${count} - ${trade} (${desc})`,
         shift: shift,
-        urgency: 'Urgent'
+        urgency: 'Urgent',
+        site: w.site || 'P1',
+        requestedBy: currentLabourUser.name,
+        time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+        status: 'Pending'
       });
+      await saveCloudMasterDB(liveDB);
       document.getElementById('demLabWorkDetail').value = '';
-      await syncLiveScopedData();
+      renderCombinedDemands();
       alert(currentLang === 'hi' ? "👷‍♂️ लेबर/कारीगर मांग एडमिन को भेज दी गई!" : "👷‍♂️ Manpower request sent to Admin!");
     }
 
-    function renderCombinedDemands(demands) {
+    function renderCombinedDemands() {
       const container = document.getElementById('workerCombinedDemandList');
-      if (!demands || demands.length === 0) {
+      if (!liveDB.materials || liveDB.materials.length === 0) {
         container.innerHTML = `<div class="text-slate-400 p-2">${currentLang === 'hi' ? 'कोई पेंडिंग मांग नहीं है।' : 'No active requests.'}</div>`;
         return;
       }
 
-      container.innerHTML = demands.map(m => {
+      container.innerHTML = liveDB.materials.slice(0, 6).map(m => {
         const isManpower = m.type === 'manpower';
         return `
           <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 flex justify-between items-center border-l-4 ${isManpower ? 'border-emerald-500' : 'border-blue-500'}">
@@ -879,7 +1011,6 @@
       }).join('');
     }
 
-    // 📸 Photo Proof Capture & Push to Admin
     function processProofPhoto(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -910,7 +1041,19 @@
           document.getElementById('photoProofPreviewImg').src = finalData;
           document.getElementById('photoProofPreviewContainer').classList.remove('hidden');
 
-          await apiWorkerAction('upload_proof', currentLabourUser.id, { img: finalData });
+          liveDB = await getCloudMasterDB();
+          if (!liveDB.siteProofs) liveDB.siteProofs = [];
+          const currentWorker = liveDB.workers.find(x => x.phone === currentLabourUser.phone) || { site: 'P1' };
+          const projObj = (liveDB.projects || []).find(p => p.id === currentWorker.site) || { name: 'Flat 309 (Dilshad Garden)' };
+
+          liveDB.siteProofs.unshift({
+            id: 'SP' + Date.now(),
+            worker: currentLabourUser.name,
+            site: projObj.name,
+            time: `Today • ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`,
+            img: finalData
+          });
+          await saveCloudMasterDB(liveDB);
           alert(currentLang === 'hi' ? "📸 साइट फोटो पापा के कंट्रोल हब पर लाइव सेव हो गई!" : "📸 Site Photo synced to Papa's Master Hub!");
         };
         img.src = e.target.result;
@@ -919,16 +1062,19 @@
     }
 
     function handleVoiceAudioLedger() {
-      if (!scopedWorkerData) return;
-      const fin = scopedWorkerData.financials || {};
-      const shifts = fin.shifts || 0;
-      const net = fin.netDue || 0;
+      const w = (liveDB.workers || []).find(x => x.phone === currentLabourUser.phone) || liveDB.workers[0];
+      let shifts = 0;
+      Object.values(w.att || {}).forEach(r => {
+        const st = typeof r === 'object' ? r.status : r;
+        if (st === 'P') shifts += 1; else if (st === 'HD') shifts += 0.5;
+      });
+      const net = Math.max(0, (shifts * w.rate) + (w.bakaaya || 0) - (w.advance || 0));
       
       let msg = "";
       if (currentLang === 'hi') {
-        msg = `नमस्ते ${scopedWorkerData.name} जी! आपकी इस महीने कुल ${shifts} दिन की हाजिरी दर्ज है। जेब एडवांस काटने के बाद, शनिवार का कुल बकाया हिसाब ₹${net} है। धन्यवाद!`;
+        msg = `नमस्ते ${w.name} जी! आपकी इस महीने कुल ${shifts} दिन की हाजिरी दर्ज है। जेब एडवांस काटने के बाद, शनिवार का कुल बकाया हिसाब ₹${net} है। धन्यवाद!`;
       } else {
-        msg = `Hello ${scopedWorkerData.name}! You have completed ${shifts} days of attendance. After deducting cash advance, your net Saturday balance is ₹${net}. Thank you!`;
+        msg = `Hello ${w.name}! You have completed ${shifts} days of attendance. After deducting cash advance, your net Saturday balance is ₹${net}. Thank you!`;
       }
 
       if ('speechSynthesis' in window) {
