@@ -5,11 +5,11 @@
 const MASTER_DB_KEY = 'vijay_subadmin_master_v5';
 const PERSISTENT_DB_URL = "https://vijay-construction-50c0f-default-rtdb.firebaseio.com/master_db.json";
 
-// Default Master Template
+// Default Master Template with Real GPS Coordinates (Delhi NCR Sites)
 const defaultMasterDB = {
   projects: [
-    { id: 'P1', client: 'Sharma Ji', name: 'Flat 309 (Dilshad Garden)', totalValue: 500000, received: 180000, progress: 65, phase: 'Plaster & Electrical Piping' },
-    { id: 'P2', client: 'Gupta Ji', name: 'Villa 12 (Shahdara)', totalValue: 1200000, received: 400000, progress: 35, phase: 'Brickwork & Conduit Wiring' }
+    { id: 'P1', client: 'Sharma Ji', name: 'Flat 309 (Dilshad Garden)', lat: 28.6758, lng: 77.3214, totalValue: 500000, received: 180000, progress: 65, phase: 'Plaster & Electrical Piping' },
+    { id: 'P2', client: 'Gupta Ji', name: 'Villa 12 (Shahdara)', lat: 28.6692, lng: 77.2915, totalValue: 1200000, received: 400000, progress: 35, phase: 'Brickwork & Conduit Wiring' }
   ],
   suppliers: ["Gupta Building Material", "Aggarwal Hardware", "Sharma Paint & Sanitary"],
   workers: [
@@ -29,7 +29,7 @@ const defaultMasterDB = {
   settlements: []
 };
 
-// 1. DATA FETCH (CLOUD + LOCAL CACHE FALLBACK)
+// 1. DATA FETCH & SAVE
 async function getCloudMasterDB() {
   try {
     const res = await fetch(PERSISTENT_DB_URL, { cache: 'no-store' });
@@ -41,7 +41,7 @@ async function getCloudMasterDB() {
       }
     }
   } catch (err) {
-    console.warn("Cloud DB fetch fallback to local cache:", err.message);
+    console.warn("Cloud DB fetch fallback to cache:", err.message);
   }
 
   const local = localStorage.getItem(MASTER_DB_KEY);
@@ -53,7 +53,6 @@ async function getCloudMasterDB() {
   return defaultMasterDB;
 }
 
-// 2. DATA SAVE (PUSH TO CLOUD & CACHE)
 async function saveCloudMasterDB(data) {
   if (!data) return;
   localStorage.setItem(MASTER_DB_KEY, JSON.stringify(data));
@@ -69,7 +68,21 @@ async function saveCloudMasterDB(data) {
   }
 }
 
-// 3. CALCULATION HELPERS
+// 2. 📍 GPS HAVERSINE DISTANCE CALCULATION HELPER (In Meters)
+function calculateGPSDistanceMeters(lat1, lon1, lat2, lon2) {
+  if (!lat1 || !lon1 || !lat2 || !lon2) return null;
+  const R = 6371e3; // Earth radius in meters
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Math.round(R * c);
+}
+
+// 3. WAGE & FINANCIAL CALCULATIONS
 function calcWorkerShifts(w) {
   if (!w || !w.att) return 0;
   return Object.values(w.att).reduce((acc, v) => {
@@ -158,7 +171,7 @@ _Verified & Approved by: Vijay Sir_`
   );
 }
 
-// 4. 1-CLICK EXCEL / CSV EXPORT UTILITIES
+// 4. 1-CLICK EXCEL / CSV EXPORT
 function downloadCSVFile(csvContent, filename) {
   const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
