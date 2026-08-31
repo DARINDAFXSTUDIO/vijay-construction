@@ -5,13 +5,27 @@
 const MASTER_DB_KEY = 'vijay_subadmin_master_v5';
 const PERSISTENT_DB_URL = "https://vijay-construction-50c0f-default-rtdb.firebaseio.com/master_db.json";
 
-// Default Master Template with Real GPS Coordinates (Delhi NCR Sites)
+// Default Master Template with Delhi NCR Site Coordinates & Full Schema
 const defaultMasterDB = {
   projects: [
     { id: 'P1', client: 'Sharma Ji', name: 'Flat 309 (Dilshad Garden)', lat: 28.6758, lng: 77.3214, totalValue: 500000, received: 180000, progress: 65, phase: 'Plaster & Electrical Piping' },
     { id: 'P2', client: 'Gupta Ji', name: 'Villa 12 (Shahdara)', lat: 28.6692, lng: 77.2915, totalValue: 1200000, received: 400000, progress: 35, phase: 'Brickwork & Conduit Wiring' }
   ],
-  suppliers: ["Gupta Building Material", "Aggarwal Hardware", "Sharma Paint & Sanitary"],
+  suppliers: [
+    { id: 'SUP1', name: 'Gupta Building Material', phone: '9811000005', category: 'Cement & Masonry', totalPurchased: 45000, totalPaid: 25000 },
+    { id: 'SUP2', name: 'Aggarwal Hardware & Tools', phone: '9811000006', category: 'Hardware & Tools', totalPurchased: 18500, totalPaid: 10000 },
+    { id: 'SUP3', name: 'Sharma Paint & Sanitary', phone: '9811000007', category: 'Paint & Plumbing', totalPurchased: 32000, totalPaid: 32000 }
+  ],
+  supplierBills: [
+    { id: 'BILL1', supplierId: 'SUP1', site: 'P1', item: '50 Bags Ultratech Cement', billNo: 'INV-102', amount: 19500, date: '2026-08-25' },
+    { id: 'BILL2', supplierId: 'SUP1', site: 'P1', item: '200 Ft Rodi & Badarpur', billNo: 'INV-109', amount: 25500, date: '2026-08-28' },
+    { id: 'BILL3', supplierId: 'SUP2', site: 'P2', item: 'Cutting Blades, Screws & PVC Pipes', billNo: 'INV-441', amount: 18500, date: '2026-08-27' }
+  ],
+  supplierPayments: [
+    { id: 'SPAY1', supplierId: 'SUP1', amount: 25000, mode: 'UPI', note: 'Part payment for INV-102', date: '2026-08-29' },
+    { id: 'SPAY2', supplierId: 'SUP2', amount: 10000, mode: 'Cash', note: 'Field Cash Handover', date: '2026-08-28' },
+    { id: 'SPAY3', supplierId: 'SUP3', amount: 32000, mode: 'Bank', note: 'Full Settlement', date: '2026-08-26' }
+  ],
   workers: [
     { id: 'W1', name: 'Ramesh Mistri', role: 'Mistri', rate: 800, otRate: 100, site: 'P1', phone: '9811000001', pin: '1234', photo: '', att: {}, advance: 200, advanceList: [{ date: '2026-08-28', amount: 200, reason: 'Field Cash' }], bakaaya: 0, gpsMatch: true },
     { id: 'W2', name: 'Suresh Mazdoor', role: 'Mazdoor', rate: 500, otRate: 65, site: 'P1', phone: '9811000004', pin: '1234', photo: '', att: {}, advance: 100, advanceList: [{ date: '2026-08-28', amount: 100, reason: 'Field Cash' }], bakaaya: 0, gpsMatch: true }
@@ -29,7 +43,7 @@ const defaultMasterDB = {
   settlements: []
 };
 
-// 1. DATA FETCH & SAVE
+// 1. DATA SYNC (CLOUD REALTIME DATABASE + LOCAL FALLBACK)
 async function getCloudMasterDB() {
   try {
     const res = await fetch(PERSISTENT_DB_URL, { cache: 'no-store' });
@@ -68,10 +82,10 @@ async function saveCloudMasterDB(data) {
   }
 }
 
-// 2. 📍 GPS HAVERSINE DISTANCE CALCULATION HELPER (In Meters)
+// 2. 📍 GPS HAVERSINE DISTANCE HELPER (In Meters)
 function calculateGPSDistanceMeters(lat1, lon1, lat2, lon2) {
   if (!lat1 || !lon1 || !lat2 || !lon2) return null;
-  const R = 6371e3; // Earth radius in meters
+  const R = 6371e3;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = 
@@ -82,7 +96,7 @@ function calculateGPSDistanceMeters(lat1, lon1, lat2, lon2) {
   return Math.round(R * c);
 }
 
-// 3. WAGE & FINANCIAL CALCULATIONS
+// 3. WAGES & FINANCIAL CALCULATIONS
 function calcWorkerShifts(w) {
   if (!w || !w.att) return 0;
   return Object.values(w.att).reduce((acc, v) => {
@@ -143,6 +157,22 @@ function calcProjectMargin(db, projectId) {
   };
 }
 
+// 4. SUPPLIER KHATA CALCULATIONS
+function calcSupplierBalance(db, supId) {
+  const sup = (db.suppliers || []).find(s => (typeof s === 'object' ? s.id : s) === supId);
+  if (!sup || typeof sup !== 'object') return { totalPurchased: 0, totalPaid: 0, balanceDue: 0, billsCount: 0, paymentsCount: 0 };
+
+  const bills = (db.supplierBills || []).filter(b => b.supplierId === supId);
+  const payments = (db.supplierPayments || []).filter(p => p.supplierId === supId);
+
+  const totalPurchased = bills.reduce((acc, b) => acc + Number(b.amount || 0), 0);
+  const totalPaid = payments.reduce((acc, p) => acc + Number(p.amount || 0), 0);
+  const balanceDue = Math.max(0, totalPurchased - totalPaid);
+
+  return { totalPurchased, totalPaid, balanceDue, billsCount: bills.length, paymentsCount: payments.length };
+}
+
+// 5. WHATSAPP PARCHA GENERATORS
 function generateWorkerWhatsAppSlip(w, siteName) {
   const shifts = calcWorkerShifts(w);
   const otPay = calcWorkerOTPay(w);
@@ -171,7 +201,27 @@ _Verified & Approved by: Vijay Sir_`
   );
 }
 
-// 4. 1-CLICK EXCEL / CSV EXPORT
+function generateSupplierWhatsAppSlip(sup, db) {
+  const fin = calcSupplierBalance(db, sup.id);
+  const dateStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+  return encodeURIComponent(
+`*📦 VIJAY CONSTRUCTION - SUPPLIER KHATA PARCHA*
+---------------------------------------
+🏬 *Supplier:* ${sup.name}
+📂 *Category:* ${sup.category || 'Building Material'}
+📅 *Statement Date:* ${dateStr}
+---------------------------------------
+🛒 *Total Purchases Logged:* ₹${fin.totalPurchased.toLocaleString('en-IN')} (${fin.billsCount} Bills)
+💳 *Total Payment Released:* ₹${fin.totalPaid.toLocaleString('en-IN')} (${fin.paymentsCount} Txns)
+---------------------------------------
+🔴 *NET OUTSTANDING DUE (बाकी): ₹${fin.balanceDue.toLocaleString('en-IN')}*
+---------------------------------------
+_Account Managed by: Vijay Sir • Dilshad Garden, Delhi_`
+  );
+}
+
+// 6. 1-CLICK EXCEL / CSV EXPORTS
 function downloadCSVFile(csvContent, filename) {
   const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
@@ -186,34 +236,42 @@ function downloadCSVFile(csvContent, filename) {
 function exportLabourReportCSV(db) {
   const workers = db.workers || [];
   const dateStr = new Date().toISOString().slice(0, 10);
-  
   let csv = "VIJAY CONSTRUCTION - LABOUR MUSTER & WAGE REPORT\n";
   csv += `Generated Date,${dateStr}\n\n`;
-  csv += "Worker ID,Name,Role,Assigned Site,Daily Rate (Rs),Total Shifts (Days),OT Hours,OT Pay (Rs),Gross Earned (Rs),Previous Bakaaya (Rs),Advance Cut (Rs),Saturday Net Payable (Rs),Phone\n";
+  csv += "Worker ID,Name,Role,Assigned Site,Daily Rate (Rs),Total Shifts (Days),OT Pay (Rs),Gross Earned (Rs),Advance Cut (Rs),Saturday Net Payable (Rs),Phone\n";
 
   workers.forEach(w => {
     const siteName = getProjectDetails(db, w.site).name.replace(/,/g, ' ');
     const shifts = calcWorkerShifts(w);
     const otPay = calcWorkerOTPay(w);
-    let otHours = 0;
-    Object.values(w.att || {}).forEach(r => {
-      otHours += (typeof r === 'object' ? (r.ot || 0) : 0);
-    });
     const regularPay = shifts * (w.rate || 0);
     const gross = regularPay + otPay + (w.bakaaya || 0);
-    const advance = w.advance || 0;
-    const netDue = Math.max(0, gross - advance);
-
-    csv += `"${w.id}","${w.name}","${w.role}","${siteName}",${w.rate},${shifts},${otHours},${otPay},${gross},${w.bakaaya || 0},${advance},${netDue},"${w.phone}"\n`;
+    const netDue = Math.max(0, gross - (w.advance || 0));
+    csv += `"${w.id}","${w.name}","${w.role}","${siteName}",${w.rate},${shifts},${otPay},${gross},${w.advance || 0},${netDue},"${w.phone}"\n`;
   });
 
   downloadCSVFile(csv, `Vijay_Construction_Labour_Report_${dateStr}.csv`);
 }
 
+function exportSupplierReportCSV(db) {
+  const suppliers = db.suppliers || [];
+  const dateStr = new Date().toISOString().slice(0, 10);
+  let csv = "VIJAY CONSTRUCTION - SUPPLIER & VENDOR KHATA REPORT\n";
+  csv += `Generated Date,${dateStr}\n\n`;
+  csv += "Supplier ID,Supplier Name,Category,Mobile Number,Total Purchased (Rs),Total Paid (Rs),Outstanding Balance (Rs)\n";
+
+  suppliers.forEach(s => {
+    const supObj = typeof s === 'object' ? s : { id: s, name: s, phone: 'N/A', category: 'General' };
+    const fin = calcSupplierBalance(db, supObj.id);
+    csv += `"${supObj.id}","${supObj.name}","${supObj.category || 'General'}","${supObj.phone || ''}",${fin.totalPurchased},${fin.totalPaid},${fin.balanceDue}\n`;
+  });
+
+  downloadCSVFile(csv, `Vijay_Construction_Supplier_Khata_${dateStr}.csv`);
+}
+
 function exportLedgerReportCSV(db) {
   const ledger = db.ledger || [];
   const dateStr = new Date().toISOString().slice(0, 10);
-
   let csv = "VIJAY CONSTRUCTION - COMPANY LEDGER & EXPENSE REPORT\n";
   csv += `Generated Date,${dateStr}\n\n`;
   csv += "Entry ID,Date,Site Name,Type,Amount (Rs),Description / Note\n";
@@ -230,17 +288,13 @@ function exportLedgerReportCSV(db) {
 function exportProjectMarginsCSV(db) {
   const projects = db.projects || [];
   const dateStr = new Date().toISOString().slice(0, 10);
-
   let csv = "VIJAY CONSTRUCTION - PROJECT MARGINS & COST SUMMARY\n";
   csv += `Generated Date,${dateStr}\n\n`;
-  csv += "Project ID,Client Name,Site Name,Contract Value (Rs),Inward Received (Rs),Material Expense (Rs),Labour Expense (Rs),Thekedar Expense (Rs),Total Cost (Rs),Net Profit (Rs),Net Margin (%),Client Recovery Due (Rs)\n";
+  csv += "Project ID,Client Name,Site Name,Contract Value (Rs),Inward Received (Rs),Total Cost (Rs),Net Profit (Rs),Net Margin (%)\n";
 
   projects.forEach(p => {
     const fin = calcProjectMargin(db, p.id);
-    const siteName = p.name.replace(/,/g, ' ');
-    const client = p.client.replace(/,/g, ' ');
-
-    csv += `"${p.id}","${client}","${siteName}",${fin.contractValue},${fin.inwardReceived},${fin.materialExpense},${fin.labourExpense},${fin.thekedarExpense},${fin.totalCost},${fin.netProfit},${fin.profitMarginPct}%,${fin.dueFromClient}\n`;
+    csv += `"${p.id}","${p.client.replace(/,/g, ' ')}","${p.name.replace(/,/g, ' ')}",${fin.contractValue},${fin.inwardReceived},${fin.totalCost},${fin.netProfit},${fin.profitMarginPct}%\n`;
   });
 
   downloadCSVFile(csv, `Vijay_Construction_Project_Margins_${dateStr}.csv`);

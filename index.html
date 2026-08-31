@@ -27,6 +27,7 @@
       --neo-hero-dash: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0c831f 100%);
       --neo-hero-labour: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
       --neo-hero-thekedar: linear-gradient(135deg, #3b0764 0%, #581c87 50%, #7e22ce 100%);
+      --neo-hero-supplier: linear-gradient(135deg, #7c2d12 0%, #c2410c 50%, #ea580c 100%);
       --neo-hero-demand: linear-gradient(135deg, #082f49 0%, #0369a1 50%, #0284c7 100%);
       --neo-hero-client: linear-gradient(135deg, #064e3b 0%, #047857 50%, #059669 100%);
     }
@@ -45,6 +46,7 @@
       --neo-hero-dash: linear-gradient(135deg, #022c22 0%, #064e3b 50%, #047857 100%);
       --neo-hero-labour: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #3730a3 100%);
       --neo-hero-thekedar: linear-gradient(135deg, #180828 0%, #3b0764 50%, #6b21a8 100%);
+      --neo-hero-supplier: linear-gradient(135deg, #431407 0%, #9a3412 50%, #ea580c 100%);
       --neo-hero-demand: linear-gradient(135deg, #032030 0%, #075985 50%, #0284c7 100%);
       --neo-hero-client: linear-gradient(135deg, #022c22 0%, #065f46 50%, #059669 100%);
     }
@@ -166,7 +168,7 @@
       align-items: center;
       justify-content: center;
       gap: 3px;
-      font-size: 10.5px;
+      font-size: 10px;
       font-weight: 800;
       color: var(--text-muted);
       border: none;
@@ -236,16 +238,13 @@
         <button onclick="triggerHaptic(); refreshAdminData()" class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-xs active:scale-90" title="Sync Cloud Live">
           🔄
         </button>
-        <button onclick="triggerHaptic(); toggleAdminLanguage()" class="px-2.5 py-1 rounded-full text-[11px] font-black bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 active:scale-95" id="adminLangToggleBtn">
-          🌐 हिन्दी
-        </button>
         <button onclick="triggerHaptic(); toggleTheme()" class="w-9 h-9 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-sm active:scale-90" aria-label="Toggle Theme">
           🌓
         </button>
       </div>
     </header>
 
-    <!-- Main Dynamic Body Container -->
+    <!-- Main Dynamic Body -->
     <main class="flex-1 overflow-y-auto no-scrollbar px-4 pt-3 pb-28 space-y-4" id="mainAppScroll">
 
       <!-- ========================================== -->
@@ -255,14 +254,14 @@
         
         <!-- Site Filter Selector -->
         <div class="flex items-center justify-between p-2 rounded-2xl bg-black/5 dark:bg-white/5">
-          <span class="text-[11.5px] font-black px-2 text-slate-500" id="lblFilterSite">Filter Site:</span>
+          <span class="text-[11.5px] font-black px-2 text-slate-500">Filter Site:</span>
           <select id="dashSiteFilterSelect" onchange="renderDashboardView()" class="h-9 px-3 rounded-xl font-black text-[12px] bg-white dark:bg-slate-800 text-blue-600 border border-black/10 outline-none">
             <option value="ALL">All Active Sites (Combined)</option>
           </select>
         </div>
 
         <!-- 📊 1-CLICK EXCEL / CSV REPORT DOWNLOAD BAR -->
-        <div class="b-card flex items-center justify-between py-2.5 px-3.5 bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-transparent border border-emerald-500/20">
+        <div class="b-card flex items-center justify-between py-2.5 px-3.5 bg-gradient-to-r from-emerald-500/10 via-orange-500/10 to-transparent border border-emerald-500/20">
           <div class="flex items-center gap-2">
             <span class="text-xl">📊</span>
             <div>
@@ -272,13 +271,13 @@
           </div>
           
           <div class="flex items-center gap-1.5">
-            <button onclick="triggerHaptic(); exportLabourReportCSV(db)" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white font-extrabold text-[11px] flex items-center gap-1 active:scale-95 shadow-sm" title="Labour Hisaab Download">
+            <button onclick="triggerHaptic(); exportLabourReportCSV(db)" class="px-2 py-1.5 rounded-xl bg-emerald-600 text-white font-extrabold text-[10.5px] flex items-center gap-1 active:scale-95 shadow-sm">
               <span>👷</span> <span>Labour</span>
             </button>
-            <button onclick="triggerHaptic(); exportLedgerReportCSV(db)" class="px-2.5 py-1.5 rounded-xl bg-blue-600 text-white font-extrabold text-[11px] flex items-center gap-1 active:scale-95 shadow-sm" title="Ledger Download">
-              <span>💵</span> <span>Ledger</span>
+            <button onclick="triggerHaptic(); exportSupplierReportCSV(db)" class="px-2 py-1.5 rounded-xl bg-orange-600 text-white font-extrabold text-[10.5px] flex items-center gap-1 active:scale-95 shadow-sm">
+              <span>📦</span> <span>Suppliers</span>
             </button>
-            <button onclick="triggerHaptic(); exportProjectMarginsCSV(db)" class="px-2.5 py-1.5 rounded-xl bg-slate-800 text-white font-extrabold text-[11px] flex items-center gap-1 active:scale-95 shadow-sm" title="Profit Margins Download">
+            <button onclick="triggerHaptic(); exportProjectMarginsCSV(db)" class="px-2 py-1.5 rounded-xl bg-slate-800 text-white font-extrabold text-[10.5px] flex items-center gap-1 active:scale-95 shadow-sm">
               <span>📈</span> <span>Margins</span>
             </button>
           </div>
@@ -288,22 +287,22 @@
         <div class="hero-pulse space-y-3" style="background: var(--neo-hero-dash);">
           <div class="flex justify-between items-start">
             <div>
-              <span class="text-[10.5px] font-extrabold uppercase tracking-widest text-emerald-200" id="lblProfitTitle">Net Estimated Profit</span>
+              <span class="text-[10.5px] font-extrabold uppercase tracking-widest text-emerald-200">Net Estimated Profit</span>
               <div class="text-[34px] font-black tracking-tighter leading-none mt-1 text-emerald-300" id="dbProfit">₹0</div>
             </div>
             <span class="px-3 py-1 rounded-full bg-emerald-500/30 text-emerald-200 text-[10.5px] font-extrabold">Master Hub</span>
           </div>
           <div class="grid grid-cols-3 gap-2 pt-2.5 text-[11px] font-black border-t border-white/15">
             <div>
-              <span class="text-[9.5px] font-semibold text-emerald-200 block" id="lblIncome">Client Inward</span>
+              <span class="text-[9.5px] font-semibold text-emerald-200 block">Client Inward</span>
               <span class="text-white text-[14px]" id="dbIncome">₹0</span>
             </div>
             <div>
-              <span class="text-[9.5px] font-semibold text-rose-200 block" id="lblExpense">Total Expenses</span>
+              <span class="text-[9.5px] font-semibold text-rose-200 block">Total Expenses</span>
               <span class="text-rose-300 text-[14px]" id="dbExpense">₹0</span>
             </div>
             <div>
-              <span class="text-[9.5px] font-semibold text-amber-200 block" id="lblLabourDue">Labour Net Due</span>
+              <span class="text-[9.5px] font-semibold text-amber-200 block">Labour Net Due</span>
               <span class="text-amber-300 text-[14px]" id="dbLabourDue">₹0</span>
             </div>
           </div>
@@ -314,9 +313,9 @@
           <div>
             <div class="flex items-center gap-1.5">
               <span class="text-base">💼</span>
-              <span class="text-[12.5px] font-black" style="color: var(--text-main);" id="lblSatBagTitle">Saturday Cash Required</span>
+              <span class="text-[12.5px] font-black" style="color: var(--text-main);">Saturday Cash Required</span>
             </div>
-            <span class="text-[10px] font-bold text-slate-500" id="lblSatBagSub">Bank cash withdrawal estimated for this Saturday</span>
+            <span class="text-[10px] font-bold text-slate-500">Bank cash withdrawal estimated for this Saturday</span>
           </div>
           <div class="text-right">
             <span class="text-[20px] font-black text-amber-600 block leading-tight" id="satCashBagDisplay">₹0</span>
@@ -324,172 +323,133 @@
           </div>
         </div>
 
-        <!-- Manpower Status -->
-        <div class="b-card space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-[13.5px] font-black" style="color: var(--text-main);" id="lblManpowerTitle">👥 Manpower & Live Sites</span>
-            <span class="text-[10.5px] font-extrabold text-blue-600 bg-blue-500/10 px-2.5 py-0.5 rounded-full" id="dbActiveSitesCount">4 Sites Active</span>
-          </div>
-          <div class="grid grid-cols-3 gap-2.5 text-center">
-            <div class="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
-              <span class="text-[20px] font-black text-emerald-600 block leading-none" id="dbOnDutyCount">0</span>
-              <span class="text-[10px] font-bold text-emerald-800 dark:text-emerald-300" id="lblOnDuty">On Duty (P)</span>
-            </div>
-            <div class="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20">
-              <span class="text-[20px] font-black text-rose-600 block leading-none" id="dbAbsentCount">0</span>
-              <span class="text-[10px] font-bold text-rose-800 dark:text-rose-300" id="lblAbsent">Chhutti (A)</span>
-            </div>
-            <div class="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20">
-              <span class="text-[20px] font-black text-amber-600 block leading-none" id="dbPendingAttCount">0</span>
-              <span class="text-[10px] font-bold text-amber-800 dark:text-amber-300" id="lblUnmarked">Unmarked</span>
-            </div>
-          </div>
-          <div class="space-y-1.5 pt-1" id="dbSiteRadarList"></div>
-        </div>
-
-        <!-- 📸 SITE PACK-UP PROOFS GALLERY -->
-        <div class="b-card space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-[13.5px] font-black" style="color: var(--text-main);" id="lblPhotoGalleryTitle">📸 Live Site Pack-Up Proofs</span>
-            <span class="text-[10.5px] font-bold text-emerald-600">Geo-Tagged Live</span>
-          </div>
-          <div id="siteProofGalleryContainer" class="space-y-2 text-[12px]"></div>
-        </div>
-
         <!-- Direct Controls -->
         <div class="space-y-2.5">
-          <span class="text-[11.5px] font-extrabold uppercase tracking-wider px-1" style="color: var(--text-sub);" id="lblDirectControls">Direct Field Controls</span>
+          <span class="text-[11.5px] font-extrabold uppercase tracking-wider px-1" style="color: var(--text-sub);">Direct Field Controls</span>
           <div class="tile-grid">
             <div class="b-tile" onclick="triggerHaptic(); switchTab('labour')">
               <span class="text-3xl">👷‍♂️</span>
               <div>
-                <span class="text-[14px] font-black block leading-tight" style="color: var(--text-main);" id="tileLabour">Labour Haziri</span>
+                <span class="text-[14px] font-black block leading-tight" style="color: var(--text-main);">Labour Haziri</span>
                 <span class="text-[10.5px] font-medium" style="color: var(--text-sub);">Muster Roll & Parcha</span>
               </div>
             </div>
-            <div class="b-tile" onclick="triggerHaptic(); openFastAdvanceModal()">
-              <span class="text-3xl">💵</span>
+            <div class="b-tile" onclick="triggerHaptic(); switchTab('suppliers')">
+              <span class="text-3xl">📦</span>
               <div>
-                <span class="text-[14px] font-black block leading-tight" style="color: var(--text-main);" id="tileKharcha">Jeb Kharcha</span>
-                <span class="text-[10.5px] font-medium" style="color: var(--text-sub);">Instant Cash Advance</span>
+                <span class="text-[14px] font-black block leading-tight text-orange-600">Supplier Khata</span>
+                <span class="text-[10.5px] font-medium" style="color: var(--text-sub);">Material Bills & Payments</span>
               </div>
             </div>
             <div class="b-tile" onclick="triggerHaptic(); switchTab('thekedar')">
               <span class="text-3xl">⚡</span>
               <div>
-                <span class="text-[14px] font-black block leading-tight" style="color: var(--text-main);" id="tileThekedar">Thekedar RA</span>
+                <span class="text-[14px] font-black block leading-tight" style="color: var(--text-main);">Thekedar RA</span>
                 <span class="text-[10.5px] font-medium" style="color: var(--text-sub);">Payments & Progress</span>
               </div>
             </div>
-            <div class="b-tile" onclick="triggerHaptic(); switchTab('materials')">
-              <span class="text-3xl">📦</span>
+            <div class="b-tile" onclick="triggerHaptic(); switchTab('client')">
+              <span class="text-3xl">📊</span>
               <div>
-                <span class="text-[14px] font-black block leading-tight" style="color: var(--text-main);" id="tileDemands">Demands Hub</span>
-                <span class="text-[10.5px] font-medium" style="color: var(--text-sub);">Saman & Extra Labour</span>
-              </div>
-            </div>
-            <div class="b-tile col-span-2" onclick="triggerHaptic(); switchTab('client')">
-              <div class="flex items-center gap-3.5">
-                <span class="text-3xl">📊</span>
-                <div>
-                  <span class="text-[14.5px] font-black block leading-tight" style="color: var(--text-main);" id="tileClient">Site Profit & Margins</span>
-                  <span class="text-[11px] font-medium" style="color: var(--text-sub);">Live Margin Engine & Cost Tracking</span>
-                </div>
+                <span class="text-[14px] font-black block leading-tight" style="color: var(--text-main);">Site Margins</span>
+                <span class="text-[10.5px] font-medium" style="color: var(--text-sub);">Cost & Profit Analysis</span>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- 📸 SITE PACK-UP PROOFS GALLERY -->
+        <div class="b-card space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-[13.5px] font-black" style="color: var(--text-main);">📸 Live Site Pack-Up Proofs</span>
+            <span class="text-[10.5px] font-bold text-emerald-600">Geo-Tagged Live</span>
+          </div>
+          <div id="siteProofGalleryContainer" class="space-y-2 text-[12px]"></div>
+        </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- TAB 2: 👷 LABOUR (WITH DELETE & 1-CLICK PARCHA) -->
+      <!-- TAB 2: 👷 LABOUR (WITH DELETE & GEOFENCE STATUS) -->
       <!-- ========================================== -->
       <section id="view-labour" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
-          <h2 class="text-[14.5px] font-black" style="color: var(--text-main);" id="lblHaziriMatrix">Labour Haziri & OT Matrix</h2>
+          <h2 class="text-[14.5px] font-black" style="color: var(--text-main);">Labour Haziri & Wages</h2>
           <div class="flex gap-1.5">
             <button onclick="triggerHaptic(); openAuditLogModal()" class="px-3 py-2 rounded-xl bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[11px] font-black">📜 Audit Log</button>
             <button onclick="triggerHaptic(); openAddWorkerModal()" class="px-3.5 py-2 rounded-xl bg-blue-600 text-white text-[11.5px] font-black">+ Worker</button>
           </div>
         </div>
 
-        <!-- HERO BANNER 2: LABOUR FINANCIAL CALCULATOR -->
         <div class="hero-pulse space-y-3" style="background: var(--neo-hero-labour);">
           <div class="flex justify-between items-start">
             <div>
-              <span class="text-[10px] font-extrabold uppercase tracking-widest text-indigo-200" id="lblLabHeroTitle">Saturday Cash Needed (शनिवार बकाया)</span>
+              <span class="text-[10px] font-extrabold uppercase tracking-widest text-indigo-200">Saturday Cash Needed (शनिवार बकाया)</span>
               <div class="text-[34px] font-black tracking-tighter leading-none mt-1 text-indigo-300" id="labHeroNetDue">₹0</div>
             </div>
-            <span class="px-2.5 py-1 rounded-full bg-indigo-500/30 text-indigo-200 text-[10px] font-extrabold" id="labHeroWorkerCount">0 Active Workers</span>
-          </div>
-          <div class="grid grid-cols-3 gap-2 pt-2.5 text-[11px] font-black border-t border-white/15">
-            <div>
-              <span class="text-[9.5px] font-semibold text-indigo-200 block" id="lblLabEarned">Gross Wages</span>
-              <span class="text-white text-[13.5px]" id="labHeroGrossEarned">₹0</span>
-            </div>
-            <div>
-              <span class="text-[9.5px] font-semibold text-rose-200 block" id="lblLabAdvance">Advance Cut</span>
-              <span class="text-rose-300 text-[13.5px]" id="labHeroAdvances">-₹0</span>
-            </div>
-            <div>
-              <span class="text-[9.5px] font-semibold text-indigo-200 block" id="lblLabShifts">Total Shifts</span>
-              <span class="text-indigo-200 text-[13.5px]" id="labHeroTotalShifts">0 D</span>
-            </div>
+            <span class="px-2.5 py-1 rounded-full bg-indigo-500/30 text-indigo-200 text-[10px] font-extrabold" id="labHeroWorkerCount">0 Workers</span>
           </div>
         </div>
 
-        <div class="space-y-2">
-          <div class="grid grid-cols-2 gap-2">
-            <button onclick="triggerHaptic(); markAllPresent()" class="h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-extrabold text-[12px] flex items-center justify-center gap-1 active:scale-98">
-              <span>✓</span> <span id="btnMarkAll">Mark All P</span>
-            </button>
-            <button onclick="triggerHaptic(); lockAllAttendance()" class="h-12 rounded-2xl bg-blue-600 text-white font-black text-[12px] flex items-center justify-center gap-1 active:scale-98 shadow-md">
-              <span>🔒</span> <span id="btnFinalSubmit">Final Submit (Lock)</span>
-            </button>
-          </div>
-
-          <div class="flex gap-1.5 items-center">
-            <input id="workerSearchInput" oninput="renderWorkersList()" type="text" placeholder="🔍 Search worker or site..." class="flex-1 h-12 px-4 rounded-2xl font-bold text-[13px] outline-none border border-black/10 dark:border-white/10" style="background: var(--card-bg); color: var(--text-main);" />
-            <button onclick="triggerHaptic(); startVoiceInput('workerSearchInput')" class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-lg active:scale-90 shadow-md" title="Speak to Search">
-              🎤
-            </button>
-          </div>
+        <div class="flex gap-1.5 items-center">
+          <input id="workerSearchInput" oninput="renderWorkersList()" type="text" placeholder="🔍 Search worker or site..." class="flex-1 h-12 px-4 rounded-2xl font-bold text-[13px] outline-none border border-black/10 dark:border-white/10" style="background: var(--card-bg); color: var(--text-main);" />
         </div>
 
         <div id="workersListContainer" class="space-y-3 pb-8"></div>
       </section>
 
       <!-- ========================================== -->
-      <!-- TAB 3: ⚡ THEKEDAR -->
+      <!-- TAB 3: 📦 SUPPLIERS & VENDOR KHATA -->
+      <!-- ========================================== -->
+      <section id="view-suppliers" class="hidden space-y-3.5">
+        <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
+          <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
+          <h2 class="text-[14.5px] font-black text-orange-600">Supplier & Vendor Khata</h2>
+          <div class="flex gap-1.5">
+            <button onclick="triggerHaptic(); openModal('modalAddSupplierBill')" class="px-3 py-2 rounded-xl bg-orange-600 text-white text-[11px] font-black">+ Bill</button>
+            <button onclick="triggerHaptic(); openModal('modalAddSupplier')" class="px-3 py-2 rounded-xl bg-slate-800 text-white text-[11px] font-black">+ Vendor</button>
+          </div>
+        </div>
+
+        <!-- HERO BANNER: SUPPLIER TOTAL LIABILITY -->
+        <div class="hero-pulse space-y-3" style="background: var(--neo-hero-supplier);">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-[10px] font-extrabold uppercase tracking-widest text-orange-200">Total Supplier Outstanding (सप्लायर बकाया)</span>
+              <div class="text-[34px] font-black tracking-tighter leading-none mt-1 text-orange-100" id="supHeroBalance">₹0</div>
+            </div>
+            <span class="px-2.5 py-1 rounded-full bg-orange-500/30 text-orange-100 text-[10px] font-extrabold" id="supHeroCount">0 Vendors</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 pt-2.5 text-[11px] font-black border-t border-white/15">
+            <div>
+              <span class="text-[9.5px] font-semibold text-orange-200 block">Total Material Billed</span>
+              <span class="text-white text-[13.5px]" id="supHeroPurchased">₹0</span>
+            </div>
+            <div>
+              <span class="text-[9.5px] font-semibold text-orange-200 block">Total Payment Released</span>
+              <span class="text-orange-200 text-[13.5px]" id="supHeroPaid">₹0</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="suppliersListContainer" class="space-y-3 pb-8"></div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- TAB 4: ⚡ THEKEDAR -->
       <!-- ========================================== -->
       <section id="view-thekedar" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
-          <h2 class="text-[14.5px] font-black" style="color: var(--text-main);" id="lblThekTitle">Thekedar RA & Measurements</h2>
+          <h2 class="text-[14.5px] font-black" style="color: var(--text-main);">Thekedar RA & Measurements</h2>
           <button onclick="triggerHaptic(); openModal('modalThekedar')" class="px-3.5 py-2 rounded-xl bg-purple-600 text-white text-[11.5px] font-black">+ Contract</button>
         </div>
 
         <div class="hero-pulse space-y-3" style="background: var(--neo-hero-thekedar);">
           <div class="flex justify-between items-start">
             <div>
-              <span class="text-[10px] font-extrabold uppercase tracking-widest text-purple-200" id="lblThekHeroTitle">Net Thekedar Liability (कुल बकाया)</span>
+              <span class="text-[10px] font-extrabold uppercase tracking-widest text-purple-200">Net Thekedar Liability</span>
               <div class="text-[34px] font-black tracking-tighter leading-none mt-1 text-purple-300" id="thekHeroBalance">₹0</div>
-            </div>
-            <span class="px-2.5 py-1 rounded-full bg-purple-500/30 text-purple-200 text-[10px] font-extrabold" id="thekHeroRunningCount">0 Running RA</span>
-          </div>
-          <div class="grid grid-cols-3 gap-2 pt-2.5 text-[11px] font-black border-t border-white/15">
-            <div>
-              <span class="text-[9.5px] font-semibold text-purple-200 block" id="lblThekContractVal">Total Contracts</span>
-              <span class="text-white text-[13.5px]" id="thekHeroContractVal">₹0</span>
-            </div>
-            <div>
-              <span class="text-[9.5px] font-semibold text-purple-200 block" id="lblThekPaidVal">Released Paid</span>
-              <span class="text-emerald-300 text-[13.5px]" id="thekHeroPaidVal">₹0</span>
-            </div>
-            <div>
-              <span class="text-[9.5px] font-semibold text-purple-200 block" id="lblThekActive">Active Work</span>
-              <span class="text-purple-200 text-[13.5px]" id="thekHeroWorkCount">0 Sites</span>
             </div>
           </div>
         </div>
@@ -498,78 +458,20 @@
       </section>
 
       <!-- ========================================== -->
-      <!-- TAB 4: 📦 DEMANDS HUB -->
-      <!-- ========================================== -->
-      <section id="view-materials" class="hidden space-y-3.5">
-        <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
-          <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
-          <h2 class="text-[14.5px] font-black" style="color: var(--text-main);" id="lblDemandsTitle">Field Demands & Orders</h2>
-          <button onclick="triggerHaptic(); openMaterialDemandModal()" class="px-3.5 py-2 rounded-xl bg-emerald-600 text-white text-[11.5px] font-black">+ Demand</button>
-        </div>
-
-        <div class="hero-pulse space-y-3" style="background: var(--neo-hero-demand);">
-          <div class="flex justify-between items-start">
-            <div>
-              <span class="text-[10px] font-extrabold uppercase tracking-widest text-sky-200" id="lblDemHeroTitle">Pending Demands In Queue (पेंडिंग मांग)</span>
-              <div class="text-[34px] font-black tracking-tighter leading-none mt-1 text-sky-300" id="demHeroPendingCount">0</div>
-            </div>
-            <span class="px-2.5 py-1 rounded-full bg-sky-500/30 text-sky-200 text-[10px] font-extrabold" id="demHeroTotalCount">0 Total Logged</span>
-          </div>
-          <div class="grid grid-cols-3 gap-2 pt-2.5 text-[11px] font-black border-t border-white/15">
-            <div>
-              <span class="text-[9.5px] font-semibold text-sky-200 block" id="lblDemMatCount">Material (सामान)</span>
-              <span class="text-white text-[13.5px]" id="demHeroMatCount">0 Orders</span>
-            </div>
-            <div>
-              <span class="text-[9.5px] font-semibold text-sky-200 block" id="lblDemLabCount">Labour (कारीगर)</span>
-              <span class="text-sky-200 text-[13.5px]" id="demHeroLabCount">0 Reqs</span>
-            </div>
-            <div>
-              <span class="text-[9.5px] font-semibold text-emerald-200 block" id="lblDemApproved">Approved</span>
-              <span class="text-emerald-300 text-[13.5px]" id="demHeroApprovedCount">0 Done</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="p-1 rounded-2xl bg-black/5 dark:bg-white/5 grid grid-cols-3 gap-1">
-          <button id="fltDemAll" onclick="triggerHaptic(); filterDemands('ALL')" class="py-2 rounded-xl font-black text-[11.5px] bg-white dark:bg-slate-800 text-blue-600 shadow-sm">All Demands</button>
-          <button id="fltDemMat" onclick="triggerHaptic(); filterDemands('material')" class="py-2 rounded-xl font-bold text-[11.5px] text-slate-500">📦 Saman</button>
-          <button id="fltDemLab" onclick="triggerHaptic(); filterDemands('manpower')" class="py-2 rounded-xl font-bold text-[11.5px] text-slate-500">👷 Karigar</button>
-        </div>
-
-        <div id="materialsListContainer" class="space-y-3 pb-8"></div>
-      </section>
-
-      <!-- ========================================== -->
-      <!-- TAB 5: 📊 SITE PROFIT MARGINS & CLIENTS -->
+      <!-- TAB 5: 📊 SITE PROFIT MARGINS -->
       <!-- ========================================== -->
       <section id="view-client" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
-          <h2 class="text-[14.5px] font-black" style="color: var(--text-main);" id="lblClientTitle">Site Profit Margins & Hub</h2>
+          <h2 class="text-[14.5px] font-black" style="color: var(--text-main);">Site Profit Margins</h2>
           <button onclick="triggerHaptic(); openModal('modalAddProject')" class="px-3.5 py-2 rounded-xl bg-blue-600 text-white text-[11.5px] font-black">+ Project</button>
         </div>
 
         <div class="hero-pulse space-y-3" style="background: var(--neo-hero-client);">
           <div class="flex justify-between items-start">
             <div>
-              <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-200" id="lblCliHeroTitle">Total Market Recovery (वसूली बाकी)</span>
+              <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-200">Total Market Recovery</span>
               <div class="text-[34px] font-black tracking-tighter leading-none mt-1 text-emerald-300" id="cliHeroBakaaya">₹0</div>
-            </div>
-            <span class="px-2.5 py-1 rounded-full bg-emerald-500/30 text-emerald-200 text-[10px] font-extrabold" id="cliHeroCollectionRate">0% Collected</span>
-          </div>
-          <div class="grid grid-cols-3 gap-2 pt-2.5 text-[11px] font-black border-t border-white/15">
-            <div>
-              <span class="text-[9.5px] font-semibold text-emerald-200 block" id="lblCliBooked">Total Booked</span>
-              <span class="text-white text-[13.5px]" id="cliHeroBooked">₹0</span>
-            </div>
-            <div>
-              <span class="text-[9.5px] font-semibold text-emerald-200 block" id="lblCliReceived">Received Inward</span>
-              <span class="text-emerald-300 text-[13.5px]" id="cliHeroReceived">₹0</span>
-            </div>
-            <div>
-              <span class="text-[9.5px] font-semibold text-emerald-200 block" id="lblCliSites">Total Sites</span>
-              <span class="text-emerald-200 text-[13.5px]" id="cliHeroSitesCount">0 Projects</span>
             </div>
           </div>
         </div>
@@ -582,74 +484,120 @@
     <!-- Bottom Navigation Bar -->
     <nav class="b-nav">
       <button class="b-nav-btn active" id="tabNav-dashboard" onclick="triggerHaptic(); switchTab('dashboard')">
-        <span class="icon-wrap text-2xl">🏠</span><span id="navHome">Home</span>
+        <span class="icon-wrap text-2xl">🏠</span><span>Home</span>
       </button>
       <button class="b-nav-btn" id="tabNav-labour" onclick="triggerHaptic(); switchTab('labour')">
-        <span class="icon-wrap text-2xl">👷</span><span id="navLabour">Labour</span>
+        <span class="icon-wrap text-2xl">👷</span><span>Labour</span>
+      </button>
+      <button class="b-nav-btn" id="tabNav-suppliers" onclick="triggerHaptic(); switchTab('suppliers')">
+        <span class="icon-wrap text-2xl">📦</span><span>Suppliers</span>
       </button>
       <button class="b-nav-btn" id="tabNav-thekedar" onclick="triggerHaptic(); switchTab('thekedar')">
-        <span class="icon-wrap text-2xl">⚡</span><span id="navThekedar">Thekedar</span>
-      </button>
-      <button class="b-nav-btn relative" id="tabNav-materials" onclick="triggerHaptic(); switchTab('materials')">
-        <span class="icon-wrap text-2xl">📦</span><span id="navDemands">Demands</span>
-        <span id="navBadgeDemand" class="absolute top-1 right-2 w-4 h-4 bg-rose-500 rounded-full text-white text-[9px] font-black flex items-center justify-center hidden">0</span>
+        <span class="icon-wrap text-2xl">⚡</span><span>Thekedar</span>
       </button>
       <button class="b-nav-btn" id="tabNav-client" onclick="triggerHaptic(); switchTab('client')">
-        <span class="icon-wrap text-2xl">📊</span><span id="navClient">Margins</span>
+        <span class="icon-wrap text-2xl">📊</span><span>Margins</span>
       </button>
     </nav>
 
-    <!-- Modals -->
-    <!-- Modal: Settlement Audit Log -->
-    <div id="modalAuditLog" class="modal-backdrop hidden" onclick="closeAllModals()">
+    <!-- Modals Container -->
+    <!-- Modal: Add New Supplier -->
+    <div id="modalAddSupplier" class="modal-backdrop hidden" onclick="closeAllModals()">
       <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
         <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
-          <div>
-            <h3 class="text-[16px] font-black" style="color: var(--text-main);">📜 Settlement & Payout Audit Trail</h3>
-            <span class="text-[11px] font-bold text-slate-400">Permanent financial records log</span>
-          </div>
+          <h3 class="text-[16px] font-black text-orange-600">+ Add New Supplier / Vendor</h3>
           <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-black/5 text-xs font-bold">✕</button>
         </div>
-        <div id="auditLogListContainer" class="space-y-2 max-h-96 overflow-y-auto pr-1"></div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Firm / Shop Name</label>
+          <input id="newSupName" type="text" placeholder="e.g. Gupta Building Material" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Material Category</label>
+            <select id="newSupCat" class="w-full h-12 px-3 rounded-2xl font-bold text-[12.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);">
+              <option value="Cement & Masonry">🧱 Cement / Rodi / Badarpur</option>
+              <option value="Hardware & Tools">🔨 Hardware & Tools</option>
+              <option value="Electrical & Wire">⚡ Electrical Goods</option>
+              <option value="Paint & Putty">🎨 Paint & Putty</option>
+              <option value="Plumbing & Sanitary">🚿 Plumbing & Sanitary</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Mobile Number</label>
+            <input id="newSupPhone" type="tel" maxlength="10" placeholder="98XXXXXXXX" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+          </div>
+        </div>
+        <button onclick="triggerHaptic(); submitNewSupplier()" class="b-btn-primary text-[13.5px] bg-orange-600 hover:bg-orange-700">Save Supplier ✓</button>
       </div>
     </div>
 
-    <!-- Modal: Pay Thekedar -->
-    <div id="modalPayThekedar" class="modal-backdrop hidden" onclick="closeAllModals()">
+    <!-- Modal: Add Purchase Bill -->
+    <div id="modalAddSupplierBill" class="modal-backdrop hidden" onclick="closeAllModals()">
+      <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
+        <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
+          <h3 class="text-[16px] font-black text-orange-600">+ Add Material Purchase Bill</h3>
+          <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-black/5 text-xs font-bold">✕</button>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Select Supplier</label>
+          <select id="billSupplierSelect" class="w-full h-12 px-3 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"></select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Site Delivered</label>
+          <select id="billSiteSelect" class="w-full h-12 px-3 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"></select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Item Description (सामान का विवरण)</label>
+          <input id="billItemDesc" type="text" placeholder="e.g. 50 Bags Ultratech PPC Cement" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Bill / Parcha No.</label>
+            <input id="billInvoiceNo" type="text" placeholder="INV-101" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Bill Amount (₹)</label>
+            <input id="billAmountInput" type="number" placeholder="19500" class="w-full h-12 px-3.5 rounded-2xl font-black text-[16px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+          </div>
+        </div>
+        <button onclick="triggerHaptic(); submitSupplierBill()" class="b-btn-primary text-[13.5px] bg-orange-600 hover:bg-orange-700">Save Bill to Khata 📦</button>
+      </div>
+    </div>
+
+    <!-- Modal: Pay Supplier -->
+    <div id="modalPaySupplier" class="modal-backdrop hidden" onclick="closeAllModals()">
       <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
         <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
           <div>
-            <h3 class="text-[16px] font-black" style="color: var(--text-main);">💳 Pay Thekedar (पेमेंट एंट्री)</h3>
-            <span id="payThekName" class="text-[12px] font-bold text-purple-600">Thekedar Name</span>
+            <h3 class="text-[16px] font-black text-emerald-600">💳 Pay Supplier (सप्लायर पेमेंट)</h3>
+            <span id="paySupNameDisplay" class="text-[12px] font-bold text-slate-500">Supplier Name</span>
           </div>
           <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-black/5 text-xs font-bold">✕</button>
         </div>
-        <div class="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex justify-between items-center">
-          <span class="text-[13px] font-bold text-purple-900 dark:text-purple-200">Current Balance:</span>
-          <span class="text-[22px] font-black text-purple-600" id="payThekCurrentBal">₹0</span>
+        <div class="p-4 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex justify-between items-center">
+          <span class="text-[13px] font-bold text-orange-900 dark:text-orange-200">Current Outstanding Due:</span>
+          <span class="text-[22px] font-black text-orange-600" id="paySupBalanceDisplay">₹0</span>
         </div>
         <div>
           <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Payment Amount (₹)</label>
-          <input id="thekPayAmountInput" type="number" class="w-full h-12 px-3.5 rounded-2xl font-black text-[20px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+          <input id="supPayAmountInput" type="number" class="w-full h-12 px-3.5 rounded-2xl font-black text-[20px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
         </div>
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Payment Mode</label>
-            <select id="thekPayModeSelect" class="w-full h-12 px-3 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);">
-              <option value="Cash">💵 Cash</option>
+            <select id="supPayModeSelect" class="w-full h-12 px-3 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);">
               <option value="UPI">📱 GooglePay / UPI</option>
               <option value="Bank">🏦 Bank NEFT/RTGS</option>
+              <option value="Cash">💵 Cash</option>
             </select>
           </div>
           <div>
-            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Payment Stage / Note</label>
-            <input id="thekPayNoteInput" type="text" placeholder="e.g. 50% Wiring Complete" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
+            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Payment Ref / Note</label>
+            <input id="supPayNoteInput" type="text" placeholder="e.g. Part payment cement bill" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-2 pt-1">
-          <button onclick="triggerHaptic(); submitThekedarPaymentOnly()" class="b-btn-primary h-12 text-[13px] bg-purple-600 hover:bg-purple-700">💾 Save Payment</button>
-          <button onclick="triggerHaptic(); sendThekedarWhatsAppReceipt()" class="b-btn-secondary h-12 text-[13px] text-emerald-600 border-emerald-500/30">📲 WhatsApp Receipt</button>
-        </div>
+        <button onclick="triggerHaptic(); submitSupplierPayment()" class="b-btn-primary text-[13.5px] bg-emerald-600 hover:bg-emerald-700">Save Payment ✓</button>
       </div>
     </div>
 
@@ -672,32 +620,21 @@
       </div>
     </div>
 
-    <!-- Modal: Chukta Settlement -->
-    <div id="modalChukta" class="modal-backdrop hidden" onclick="closeAllModals()">
+    <!-- Modal: Settlement Audit Log -->
+    <div id="modalAuditLog" class="modal-backdrop hidden" onclick="closeAllModals()">
       <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
         <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
           <div>
-            <h3 class="text-[16px] font-black" style="color: var(--text-main);">💰 Labour Settlement (चुकता)</h3>
-            <span id="chuktaWorkerName" class="text-[12px] font-bold text-emerald-600">Worker Name</span>
+            <h3 class="text-[16px] font-black" style="color: var(--text-main);">📜 Settlement & Payout Audit Trail</h3>
+            <span class="text-[11px] font-bold text-slate-400">Permanent financial records log</span>
           </div>
           <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-black/5 text-xs font-bold">✕</button>
         </div>
-        <div class="p-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 flex justify-between items-center">
-          <span class="text-[13px] font-extrabold text-amber-800 dark:text-amber-200">Net Due (देना बाकी):</span>
-          <span class="text-[24px] font-black text-amber-600" id="chuktaNetDueDisplay">₹0</span>
-        </div>
-        <div>
-          <label class="block text-[11.5px] font-extrabold uppercase mb-1 text-slate-400">Cash Paid Now (₹)</label>
-          <input id="chuktaPaidInput" type="number" class="w-full h-12 px-3.5 rounded-2xl font-black text-[20px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
-        </div>
-        <div class="grid grid-cols-2 gap-2.5 pt-1">
-          <button onclick="triggerHaptic(); processChuktaOnly()" class="b-btn-primary h-12 text-[13px] bg-blue-600 hover:bg-blue-700">💾 Settle Hisaab</button>
-          <button onclick="triggerHaptic(); sendChuktaWhatsApp()" class="b-btn-secondary h-12 text-[13px] text-emerald-600 border-emerald-500/30">📲 WhatsApp Slip</button>
-        </div>
+        <div id="auditLogListContainer" class="space-y-2 max-h-96 overflow-y-auto pr-1"></div>
       </div>
     </div>
 
-    <!-- Modal: Add Worker (With Duplicate Check) -->
+    <!-- Modal: Add Worker -->
     <div id="modalAddWorker" class="modal-backdrop hidden" onclick="closeAllModals()">
       <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
         <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
@@ -738,95 +675,11 @@
             <input id="newWPin" type="password" maxlength="4" value="1234" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
           </div>
         </div>
-        <button id="btnSaveNewWorker" onclick="triggerHaptic(); submitNewWorker()" class="b-btn-primary text-[13.5px] mt-2">
-          Save Worker ✓
-        </button>
+        <button id="btnSaveNewWorker" onclick="triggerHaptic(); submitNewWorker()" class="b-btn-primary text-[13.5px] mt-2">Save Worker ✓</button>
       </div>
     </div>
 
-    <!-- Modal: Add Thekedar Contract -->
-    <div id="modalThekedar" class="modal-backdrop hidden" onclick="closeAllModals()">
-      <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
-        <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
-          <h3 class="text-[16px] font-black" style="color: var(--text-main);">⚡ Add Thekedar Contract</h3>
-          <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-black/5 text-xs font-bold">✕</button>
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Thekedar Name</label>
-          <input id="thNameInput" type="text" placeholder="e.g. Raju Thekedar" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Work Scope & Site</label>
-          <input id="thWorkInput" type="text" placeholder="e.g. Tile Work @ Flat 309" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
-        </div>
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Contract Value (₹)</label>
-            <input id="thValInput" type="number" placeholder="85000" class="w-full h-12 px-3.5 rounded-2xl font-black text-[15px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
-          </div>
-          <div>
-            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Paid So Far (₹)</label>
-            <input id="thPaidInput" type="number" value="0" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
-          </div>
-        </div>
-        <button onclick="triggerHaptic(); submitThekedarContract()" class="b-btn-primary text-[13.5px] mt-2">Save RA Contract ✓</button>
-      </div>
-    </div>
-
-    <!-- Modal: Material Demand -->
-    <div id="modalMaterial" class="modal-backdrop hidden" onclick="closeAllModals()">
-      <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
-        <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
-          <h3 class="text-[16px] font-black" style="color: var(--text-main);">📦 Create Demand</h3>
-          <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-black/5 text-xs font-bold">✕</button>
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Item / Karigar Details</label>
-          <div class="flex gap-2">
-            <input id="matItemInput" type="text" placeholder="e.g. 10 Bags Ultratech Cement or 2 Mazdoor" class="flex-1 h-12 px-3.5 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
-            <button onclick="triggerHaptic(); startVoiceInput('matItemInput')" class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-lg active:scale-90" title="Bolkar Likhein">
-              🎤
-            </button>
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Supplier / Vendor</label>
-            <select id="matSupplierSelect" class="w-full h-12 px-3 rounded-2xl font-bold text-[12.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"></select>
-          </div>
-          <div>
-            <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Site</label>
-            <select id="matSiteSelect" class="w-full h-12 px-3 rounded-2xl font-bold text-[12.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"></select>
-          </div>
-        </div>
-        <button onclick="triggerHaptic(); submitMaterialDemand()" class="b-btn-primary text-[13.5px] mt-2">Add to Demand Queue 📦</button>
-      </div>
-    </div>
-
-    <!-- Modal: Add Project -->
-    <div id="modalAddProject" class="modal-backdrop hidden" onclick="closeAllModals()">
-      <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
-        <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
-          <h3 class="text-[16px] font-black" style="color: var(--text-main);">+ Add New Project / Client</h3>
-          <button onclick="closeAllModals()" class="w-8 h-8 rounded-full bg-black/5 text-xs font-bold">✕</button>
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Client Name</label>
-          <input id="newCName" type="text" placeholder="e.g. Sharma Ji" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Site Address / Title</label>
-          <input id="newCSite" type="text" placeholder="e.g. Flat 309 (Dilshad Garden)" class="w-full h-12 px-3.5 rounded-2xl font-bold text-[13.5px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Total Contract Value (₹)</label>
-          <input id="newCValue" type="number" placeholder="500000" class="w-full h-12 px-3.5 rounded-2xl font-black text-[15px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
-        </div>
-        <button onclick="triggerHaptic(); submitNewProject()" class="b-btn-primary text-[13.5px] mt-2">Save Project ✓</button>
-      </div>
-    </div>
-
-    <!-- Modal: Image Preview -->
+    <!-- Modal: Image Preview & Google Maps Link -->
     <div id="modalImagePreview" class="modal-backdrop hidden" onclick="closeAllModals()">
       <div class="p-4 max-w-sm w-full bg-slate-900 rounded-3xl space-y-3" onclick="event.stopPropagation()">
         <div class="flex justify-between items-center text-white">
@@ -834,22 +687,19 @@
           <button onclick="closeAllModals()" class="text-xs font-bold w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">✕</button>
         </div>
         <img id="previewImgElem" class="w-full h-72 object-cover rounded-2xl border border-white/10" />
+        <div id="modalPreviewMapBtnContainer"></div>
       </div>
     </div>
 
   </div>
 
   <script>
-    let currentAdminLang = localStorage.getItem('vj_admin_lang') || 'hi';
+    let currentPayingSupplierId = null;
     let expandedWorkerIds = new Set();
-    let currentChuktaWorkerId = null;
-    let currentThekedarPayId = null;
-    let currentDemandFilter = 'ALL';
     let db = defaultMasterDB;
 
     function triggerHaptic() { if ('vibrate' in navigator) navigator.vibrate([15]); }
 
-    // INITIALIZE ADMIN HUB VIA DIRECT FIREBASE & CACHE
     async function initAdminApp() {
       db = await getCloudMasterDB();
       renderAllViews();
@@ -857,154 +707,58 @@
 
     async function refreshAdminData() {
       await initAdminApp();
-      alert("☁️ Live Master Data Refreshed!");
+      alert("☁️ Live Data Refreshed from Cloud!");
     }
 
     async function verifyAdminPIN() {
       const pin = document.getElementById('adminPinInput').value.trim();
-      const btn = document.getElementById('btnUnlockHub');
-      btn.innerText = "Verifying 🔒...";
-
       if (pin === "2026") {
         document.getElementById('adminLockOverlay').classList.add('hidden');
-        sessionStorage.setItem('vijay_admin_token', 'vj_admin_auth_active');
+        sessionStorage.setItem('vijay_admin_token', 'active');
         await initAdminApp();
       } else {
-        btn.innerText = "Unlock Hub ⚡";
         alert("Galat Master PIN! '2026' enter karein.");
-        document.getElementById('adminPinInput').value = '';
       }
     }
 
     function getTodayString() { return new Date().toISOString().slice(0, 10); }
 
-    function toggleAdminLanguage() {
-      currentAdminLang = currentAdminLang === 'hi' ? 'en' : 'hi';
-      localStorage.setItem('vj_admin_lang', currentAdminLang);
-      applyAdminLanguage();
+    function switchTab(tabKey) {
+      ['dashboard', 'labour', 'suppliers', 'thekedar', 'client'].forEach(t => {
+        const view = document.getElementById(`view-${t}`);
+        const navBtn = document.getElementById(`tabNav-${t}`);
+        if (view) view.classList.add('hidden');
+        if (navBtn) navBtn.classList.remove('active');
+      });
+      const activeView = document.getElementById(`view-${tabKey}`);
+      const activeNav = document.getElementById(`tabNav-${tabKey}`);
+      if (activeView) activeView.classList.remove('hidden');
+      if (activeNav) activeNav.classList.add('active');
+      document.getElementById('mainAppScroll').scrollTop = 0;
     }
-
-    function applyAdminLanguage() {
-      const t = adminI18n[currentAdminLang];
-      document.getElementById('adminLangToggleBtn').innerText = t.langToggle;
-      document.getElementById('lblFilterSite').innerText = t.filterSite;
-      document.getElementById('lblProfitTitle').innerText = t.profitTitle;
-      document.getElementById('lblIncome').innerText = t.income;
-      document.getElementById('lblExpense').innerText = t.expense;
-      document.getElementById('lblLabourDue').innerText = t.labourDue;
-      document.getElementById('lblSatBagTitle').innerText = t.satBagTitle;
-      document.getElementById('lblSatBagSub').innerText = t.satBagSub;
-      document.getElementById('lblManpowerTitle').innerText = t.manpowerTitle;
-      document.getElementById('lblOnDuty').innerText = t.onDuty;
-      document.getElementById('lblAbsent').innerText = t.absent;
-      document.getElementById('lblUnmarked').innerText = t.unmarked;
-      document.getElementById('lblPhotoGalleryTitle').innerText = t.photoGallery;
-      document.getElementById('lblDirectControls').innerText = t.directControls;
-      document.getElementById('tileLabour').innerText = t.tileLabour;
-      document.getElementById('tileKharcha').innerText = t.tileKharcha;
-      document.getElementById('tileThekedar').innerText = t.tileThekedar;
-      document.getElementById('tileDemands').innerText = t.tileDemands;
-      document.getElementById('tileClient').innerText = t.tileClient;
-      document.getElementById('lblHaziriMatrix').innerText = t.haziriMatrix;
-      document.getElementById('btnMarkAll').innerText = t.markAll;
-      document.getElementById('btnFinalSubmit').innerText = t.finalSubmit;
-      document.getElementById('navHome').innerText = t.navHome;
-      document.getElementById('navLabour').innerText = t.navLabour;
-      document.getElementById('navThekedar').innerText = t.navThekedar;
-      document.getElementById('navDemands').innerText = t.navDemands;
-      document.getElementById('navClient').innerText = t.navClient;
-      document.getElementById('lblThekTitle').innerText = t.thekTitle;
-      document.getElementById('lblDemandsTitle').innerText = t.demandsTitle;
-      document.getElementById('lblClientTitle').innerText = t.clientTitle;
-
-      document.getElementById('lblLabHeroTitle').innerText = t.labHeroTitle;
-      document.getElementById('lblLabEarned').innerText = t.labEarned;
-      document.getElementById('lblLabAdvance').innerText = t.labAdvance;
-      document.getElementById('lblLabShifts').innerText = t.labShifts;
-
-      document.getElementById('lblThekHeroTitle').innerText = t.thekHeroTitle;
-      document.getElementById('lblThekContractVal').innerText = t.thekContractVal;
-      document.getElementById('lblThekPaidVal').innerText = t.thekPaidVal;
-      document.getElementById('lblThekActive').innerText = t.thekActive;
-
-      document.getElementById('lblDemHeroTitle').innerText = t.demHeroTitle;
-      document.getElementById('lblDemMatCount').innerText = t.demMatCount;
-      document.getElementById('lblDemLabCount').innerText = t.demLabCount;
-      document.getElementById('lblDemApproved').innerText = t.demApproved;
-
-      document.getElementById('lblCliHeroTitle').innerText = t.cliHeroTitle;
-      document.getElementById('lblCliBooked').innerText = t.cliBooked;
-      document.getElementById('lblCliReceived').innerText = t.cliReceived;
-      document.getElementById('lblCliSites').innerText = t.cliSites;
-    }
-
-    function updateNavBadges() {
-      const pendingCount = (db.materials || []).filter(m => m.status === 'Pending').length;
-      const badge = document.getElementById('navBadgeDemand');
-      if (pendingCount > 0) {
-        badge.innerText = pendingCount;
-        badge.classList.remove('hidden');
-      } else {
-        badge.classList.add('hidden');
-      }
-    }
-
-    function getWorkerShifts(w) { return calcWorkerShifts(w); }
-    function getWorkerOTPay(w) { return calcWorkerOTPay(w); }
-    function getWorkerDue(w) { return calcWorkerDue(w); }
-    function getProjectObj(pId) { return getProjectDetails(db, pId); }
 
     function renderAllViews() {
       renderDashboardView();
       renderWorkersList();
+      renderSuppliersView();
       renderThekedarsView();
-      renderMaterialsView();
       renderClientProjectsView();
       renderSiteProofsGallery();
       populateDropdowns();
-      updateNavBadges();
-      applyAdminLanguage();
     }
 
     function renderDashboardView() {
-      const filterSite = document.getElementById('dashSiteFilterSelect')?.value || 'ALL';
-      const filteredLedger = filterSite === 'ALL' ? (db.ledger || []) : (db.ledger || []).filter(l => l.site === filterSite);
-      const filteredWorkers = filterSite === 'ALL' ? (db.workers || []) : (db.workers || []).filter(w => w.site === filterSite);
-
+      const filteredLedger = db.ledger || [];
       const tIncome = filteredLedger.filter(x => x.type === 'income').reduce((a, b) => a + b.amount, 0);
       const tExpense = filteredLedger.filter(x => x.type === 'expense').reduce((a, b) => a + b.amount, 0);
       const tProfit = tIncome - tExpense;
-      const tLabourDue = filteredWorkers.reduce((a, w) => a + getWorkerDue(w), 0);
+      const tLabourDue = (db.workers || []).reduce((a, w) => a + calcWorkerDue(w), 0);
 
       document.getElementById('dbProfit').innerText = `₹${tProfit.toLocaleString('en-IN')}`;
       document.getElementById('dbIncome').innerText = `₹${tIncome.toLocaleString('en-IN')}`;
       document.getElementById('dbExpense').innerText = `₹${tExpense.toLocaleString('en-IN')}`;
       document.getElementById('dbLabourDue').innerText = `₹${tLabourDue.toLocaleString('en-IN')}`;
-
-      const thekedarCashAllowance = (db.thekedars || []).reduce((acc, t) => acc + Math.min(5000, Math.max(0, t.value - t.paid)), 0);
-      const totalSaturdayCashBag = tLabourDue + thekedarCashAllowance;
-      document.getElementById('satCashBagDisplay').innerText = `₹${totalSaturdayCashBag.toLocaleString('en-IN')}`;
-
-      const today = getTodayString();
-      const onDuty = (db.workers || []).filter(w => ['P', 'HD'].includes(w.att && (w.att[today]?.status || w.att[today]))).length;
-      const absent = (db.workers || []).filter(w => w.att && ((w.att[today]?.status || w.att[today]) === 'A')).length;
-      const unmarked = (db.workers || []).filter(w => !w.att || !w.att[today]).length;
-
-      document.getElementById('dbOnDutyCount').innerText = onDuty;
-      document.getElementById('dbAbsentCount').innerText = absent;
-      document.getElementById('dbPendingAttCount').innerText = unmarked;
-      document.getElementById('dbActiveSitesCount').innerText = `${(db.projects || []).length} Sites Active`;
-
-      document.getElementById('dbSiteRadarList').innerHTML = (db.projects || []).map(p => {
-        const siteWorkers = (db.workers || []).filter(w => w.site === p.id);
-        const presentCount = siteWorkers.filter(w => ['P', 'HD'].includes(w.att && (w.att[today]?.status || w.att[today]))).length;
-        return `
-          <div class="flex justify-between items-center p-2.5 rounded-xl bg-black/5 dark:bg-white/5 text-[11.5px]">
-            <span class="font-black" style="color: var(--text-main);">📍 ${p.name}</span>
-            <span class="font-extrabold ${presentCount > 0 ? 'text-emerald-600' : 'text-slate-400'}">${presentCount}/${siteWorkers.length} on duty</span>
-          </div>
-        `;
-      }).join('');
+      document.getElementById('satCashBagDisplay').innerText = `₹${(tLabourDue + 5000).toLocaleString('en-IN')}`;
     }
 
     function renderSiteProofsGallery() {
@@ -1014,475 +768,112 @@
         container.innerHTML = `<div class="text-slate-400 p-2 text-center text-xs">No site pack-up photos received today.</div>`;
         return;
       }
-      container.innerHTML = proofs.map(sp => `
-        <div class="p-2.5 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-between gap-3 border border-black/5 cursor-pointer" onclick="openImagePreview('${sp.img || ''}', '${sp.worker}')">
-          <div class="flex items-center gap-2.5">
-            <div class="w-12 h-12 rounded-xl bg-emerald-600/10 border border-emerald-500/20 overflow-hidden flex items-center justify-center font-black text-emerald-600 text-lg shrink-0">
-              ${sp.img ? `<img src="${sp.img}" class="w-full h-full object-cover"/>` : '📸'}
+      container.innerHTML = proofs.map(sp => {
+        const isVer = sp.isVerified === true;
+        const distLabel = sp.distance !== undefined && sp.distance !== null ? `${sp.distance}m away` : 'GPS logged';
+
+        return `
+          <div class="p-2.5 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-between gap-3 border border-black/5 cursor-pointer" onclick="openImagePreview('${sp.img || ''}', '${sp.worker}', '${sp.site}', ${sp.gps ? sp.gps.lat : null}, ${sp.gps ? sp.gps.lng : null}, ${sp.distance})">
+            <div class="flex items-center gap-2.5">
+              <div class="w-12 h-12 rounded-xl bg-emerald-600/10 border border-emerald-500/20 overflow-hidden flex items-center justify-center font-black text-emerald-600 text-lg shrink-0">
+                ${sp.img ? `<img src="${sp.img}" class="w-full h-full object-cover"/>` : '📸'}
+              </div>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span class="font-black text-[13px]" style="color: var(--text-main);">${sp.worker}</span>
+                  <span class="text-[9px] font-black px-2 py-0.5 rounded-full ${isVer ? 'bg-emerald-500/15 text-emerald-600' : 'bg-rose-500/15 text-rose-600'}">
+                    ${isVer ? '🟢 On-Site' : '🔴 Mismatch'}
+                  </span>
+                </div>
+                <span class="text-[10px] font-bold text-slate-500">📍 ${sp.site} • ${distLabel}</span>
+              </div>
             </div>
-            <div>
-              <span class="font-black text-[13px] block leading-tight" style="color: var(--text-main);">${sp.worker}</span>
-              <span class="text-[10px] font-bold text-slate-500">📍 ${sp.site} • ${sp.time}</span>
-            </div>
+            <span class="px-2 py-1 rounded-full text-[9.5px] font-black bg-blue-500/10 text-blue-600">View Map 🔍</span>
           </div>
-          <span class="px-2 py-1 rounded-full text-[9.5px] font-black bg-emerald-500/15 text-emerald-600">✓ View Proof</span>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
-    function openImagePreview(imgSrc, workerName) {
-      if (!imgSrc) return alert("Worker pack-up photo preview available when uploaded.");
+    function openImagePreview(imgSrc, workerName, siteName, lat, lng, dist) {
+      if (!imgSrc) return alert("Photo preview not available.");
       document.getElementById('previewImgElem').src = imgSrc;
-      document.getElementById('previewImgTitle').innerText = `${workerName} - Site Pack-Up Proof`;
+      document.getElementById('previewImgTitle').innerText = `${workerName} - ${siteName}`;
+
+      const mapContainer = document.getElementById('modalPreviewMapBtnContainer');
+      if (lat && lng) {
+        mapContainer.innerHTML = `
+          <a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" class="block w-full py-2.5 text-center rounded-xl bg-blue-600 text-white font-extrabold text-xs shadow-md mt-2">
+            🗺️ Open GPS Location in Google Maps (${dist !== undefined && dist !== null ? dist + 'm' : 'View'})
+          </a>
+        `;
+      } else {
+        mapContainer.innerHTML = '';
+      }
+
       openModal('modalImagePreview');
     }
 
-    function startVoiceInput(targetInputId) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) return alert("Voice input requires Google Chrome or Safari.");
-      
-      const recognition = new SpeechRecognition();
-      recognition.lang = currentAdminLang === 'hi' ? 'hi-IN' : 'en-IN';
-      recognition.interimResults = false;
+    function renderSuppliersView() {
+      const suppliers = db.suppliers || [];
+      let totalPurchased = 0;
+      let totalPaid = 0;
+      let totalOutstanding = 0;
 
-      const input = document.getElementById(targetInputId);
-      input.placeholder = "🎤 Sun raha hoon, boliye...";
-
-      recognition.onresult = function(event) {
-        const text = event.results[0][0].transcript;
-        input.value = text;
-        input.dispatchEvent(new Event('input'));
-        triggerHaptic();
-      };
-      recognition.onend = function() { input.placeholder = "Search worker or site..."; };
-      recognition.start();
-    }
-
-    async function reassignWorkerSite(workerId, siteId) {
-      triggerHaptic();
-      const w = (db.workers || []).find(x => x.id === workerId);
-      if (w) {
-        w.site = siteId;
-        await saveCloudMasterDB(db);
-        renderAllViews();
-        alert(`✓ Worker site updated and synced!`);
-      }
-    }
-
-    async function lockAllAttendance() {
-      triggerHaptic();
-      const today = getTodayString();
-      let count = 0;
-      (db.workers || []).forEach(w => {
-        if (w.att && w.att[today]) {
-          w.att[today].locked = true;
-          count++;
-        }
+      suppliers.forEach(s => {
+        const supObj = typeof s === 'object' ? s : { id: s, name: s, phone: '', category: 'General' };
+        const fin = calcSupplierBalance(db, supObj.id);
+        totalPurchased += fin.totalPurchased;
+        totalPaid += fin.totalPaid;
+        totalOutstanding += fin.balanceDue;
       });
-      await saveCloudMasterDB(db);
-      renderAllViews();
-      alert(`✅ ${count} records locked on server!`);
-    }
 
-    function unlockAttendance(wId) {
-      triggerHaptic();
-      const today = getTodayString();
-      const w = (db.workers || []).find(x => x.id === wId);
-      if (w && w.att && w.att[today]) {
-        w.att[today].locked = false;
-        saveCloudMasterDB(db).then(renderAllViews);
-      }
-    }
+      document.getElementById('supHeroBalance').innerText = `₹${totalOutstanding.toLocaleString('en-IN')}`;
+      document.getElementById('supHeroPurchased').innerText = `₹${totalPurchased.toLocaleString('en-IN')}`;
+      document.getElementById('supHeroPaid').innerText = `₹${totalPaid.toLocaleString('en-IN')}`;
+      document.getElementById('supHeroCount').innerText = `${suppliers.length} Vendors`;
 
-    async function setAttendanceQuick(workerId, status) {
-      const today = getTodayString();
-      const w = (db.workers || []).find(x => x.id === workerId);
-      if (!w) return;
-      if (!w.att) w.att = {};
-
-      const cur = w.att[today];
-      if (cur && cur.locked) return;
-
-      const curSt = typeof cur === 'object' ? cur.status : cur;
-      const curOt = typeof cur === 'object' ? (cur.ot || 0) : 0;
-      const newSt = (curSt === status) ? '' : status;
-
-      w.att[today] = { status: newSt, ot: curOt, locked: false };
-      await saveCloudMasterDB(db);
-      renderAllViews();
-    }
-
-    async function adjustOT(workerId, delta) {
-      const today = getTodayString();
-      const w = (db.workers || []).find(x => x.id === workerId);
-      if (!w) return;
-      if (!w.att) w.att = {};
-
-      const cur = w.att[today];
-      if (cur && cur.locked) return alert("Pehle 'Update ✏️' dabakar unlock karein.");
-      
-      const curSt = typeof cur === 'object' ? cur.status : (cur || 'P');
-      const curOt = Math.max(0, (typeof cur === 'object' ? (cur.ot || 0) : 0) + delta);
-      
-      w.att[today] = { status: curSt, ot: curOt, locked: false };
-      await saveCloudMasterDB(db);
-      renderAllViews();
-    }
-
-    function sendWorkerWhatsAppSlip(wId) {
-      triggerHaptic();
-      const w = (db.workers || []).find(x => x.id === wId);
-      if (!w) return;
-      const siteName = getProjectObj(w.site).name;
-      const msg = generateWorkerWhatsAppSlip(w, siteName);
-      window.open(`https://api.whatsapp.com/send?phone=91${w.phone}&text=${msg}`, '_blank');
-    }
-
-    // 🗑️ DELETE WORKER LOGIC
-    async function deleteWorkerAccount(workerId) {
-      triggerHaptic();
-      const w = (db.workers || []).find(x => x.id === workerId);
-      if (!w) return;
-
-      const confirmDelete = confirm(`⚠️ Kya aap sach me '${w.name}' ko delete karna chahte hain? Iska hisaab aur attendance record hat jayega.`);
-      if (!confirmDelete) return;
-
-      db.workers = db.workers.filter(x => x.id !== workerId);
-      await saveCloudMasterDB(db);
-      renderAllViews();
-      alert(`✓ ${w.name} ko database se delete kar diya gaya.`);
-    }
-
-    function renderWorkersList() {
-      const totalNetDue = (db.workers || []).reduce((a, w) => a + getWorkerDue(w), 0);
-      const totalGross = (db.workers || []).reduce((a, w) => a + (getWorkerShifts(w) * w.rate) + getWorkerOTPay(w), 0);
-      const totalAdvances = (db.workers || []).reduce((a, w) => a + (w.advance || 0), 0);
-      const totalShifts = (db.workers || []).reduce((a, w) => a + getWorkerShifts(w), 0);
-
-      document.getElementById('labHeroNetDue').innerText = `₹${totalNetDue.toLocaleString('en-IN')}`;
-      document.getElementById('labHeroGrossEarned').innerText = `₹${totalGross.toLocaleString('en-IN')}`;
-      document.getElementById('labHeroAdvances').innerText = `-₹${totalAdvances.toLocaleString('en-IN')}`;
-      document.getElementById('labHeroTotalShifts').innerText = `${totalShifts} Shifts`;
-      document.getElementById('labHeroWorkerCount').innerText = `${(db.workers || []).length} Active Workers`;
-
-      const q = (document.getElementById('workerSearchInput')?.value || '').toLowerCase();
-      const container = document.getElementById('workersListContainer');
-      const today = getTodayString();
-
-      const filtered = (db.workers || []).filter(w => (w.name + ' ' + w.role + ' ' + (w.phone || '')).toLowerCase().includes(q));
-
-      if (filtered.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center text-sm font-bold text-slate-400 b-card">No worker matching search.</div>`;
+      const container = document.getElementById('suppliersListContainer');
+      if (suppliers.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-sm font-bold text-slate-400 b-card">No suppliers registered.</div>`;
         return;
       }
 
-      container.innerHTML = filtered.map(w => {
-        const isExp = expandedWorkerIds.has(w.id);
-        const shifts = getWorkerShifts(w);
-        const otPay = getWorkerOTPay(w);
-        const due = getWorkerDue(w);
-        const curRecord = w.att && w.att[today];
-        const curAtt = typeof curRecord === 'object' ? curRecord.status : curRecord;
-        const curOt = typeof curRecord === 'object' ? (curRecord.ot || 0) : 0;
-        const isLocked = typeof curRecord === 'object' && curRecord.locked === true;
-
-        const siteOptionsHtml = (db.projects || []).map(p => `
-          <option value="${p.id}" ${w.site === p.id ? 'selected' : ''}>${p.name}</option>
-        `).join('');
+      container.innerHTML = suppliers.map(s => {
+        const supObj = typeof s === 'object' ? s : { id: s, name: s, phone: '', category: 'General' };
+        const fin = calcSupplierBalance(db, supObj.id);
+        const myBills = (db.supplierBills || []).filter(b => b.supplierId === supObj.id).slice(0, 3);
 
         return `
-          <div class="b-card cursor-pointer space-y-2.5" onclick="triggerHaptic(); toggleExpand('${w.id}')">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center gap-2.5">
-                <div class="w-10 h-10 rounded-2xl flex items-center justify-center font-black text-white text-xs shrink-0 overflow-hidden ${w.role === 'Mistri' ? 'bg-indigo-600' : 'bg-emerald-600'}">
-                  ${w.photo ? `<img src="${w.photo}" class="w-full h-full object-cover"/>` : w.name.charAt(0)}
-                </div>
-                <div>
-                  <div class="flex items-center gap-1.5">
-                    <span class="font-black text-[14px]" style="color: var(--text-main);">${w.name}</span>
-                    <span class="text-[10px] font-extrabold text-blue-600">(${w.role})</span>
-                  </div>
-                  <span class="text-[10.5px] font-bold text-slate-500">📍 ${getProjectObj(w.site).name} • 📱 ${w.phone}</span>
-                </div>
-              </div>
-
-              <div class="flex items-center gap-1.5 shrink-0" onclick="event.stopPropagation()">
-                <div class="flex gap-0.5 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 ${isLocked ? 'opacity-40 pointer-events-none' : ''}">
-                  <button onclick="triggerHaptic(); setAttendanceQuick('${w.id}', 'P')" class="w-8 h-8 rounded-lg text-[10.5px] font-black ${curAtt === 'P' ? 'bg-emerald-600 text-white' : 'text-slate-400'}">P</button>
-                  <button onclick="triggerHaptic(); setAttendanceQuick('${w.id}', 'HD')" class="w-8 h-8 rounded-lg text-[10.5px] font-black ${curAtt === 'HD' ? 'bg-amber-500 text-white' : 'text-slate-400'}">HD</button>
-                  <button onclick="triggerHaptic(); setAttendanceQuick('${w.id}', 'A')" class="w-8 h-8 rounded-lg text-[10.5px] font-black ${curAtt === 'A' ? 'bg-rose-600 text-white' : 'text-slate-400'}">A</button>
-                </div>
-                ${isLocked ? `
-                  <button onclick="unlockAttendance('${w.id}')" class="h-9 px-2 rounded-xl bg-blue-600 text-white font-black text-[11px] shadow-md active:scale-95">Update ✏️</button>
-                ` : ''}
-              </div>
-            </div>
-
-            ${isExp ? `
-              <div class="pt-2.5 border-t border-black/5 dark:border-white/10 space-y-2.5" onclick="event.stopPropagation()">
-                
-                <div class="grid grid-cols-2 gap-2">
-                  <a href="tel:${w.phone}" class="h-9 rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-extrabold text-[11.5px] border border-emerald-500/20 flex items-center justify-center gap-1">
-                    <span>📞</span> Call Worker
-                  </a>
-                  <button onclick="deleteWorkerAccount('${w.id}')" class="h-9 rounded-xl bg-rose-500/10 text-rose-600 font-extrabold text-[11.5px] border border-rose-500/20 flex items-center justify-center gap-1 active:scale-95">
-                    <span>🗑️</span> Delete Worker
-                  </button>
-                </div>
-
-                <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 space-y-1">
-                  <div class="flex justify-between items-center">
-                    <span class="text-[10.5px] font-bold text-slate-500 uppercase">Change Assigned Site:</span>
-                    <span class="text-[10px] font-black text-emerald-600">PIN: ${w.pin || '1234'}</span>
-                  </div>
-                  <select onchange="reassignWorkerSite('${w.id}', this.value)" class="w-full h-9 px-2.5 rounded-lg font-bold text-[12px] bg-white dark:bg-slate-800 text-blue-600 border border-black/10 outline-none">
-                    ${siteOptionsHtml}
-                  </select>
-                </div>
-
-                <div class="flex items-center justify-between p-2 rounded-xl bg-blue-500/10 text-[11.5px]">
-                  <span class="font-bold text-blue-700 dark:text-blue-300">Today's OT Hours:</span>
-                  <div class="flex items-center gap-1">
-                    <button onclick="adjustOT('${w.id}', -1)" class="w-7 h-7 rounded-lg bg-white dark:bg-slate-800 font-black text-sm">-</button>
-                    <span class="font-black px-2">${curOt} Hrs</span>
-                    <button onclick="adjustOT('${w.id}', 1)" class="w-7 h-7 rounded-lg bg-white dark:bg-slate-800 font-black text-sm">+</button>
-                  </div>
-                </div>
-
-                <div class="p-3.5 rounded-2xl bg-black/5 dark:bg-white/5 space-y-1 text-[12px]">
-                  <div class="flex justify-between" style="color: var(--text-sub);">
-                    <span>${shifts} Days × ₹${w.rate}/D</span>
-                    <span class="font-bold" style="color: var(--text-main);">₹${(shifts * w.rate).toLocaleString('en-IN')}</span>
-                  </div>
-                  <div class="flex justify-between text-blue-600 font-bold">
-                    <span>Overtime (OT) Pay:</span>
-                    <span>+₹${otPay.toLocaleString('en-IN')}</span>
-                  </div>
-                  <div class="flex justify-between text-rose-500 font-bold">
-                    <span>Jeb Advance Cut:</span>
-                    <span>-₹${(w.advance || 0).toLocaleString('en-IN')}</span>
-                  </div>
-                  <div class="flex justify-between text-[14px] font-black pt-1 border-t border-black/5" style="color: var(--text-main);">
-                    <span>Saturday Net Due:</span>
-                    <span class="text-amber-500">₹${due.toLocaleString('en-IN')}</span>
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-1.5">
-                  <button onclick="triggerHaptic(); openWorkerAdvanceModal('${w.id}')" class="b-btn-secondary text-[11.5px] h-11 font-black">+ Advance</button>
-                  <button onclick="triggerHaptic(); openChuktaModal('${w.id}')" class="b-btn-primary text-[11.5px] h-11 font-black bg-emerald-600">Settle Hisaab</button>
-                  <button onclick="triggerHaptic(); sendWorkerWhatsAppSlip('${w.id}')" class="b-btn-secondary text-[11.5px] h-11 font-black text-emerald-600 border-emerald-500/30">📲 Parcha</button>
-                </div>
-              </div>
-            ` : ''}
-          </div>
-        `;
-      }).join('');
-    }
-
-    function openAuditLogModal() {
-      const container = document.getElementById('auditLogListContainer');
-      const list = db.settlements || [];
-      if (list.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center text-sm font-bold text-slate-400">Abhi tak koi chukta settlement log nahi hua hai.</div>`;
-      } else {
-        container.innerHTML = list.map(s => `
-          <div class="p-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 space-y-1 text-[12px]">
-            <div class="flex justify-between font-black" style="color: var(--text-main);">
-              <span>👤 ${s.workerName}</span>
-              <span class="text-emerald-600">Paid: ₹${(s.paidAmount || 0).toLocaleString('en-IN')}</span>
-            </div>
-            <div class="flex justify-between text-[10.5px] text-slate-500">
-              <span>Gross: ₹${(s.grossEarned || 0).toLocaleString('en-IN')} | Adv Cut: -₹${(s.advanceCut || 0).toLocaleString('en-IN')}</span>
-              <span>Carry: ₹${(s.carryForward || 0).toLocaleString('en-IN')}</span>
-            </div>
-            <div class="text-[9.5px] text-slate-400 font-bold pt-0.5">
-              🕒 ${new Date(s.settledAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-            </div>
-          </div>
-        `).join('');
-      }
-      openModal('modalAuditLog');
-    }
-
-    function openThekedarPayModal(tId) {
-      currentThekedarPayId = tId;
-      const t = (db.thekedars || []).find(x => x.id === tId);
-      const bal = Math.max(0, t.value - t.paid);
-      document.getElementById('payThekName').innerText = `${t.name} (${t.work})`;
-      document.getElementById('payThekCurrentBal').innerText = `₹${bal.toLocaleString('en-IN')}`;
-      document.getElementById('thekPayAmountInput').value = Math.min(10000, bal);
-      openModal('modalPayThekedar');
-    }
-
-    async function submitThekedarPaymentOnly() {
-      const amt = parseFloat(document.getElementById('thekPayAmountInput').value) || 0;
-      const mode = document.getElementById('thekPayModeSelect').value;
-      const note = document.getElementById('thekPayNoteInput').value.trim() || 'RA Stage Payment';
-      if (amt <= 0) return alert("Enter valid payment amount!");
-
-      const thek = (db.thekedars || []).find(t => t.id === currentThekedarPayId);
-      if (thek) {
-        thek.paid = (thek.paid || 0) + amt;
-        if (!db.ledger) db.ledger = [];
-        db.ledger.push({
-          id: 'L' + Date.now(),
-          site: thek.site || 'P1',
-          type: 'expense',
-          amount: amt,
-          note: `Thekedar Payment (${thek.name}) - ${mode} [${note}]`,
-          date: getTodayString()
-        });
-        await saveCloudMasterDB(db);
-        closeAllModals();
-        renderAllViews();
-        alert(`₹${amt.toLocaleString('en-IN')} payment logged!`);
-      }
-    }
-
-    function sendThekedarWhatsAppReceipt() {
-      const amt = parseFloat(document.getElementById('thekPayAmountInput').value) || 0;
-      const mode = document.getElementById('thekPayModeSelect').value;
-      const note = document.getElementById('thekPayNoteInput').value.trim() || 'Milestone Payment';
-      const t = (db.thekedars || []).find(x => x.id === currentThekedarPayId);
-      
-      submitThekedarPaymentOnly();
-      const remainingBal = Math.max(0, t.value - (t.paid + amt));
-      const txt = encodeURIComponent(`⚡ VIJAY CONSTRUCTION - PAYMENT RECEIPT\nTo: ${t.name}\nWork: ${t.work}\nPaid Amount: ₹${amt} via ${mode}\nNote: ${note}\nRemaining Contract Balance: ₹${remainingBal}\nVerified by: Vijay Sir`);
-      window.open(`https://api.whatsapp.com/send?text=${txt}`, '_blank');
-    }
-
-    async function setThekedarMilestone(tId, pct) {
-      triggerHaptic();
-      const t = (db.thekedars || []).find(x => x.id === tId);
-      if (t) {
-        t.progress = pct;
-        await saveCloudMasterDB(db);
-        renderAllViews();
-      }
-    }
-
-    function renderThekedarsView() {
-      const thekedars = db.thekedars || [];
-      const totalVal = thekedars.reduce((a, t) => a + (t.value || 0), 0);
-      const totalPaid = thekedars.reduce((a, t) => a + (t.paid || 0), 0);
-      const totalLiability = Math.max(0, totalVal - totalPaid);
-
-      document.getElementById('thekHeroBalance').innerText = `₹${totalLiability.toLocaleString('en-IN')}`;
-      document.getElementById('thekHeroContractVal').innerText = `₹${totalVal.toLocaleString('en-IN')}`;
-      document.getElementById('thekHeroPaidVal').innerText = `₹${totalPaid.toLocaleString('en-IN')}`;
-      document.getElementById('thekHeroWorkCount').innerText = `${thekedars.length} Works`;
-      document.getElementById('thekHeroRunningCount').innerText = `${thekedars.filter(t => t.value > t.paid).length} Active RA`;
-
-      const container = document.getElementById('thekedarListContainer');
-      if (thekedars.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center text-sm font-bold text-slate-400 b-card">No running contracts.</div>`;
-        return;
-      }
-      container.innerHTML = thekedars.map(t => {
-        const bal = Math.max(0, t.value - t.paid);
-        const prog = t.progress || Math.round((t.paid / t.value) * 100) || 0;
-        return `
-          <div class="b-card space-y-3">
+          <div class="b-card space-y-3 border-l-4 ${fin.balanceDue > 0 ? 'border-orange-500' : 'border-emerald-500'}">
             <div class="flex justify-between items-start">
               <div>
-                <span class="font-black text-[14.5px] block" style="color: var(--text-main);">${t.name}</span>
-                <span class="text-[11.5px] font-bold text-purple-600">${t.work}</span>
+                <span class="font-black text-[15px] block" style="color: var(--text-main);">${supObj.name}</span>
+                <span class="text-[11px] font-bold text-orange-600">${supObj.category || 'Building Material'} • 📱 ${supObj.phone || 'N/A'}</span>
               </div>
-              <span class="text-[10px] font-black px-2.5 py-1 rounded-full ${bal === 0 ? 'bg-emerald-500/15 text-emerald-600' : 'bg-purple-500/15 text-purple-600'}">
-                ${bal === 0 ? 'Settled' : 'Running RA'}
-              </span>
-            </div>
-
-            <div class="space-y-1 bg-black/5 dark:bg-white/5 p-2.5 rounded-xl">
-              <div class="flex justify-between text-[11px] font-black">
-                <span class="text-slate-400">Work Done:</span>
-                <span class="text-purple-600">${prog}%</span>
-              </div>
-              <div class="w-full h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
-                <div class="h-full bg-purple-600 rounded-full transition-all" style="width: ${prog}%"></div>
-              </div>
-              <div class="grid grid-cols-4 gap-1 pt-1">
-                <button onclick="setThekedarMilestone('${t.id}', 25)" class="py-1 rounded-lg text-[9px] font-extrabold border ${prog >= 25 ? 'bg-purple-600 text-white' : 'text-slate-400'}">25%</button>
-                <button onclick="setThekedarMilestone('${t.id}', 50)" class="py-1 rounded-lg text-[9px] font-extrabold border ${prog >= 50 ? 'bg-purple-600 text-white' : 'text-slate-400'}">50%</button>
-                <button onclick="setThekedarMilestone('${t.id}', 75)" class="py-1 rounded-lg text-[9px] font-extrabold border ${prog >= 75 ? 'bg-purple-600 text-white' : 'text-slate-400'}">75%</button>
-                <button onclick="setThekedarMilestone('${t.id}', 100)" class="py-1 rounded-lg text-[9px] font-extrabold border ${prog >= 100 ? 'bg-emerald-600 text-white' : 'text-slate-400'}">100%</button>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-3 gap-1.5 p-2.5 rounded-xl bg-black/5 dark:bg-white/5 text-center text-[11.5px] font-black">
-              <div><span class="text-[9px] text-slate-400 block font-normal">Contract</span>₹${t.value.toLocaleString('en-IN')}</div>
-              <div><span class="text-[9px] text-slate-400 block font-normal text-emerald-600">Paid</span>₹${t.paid.toLocaleString('en-IN')}</div>
-              <div><span class="text-[9px] text-slate-400 block font-normal text-amber-500">Balance</span>₹${bal.toLocaleString('en-IN')}</div>
-            </div>
-
-            <button onclick="triggerHaptic(); openThekedarPayModal('${t.id}')" class="b-btn-primary h-11 text-[12.5px] bg-purple-600 hover:bg-purple-700">
-              💳 + Log Payment to ${t.name.split(' ')[0]}
-            </button>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function filterDemands(type) {
-      currentDemandFilter = type;
-      ['fltDemAll', 'fltDemMat', 'fltDemLab'].forEach(id => document.getElementById(id).className = "py-2 rounded-xl font-bold text-[11.5px] text-slate-500");
-      if (type === 'ALL') document.getElementById('fltDemAll').className = "py-2 rounded-xl font-black text-[11.5px] bg-white dark:bg-slate-800 text-blue-600 shadow-sm";
-      if (type === 'material') document.getElementById('fltDemMat').className = "py-2 rounded-xl font-black text-[11.5px] bg-white dark:bg-slate-800 text-blue-600 shadow-sm";
-      if (type === 'manpower') document.getElementById('fltDemLab').className = "py-2 rounded-xl font-black text-[11.5px] bg-white dark:bg-slate-800 text-emerald-600 shadow-sm";
-      renderMaterialsView();
-    }
-
-    function renderMaterialsView() {
-      const list = db.materials || [];
-      const pendingCount = list.filter(m => m.status === 'Pending').length;
-      const matCount = list.filter(m => (m.type || 'material') === 'material').length;
-      const labCount = list.filter(m => m.type === 'manpower').length;
-      const approvedCount = list.filter(m => m.status === 'Approved').length;
-
-      document.getElementById('demHeroPendingCount').innerText = `${pendingCount}`;
-      document.getElementById('demHeroTotalCount').innerText = `${list.length} Demands`;
-      document.getElementById('demHeroMatCount').innerText = `${matCount} Saman`;
-      document.getElementById('demHeroLabCount').innerText = `${labCount} Karigar`;
-      document.getElementById('demHeroApprovedCount').innerText = `${approvedCount} Done`;
-
-      const container = document.getElementById('materialsListContainer');
-      const filtered = currentDemandFilter === 'ALL' ? list : list.filter(m => (m.type || 'material') === currentDemandFilter);
-
-      if (filtered.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center text-sm font-bold text-slate-400 b-card">No demands in queue.</div>`;
-        return;
-      }
-
-      container.innerHTML = filtered.map(m => {
-        const isManpower = m.type === 'manpower';
-        return `
-          <div class="b-card space-y-3 border-l-4 ${isManpower ? 'border-emerald-500' : 'border-blue-500'}">
-            <div class="flex justify-between items-start">
-              <div>
-                <span class="text-[10px] font-black uppercase text-blue-600">📍 ${getProjectObj(m.site).name}</span>
-                <h3 class="text-[14.5px] font-black mt-0.5" style="color: var(--text-main);">
-                  ${isManpower ? '👷 ' : '📦 '} ${m.item}
-                </h3>
-                <span class="text-[11px] font-medium text-slate-500">
-                  By: <b>${m.requestedBy || 'Field Worker'}</b> • ${m.shift || m.urgency || 'Normal'} (${m.time || 'Today'})
+              <div class="text-right">
+                <span class="text-[13px] font-black ${fin.balanceDue > 0 ? 'text-orange-600' : 'text-emerald-600'}">
+                  ₹${fin.balanceDue.toLocaleString('en-IN')} Due
                 </span>
+                <span class="text-[9.5px] font-bold text-slate-400 block">${fin.billsCount} Bills Logged</span>
               </div>
-              <span class="text-[10px] font-black px-2.5 py-1 rounded-full ${m.status === 'Approved' ? 'bg-emerald-500/15 text-emerald-600' : 'bg-amber-500/15 text-amber-600'}">
-                ${m.status}
-              </span>
             </div>
 
-            <div class="flex gap-2 pt-1 border-t border-black/5 dark:border-white/5">
-              ${m.status !== 'Approved' ? `
-                <button onclick="approveDemand('${m.id}')" class="flex-1 h-9 rounded-xl bg-emerald-600 text-white font-black text-[11.5px] active:scale-95 shadow-sm">
-                  Approve ✓
-                </button>
-              ` : `
-                <span class="flex-1 text-[11px] font-black text-emerald-600 flex items-center justify-center">✓ Arranged & Approved</span>
-              `}
-              <button onclick="shareDemandWhatsApp('${m.id}')" class="h-9 px-3 rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-extrabold text-[11px] border border-emerald-500/30 flex items-center gap-1 active:scale-95">
-                <span>📲</span> <span>Order</span>
+            <div class="space-y-1 bg-black/5 dark:bg-white/5 p-2.5 rounded-xl text-[11.5px]">
+              <span class="text-[10px] font-extrabold uppercase text-slate-400 block">Recent Purchases:</span>
+              ${myBills.length > 0 ? myBills.map(b => `
+                <div class="flex justify-between text-slate-600 dark:text-slate-300">
+                  <span>📄 ${b.item} (${b.billNo || 'Parcha'})</span>
+                  <span class="font-bold">₹${Number(b.amount).toLocaleString('en-IN')}</span>
+                </div>
+              `).join('') : '<span class="text-slate-400">No bills recorded yet</span>'}
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button onclick="triggerHaptic(); openSupplierPayModal('${supObj.id}')" class="b-btn-primary h-11 text-[12.5px] bg-emerald-600 hover:bg-emerald-700">
+                💳 Log Payment
+              </button>
+              <button onclick="triggerHaptic(); sendSupplierWhatsAppKhata('${supObj.id}')" class="b-btn-secondary h-11 text-[12.5px] text-orange-600 border-orange-500/30">
+                📲 WhatsApp Khata
               </button>
             </div>
           </div>
@@ -1490,224 +881,198 @@
       }).join('');
     }
 
-    async function approveDemand(demandId) {
-      triggerHaptic();
-      const m = (db.materials || []).find(x => x.id === demandId);
-      if (m) {
-        m.status = 'Approved';
-        await saveCloudMasterDB(db);
-        renderAllViews();
-      }
+    function openSupplierPayModal(supId) {
+      currentPayingSupplierId = supId;
+      const sup = (db.suppliers || []).find(s => (typeof s === 'object' ? s.id : s) === supId);
+      const fin = calcSupplierBalance(db, supId);
+      document.getElementById('paySupNameDisplay').innerText = typeof sup === 'object' ? sup.name : sup;
+      document.getElementById('paySupBalanceDisplay').innerText = `₹${fin.balanceDue.toLocaleString('en-IN')}`;
+      document.getElementById('supPayAmountInput').value = fin.balanceDue > 0 ? fin.balanceDue : '';
+      openModal('modalPaySupplier');
     }
 
-    function shareDemandWhatsApp(mId) {
-      triggerHaptic();
-      const m = (db.materials || []).find(x => x.id === mId);
-      if (!m) return;
-      const siteName = getProjectObj(m.site).name;
-      const txt = encodeURIComponent(`🔨 VIJAY CONSTRUCTION - DEMAND ORDER\nType: ${m.type === 'manpower' ? 'Manpower Requirement' : 'Material Demand'}\nDetails: ${m.item}\nSite: ${siteName}\nRequested By: ${m.requestedBy || 'Field Team'}\nApproved by: Vijay Sir`);
-      window.open(`https://api.whatsapp.com/send?text=${txt}`, '_blank');
+    async function submitSupplierPayment() {
+      const amt = parseFloat(document.getElementById('supPayAmountInput').value) || 0;
+      const mode = document.getElementById('supPayModeSelect').value;
+      const note = document.getElementById('supPayNoteInput').value.trim() || 'Supplier Payment';
+      if (amt <= 0) return alert("Valid payment amount daalein!");
+
+      const sup = (db.suppliers || []).find(s => (typeof s === 'object' ? s.id : s) === currentPayingSupplierId);
+      const supName = typeof sup === 'object' ? sup.name : sup;
+
+      if (!db.supplierPayments) db.supplierPayments = [];
+      db.supplierPayments.unshift({
+        id: 'SPAY' + Date.now(),
+        supplierId: currentPayingSupplierId,
+        amount: amt,
+        mode: mode,
+        note: note,
+        date: getTodayString()
+      });
+
+      if (!db.ledger) db.ledger = [];
+      db.ledger.push({
+        id: 'L' + Date.now(),
+        site: 'P1',
+        type: 'expense',
+        amount: amt,
+        note: `Material Payment (${supName}) - ${mode} [${note}]`,
+        date: getTodayString()
+      });
+
+      await saveCloudMasterDB(db);
+      closeAllModals();
+      renderAllViews();
+      alert(`✓ ₹${amt.toLocaleString('en-IN')} payment logged to ${supName}!`);
     }
 
-    function renderClientProjectsView() {
-      const projects = db.projects || [];
-      const totalBooked = projects.reduce((a, p) => a + (p.totalValue || 0), 0);
-      const totalReceived = projects.reduce((a, p) => a + (p.received || 0), 0);
-      const totalBakaaya = Math.max(0, totalBooked - totalReceived);
-      const colRate = totalBooked > 0 ? Math.round((totalReceived / totalBooked) * 100) : 0;
+    function sendSupplierWhatsAppKhata(supId) {
+      triggerHaptic();
+      const sup = (db.suppliers || []).find(s => (typeof s === 'object' ? s.id : s) === supId);
+      if (!sup) return;
+      const msg = generateSupplierWhatsAppSlip(typeof sup === 'object' ? sup : { id: sup, name: sup }, db);
+      const phone = typeof sup === 'object' && sup.phone ? `91${sup.phone}` : '';
+      window.open(`https://api.whatsapp.com/send?${phone ? 'phone=' + phone + '&' : ''}text=${msg}`, '_blank');
+    }
 
-      document.getElementById('cliHeroBakaaya').innerText = `₹${totalBakaaya.toLocaleString('en-IN')}`;
-      document.getElementById('cliHeroBooked').innerText = `₹${totalBooked.toLocaleString('en-IN')}`;
-      document.getElementById('cliHeroReceived').innerText = `₹${totalReceived.toLocaleString('en-IN')}`;
-      document.getElementById('cliHeroSitesCount').innerText = `${projects.length} Sites`;
-      document.getElementById('cliHeroCollectionRate').innerText = `${colRate}% Collected`;
+    async function submitNewSupplier() {
+      const name = document.getElementById('newSupName').value.trim();
+      const cat = document.getElementById('newSupCat').value;
+      const phone = document.getElementById('newSupPhone').value.trim();
+      if (!name) return alert("Supplier / Shop ka naam bharein!");
 
-      const container = document.getElementById('clientProjectsContainer');
-      container.innerHTML = projects.map(p => {
-        const fin = calcProjectMargin(db, p.id);
+      if (!db.suppliers) db.suppliers = [];
+      db.suppliers.unshift({
+        id: 'SUP' + Date.now(),
+        name,
+        category: cat,
+        phone,
+        totalPurchased: 0,
+        totalPaid: 0
+      });
 
+      await saveCloudMasterDB(db);
+      document.getElementById('newSupName').value = '';
+      document.getElementById('newSupPhone').value = '';
+      closeAllModals();
+      renderAllViews();
+      alert(`✓ ${name} Supplier list mein add ho gaya!`);
+    }
+
+    async function submitSupplierBill() {
+      const supId = document.getElementById('billSupplierSelect').value;
+      const site = document.getElementById('billSiteSelect').value;
+      const item = document.getElementById('billItemDesc').value.trim();
+      const billNo = document.getElementById('billInvoiceNo').value.trim();
+      const amount = parseFloat(document.getElementById('billAmountInput').value) || 0;
+
+      if (!item || amount <= 0) return alert("Item aur valid bill amount bharein!");
+
+      if (!db.supplierBills) db.supplierBills = [];
+      db.supplierBills.unshift({
+        id: 'BILL' + Date.now(),
+        supplierId: supId,
+        site: site,
+        item: item,
+        billNo: billNo || 'Parcha',
+        amount: amount,
+        date: getTodayString()
+      });
+
+      await saveCloudMasterDB(db);
+      document.getElementById('billItemDesc').value = '';
+      document.getElementById('billAmountInput').value = '';
+      document.getElementById('billInvoiceNo').value = '';
+      closeAllModals();
+      renderAllViews();
+      alert(`✓ ₹${amount.toLocaleString('en-IN')} ka bill khata me add ho gaya!`);
+    }
+
+    function renderWorkersList() {
+      const totalNetDue = (db.workers || []).reduce((a, w) => a + calcWorkerDue(w), 0);
+      document.getElementById('labHeroNetDue').innerText = `₹${totalNetDue.toLocaleString('en-IN')}`;
+      document.getElementById('labHeroWorkerCount').innerText = `${(db.workers || []).length} Active Workers`;
+
+      const q = (document.getElementById('workerSearchInput')?.value || '').toLowerCase();
+      const container = document.getElementById('workersListContainer');
+      const filtered = (db.workers || []).filter(w => (w.name + ' ' + (w.phone || '')).toLowerCase().includes(q));
+
+      container.innerHTML = filtered.map(w => {
+        const due = calcWorkerDue(w);
         return `
-          <div class="b-card space-y-3">
-            <div class="flex justify-between items-start">
+          <div class="b-card space-y-2.5">
+            <div class="flex justify-between items-center">
               <div>
-                <span class="text-[15.5px] font-black block" style="color: var(--text-main);">${p.client}</span>
-                <span class="text-[11.5px] font-bold text-slate-500">📍 ${p.name}</span>
+                <span class="font-black text-[14px]" style="color: var(--text-main);">${w.name} (${w.role})</span>
+                <span class="text-[10.5px] font-bold text-slate-500 block">📍 ${getProjectDetails(db, w.site).name} • 📱 ${w.phone}</span>
               </div>
               <div class="text-right">
-                <span class="text-[12px] font-black ${fin.isLoss ? 'text-rose-600 bg-rose-500/10' : 'text-emerald-600 bg-emerald-500/10'} px-2.5 py-1 rounded-full block">
-                  ${fin.isLoss ? 'Loss Risk' : fin.profitMarginPct + '% Net Margin'}
-                </span>
-                <span class="text-[9.5px] font-extrabold text-slate-400">₹${fin.netProfit.toLocaleString('en-IN')} Profit</span>
+                <span class="font-black text-amber-500 text-[14px]">₹${due.toLocaleString('en-IN')}</span>
+                <span class="text-[9px] font-bold text-slate-400 block">Net Due</span>
               </div>
             </div>
-
-            <div class="space-y-1 bg-black/5 dark:bg-white/5 p-3 rounded-2xl">
-              <div class="flex justify-between text-[11px] font-black">
-                <span class="text-slate-500">Expenses vs Inward:</span>
-                <span class="${fin.isLoss ? 'text-rose-600' : 'text-emerald-600'}">₹${fin.totalCost.toLocaleString('en-IN')} / ₹${fin.inwardReceived.toLocaleString('en-IN')}</span>
-              </div>
-              <div class="w-full h-2.5 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden flex">
-                <div style="width: ${Math.min(100, Math.round((fin.materialExpense / (fin.inwardReceived || 1)) * 100))}%" class="h-full bg-blue-500" title="Material Cost"></div>
-                <div style="width: ${Math.min(100, Math.round((fin.labourExpense / (fin.inwardReceived || 1)) * 100))}%" class="h-full bg-indigo-500" title="Labour Cost"></div>
-                <div style="width: ${Math.min(100, Math.round((fin.thekedarExpense / (fin.inwardReceived || 1)) * 100))}%" class="h-full bg-purple-500" title="Thekedar Cost"></div>
-              </div>
-              <div class="flex justify-between text-[9.5px] font-bold text-slate-400 pt-1">
-                <span>📦 Saman: ₹${fin.materialExpense.toLocaleString('en-IN')}</span>
-                <span>👷 Mazdoor: ₹${fin.labourExpense.toLocaleString('en-IN')}</span>
-                <span>⚡ Thekedar: ₹${fin.thekedarExpense.toLocaleString('en-IN')}</span>
-              </div>
-            </div>
-
-            ${fin.isLoss ? `
-              <div class="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 text-[11px] font-bold flex items-center justify-between">
-                <span>⚠️ Kharcha Client Inward se zyada hai!</span>
-                <span class="font-black underline cursor-pointer" onclick="alert('Client se agla installment jaldi mangiye!')">Alert</span>
-              </div>
-            ` : ''}
-
-            <div class="grid grid-cols-3 gap-1.5 p-2.5 rounded-xl bg-black/5 dark:bg-white/5 text-center text-[11px] font-black">
-              <div><span class="text-[9px] text-slate-400 block font-normal">Contract</span>₹${fin.contractValue.toLocaleString('en-IN')}</div>
-              <div><span class="text-[9px] text-slate-400 block font-normal text-emerald-600">Received</span>₹${fin.inwardReceived.toLocaleString('en-IN')}</div>
-              <div><span class="text-[9px] text-slate-400 block font-normal text-amber-500">Recovery Due</span>₹${fin.dueFromClient.toLocaleString('en-IN')}</div>
+            <div class="grid grid-cols-2 gap-2 pt-1 border-t border-black/5 dark:border-white/5">
+              <a href="tel:${w.phone}" class="h-9 rounded-xl bg-emerald-500/10 text-emerald-600 font-extrabold text-[11px] flex items-center justify-center gap-1">📞 Call</a>
+              <button onclick="triggerHaptic(); sendWorkerWhatsAppSlip('${w.id}')" class="h-9 rounded-xl bg-blue-500/10 text-blue-600 font-extrabold text-[11px]">📲 WhatsApp Parcha</button>
             </div>
           </div>
         `;
       }).join('');
     }
 
+    function sendWorkerWhatsAppSlip(wId) {
+      triggerHaptic();
+      const w = (db.workers || []).find(x => x.id === wId);
+      if (!w) return;
+      const siteName = getProjectDetails(db, w.site).name;
+      const msg = generateWorkerWhatsAppSlip(w, siteName);
+      window.open(`https://api.whatsapp.com/send?phone=91${w.phone}&text=${msg}`, '_blank');
+    }
+
+    function renderThekedarsView() {
+      const container = document.getElementById('thekedarListContainer');
+      container.innerHTML = (db.thekedars || []).map(t => `
+        <div class="b-card space-y-2">
+          <div class="flex justify-between font-black text-sm"><span>${t.name}</span><span class="text-purple-600">${t.work}</span></div>
+          <div class="flex justify-between text-xs text-slate-400"><span>Contract: ₹${t.value}</span><span>Paid: ₹${t.paid}</span></div>
+        </div>
+      `).join('');
+    }
+
+    function renderClientProjectsView() {
+      const container = document.getElementById('clientProjectsContainer');
+      container.innerHTML = (db.projects || []).map(p => `
+        <div class="b-card space-y-2">
+          <div class="flex justify-between font-black text-sm"><span>${p.client}</span><span class="text-emerald-600">₹${p.received} Inward</span></div>
+          <span class="text-xs text-slate-500">📍 ${p.name}</span>
+        </div>
+      `).join('');
+    }
+
     function populateDropdowns() {
       const siteOpts = (db.projects || []).map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-      const supOpts = (db.suppliers || []).map(s => `<option value="${s}">${s}</option>`).join('');
-      const workerOpts = (db.workers || []).map(w => `<option value="${w.id}">${w.name} (${getProjectObj(w.site).name})</option>`).join('');
+      const supOpts = (db.suppliers || []).map(s => {
+        const id = typeof s === 'object' ? s.id : s;
+        const name = typeof s === 'object' ? s.name : s;
+        return `<option value="${id}">${name}</option>`;
+      }).join('');
 
-      if (document.getElementById('dashSiteFilterSelect')) {
-        document.getElementById('dashSiteFilterSelect').innerHTML = `<option value="ALL">All Active Sites (Combined)</option>` + siteOpts;
-      }
+      if (document.getElementById('billSupplierSelect')) document.getElementById('billSupplierSelect').innerHTML = supOpts;
+      if (document.getElementById('billSiteSelect')) document.getElementById('billSiteSelect').innerHTML = siteOpts;
       if (document.getElementById('newWSite')) document.getElementById('newWSite').innerHTML = siteOpts;
-      if (document.getElementById('advWorkerSelect')) document.getElementById('advWorkerSelect').innerHTML = workerOpts;
-    }
-
-    function switchTab(tabKey) {
-      ['dashboard', 'labour', 'thekedar', 'materials', 'client'].forEach(t => {
-        document.getElementById(`view-${t}`).classList.add('hidden');
-        document.getElementById(`tabNav-${t}`).classList.remove('active');
-      });
-      document.getElementById(`view-${tabKey}`).classList.remove('hidden');
-      document.getElementById(`tabNav-${tabKey}`).classList.add('active');
-      document.getElementById('mainAppScroll').scrollTop = 0;
-    }
-
-    function toggleExpand(wId) {
-      expandedWorkerIds.has(wId) ? expandedWorkerIds.delete(wId) : expandedWorkerIds.add(wId);
-      renderWorkersList();
-    }
-
-    function markAllPresent() {
-      const today = getTodayString();
-      (db.workers || []).forEach(w => {
-        if (!w.att) w.att = {};
-        if (!w.att[today] || !w.att[today].locked) {
-          w.att[today] = { status: 'P', ot: 0, locked: false };
-        }
-      });
-      saveCloudMasterDB(db).then(renderAllViews);
-      alert("✓ All unlocked workers marked Present (P)!");
-    }
-
-    function closeAllModals() {
-      document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.add('hidden'));
-    }
-    function openModal(id) {
-      closeAllModals();
-      document.getElementById(id).classList.remove('hidden');
-    }
-
-    function openFastAdvanceModal() { openModal('modalAdvance'); }
-    function openWorkerAdvanceModal(wId) {
-      document.getElementById('advWorkerSelect').value = wId;
-      openModal('modalAdvance');
-    }
-    
-    async function submitFastAdvance() {
-      const wId = document.getElementById('advWorkerSelect').value;
-      const amt = parseFloat(document.getElementById('advAmountInput').value) || 0;
-      if (amt <= 0) return alert("Enter valid cash amount!");
-
-      const w = (db.workers || []).find(x => x.id === wId);
-      if (w) {
-        w.advance = (w.advance || 0) + amt;
-        if (!w.advanceList) w.advanceList = [];
-        w.advanceList.unshift({ date: getTodayString(), amount: amt, reason: 'Field Cash' });
-        if (!db.ledger) db.ledger = [];
-        db.ledger.push({ id: 'L' + Date.now(), site: w.site, type: 'expense', amount: amt, note: `Labour Advance (${w.name})`, date: getTodayString() });
-        await saveCloudMasterDB(db);
-        closeAllModals();
-        renderAllViews();
-        alert(`₹${amt} cash advance logged!`);
+      if (document.getElementById('advWorkerSelect')) {
+        document.getElementById('advWorkerSelect').innerHTML = (db.workers || []).map(w => `<option value="${w.id}">${w.name}</option>`).join('');
       }
     }
 
-    function openChuktaModal(wId) {
-      currentChuktaWorkerId = wId;
-      const w = (db.workers || []).find(x => x.id === wId);
-      const due = getWorkerDue(w);
-      document.getElementById('chuktaWorkerName').innerText = `${w.name} (${getProjectObj(w.site).name})`;
-      document.getElementById('chuktaNetDueDisplay').innerText = `₹${due.toLocaleString('en-IN')}`;
-      document.getElementById('chuktaPaidInput').value = due;
-      openModal('modalChukta');
-    }
+    function closeAllModals() { document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.add('hidden')); }
+    function openModal(id) { closeAllModals(); document.getElementById(id).classList.remove('hidden'); }
 
-    async function processChuktaOnly() {
-      const paid = parseFloat(document.getElementById('chuktaPaidInput').value) || 0;
-      const w = (db.workers || []).find(x => x.id === currentChuktaWorkerId);
-      if (!w) return;
-
-      const due = getWorkerDue(w);
-      const carry = Math.max(0, due - paid);
-
-      if (!db.settlements) db.settlements = [];
-      db.settlements.unshift({
-        id: 'SETTL_' + Date.now(),
-        workerId: w.id,
-        workerName: w.name,
-        grossEarned: due + (w.advance || 0),
-        advanceCut: w.advance || 0,
-        paidAmount: paid,
-        carryForward: carry,
-        settledAt: new Date().toISOString()
-      });
-
-      if (paid > 0) {
-        if (!db.ledger) db.ledger = [];
-        db.ledger.push({ id: 'L' + Date.now(), site: w.site, type: 'expense', amount: paid, note: `Saturday Payout (${w.name})`, date: getTodayString() });
-      }
-
-      w.bakaaya = carry;
-      w.advance = 0;
-
-      await saveCloudMasterDB(db);
-      closeAllModals();
-      renderAllViews();
-      alert(`💾 Hisaab Settled! Balance ₹${carry} carried forward.`);
-    }
-
-    function sendChuktaWhatsApp() {
-      const w = (db.workers || []).find(x => x.id === currentChuktaWorkerId);
-      const paid = parseFloat(document.getElementById('chuktaPaidInput').value) || 0;
-      const due = getWorkerDue(w);
-      const carry = Math.max(0, due - paid);
-      const txt = encodeURIComponent(`🔨 VIJAY CONSTRUCTION - HAFTAWRI SLIP\nWorker: ${w.name}\nNet Saturday Due: ₹${due}\nCash Paid: ₹${paid}\nRemaining Carry: ₹${carry}\nVerified by: Vijay Sir`);
-      processChuktaOnly();
-      window.open(`https://api.whatsapp.com/send?text=${txt}`, '_blank');
-    }
-
-    function openAddWorkerModal() { openModal('modalAddWorker'); }
     function autoSuggestRate() {
       const r = document.getElementById('newWRole').value;
       document.getElementById('newWRate').value = (r === 'Mistri' || r === 'Plumber' || r === 'Electrician') ? 800 : 500;
     }
-    
-    // 🛡️ WORKER ADDITION WITH VALIDATION & DUPLICATE NUMBER CHECK
+
     async function submitNewWorker() {
       const name = document.getElementById('newWName').value.trim();
       const role = document.getElementById('newWRole').value;
@@ -1717,85 +1082,26 @@
       const cleanPhone = rawPhone.replace(/\D/g, '');
       const pin = document.getElementById('newWPin').value.trim() || '1234';
 
-      if (!name) return alert("Kripya worker ka naam bharein!");
-      if (cleanPhone.length !== 10) return alert("Mobile number 10 digits ka hona chahiye!");
+      if (!name || cleanPhone.length !== 10) return alert("Naam aur 10-digit mobile number required hain!");
 
-      // Duplicate Check
       const existingWorker = (db.workers || []).find(w => String(w.phone).replace(/\D/g, '') === cleanPhone);
       if (existingWorker) {
-        return alert(`⚠️ Ye mobile number pehle se "${existingWorker.name}" ke naam par registered hai! Kripya doosra number daalein.`);
+        return alert(`⚠️ Ye mobile number pehle se "${existingWorker.name}" ke naam par registered hai!`);
       }
 
-      const saveBtn = document.getElementById('btnSaveNewWorker');
-      saveBtn.innerText = "Saving ⏳...";
-      saveBtn.disabled = true;
-
       if (!db.workers) db.workers = [];
-      db.workers.push({
-        id: 'W' + Date.now(),
-        name,
-        role,
-        site,
-        rate,
-        otRate: (role === 'Mistri' ? 100 : 65),
-        phone: cleanPhone,
-        pin,
-        photo: '',
-        att: {},
-        advance: 0,
-        advanceList: [],
-        bakaaya: 0,
-        gpsMatch: true
-      });
+      db.workers.push({ id: 'W' + Date.now(), name, role, site, rate, otRate: (role === 'Mistri' ? 100 : 65), phone: cleanPhone, pin, photo: '', att: {}, advance: 0, advanceList: [], bakaaya: 0, gpsMatch: true });
 
       await saveCloudMasterDB(db);
-
-      // Reset form
-      document.getElementById('newWName').value = '';
-      document.getElementById('newWPhone').value = '';
-      saveBtn.innerText = "Save Worker ✓";
-      saveBtn.disabled = false;
-
       closeAllModals();
       renderAllViews();
-      alert(`✓ ${name} (Mobile: ${cleanPhone}) add ho gaya aur Cloud Server par sync ho gaya!`);
-    }
-
-    function submitThekedarContract() {
-      const name = document.getElementById('thNameInput').value.trim();
-      const work = document.getElementById('thWorkInput').value.trim();
-      const val = parseFloat(document.getElementById('thValInput').value) || 0;
-      const paid = parseFloat(document.getElementById('thPaidInput').value) || 0;
-      if (!name || val <= 0) return alert("Contract details required!");
-      if (!db.thekedars) db.thekedars = [];
-      db.thekedars.unshift({ id: 'T' + Date.now(), name, work, value: val, paid, progress: 0, site: 'P1' });
-      saveCloudMasterDB(db);
-      closeAllModals();
-      renderAllViews();
-    }
-
-    async function submitNewProject() {
-      const client = document.getElementById('newCName').value.trim();
-      const name = document.getElementById('newCSite').value.trim();
-      const totalValue = parseFloat(document.getElementById('newCValue').value) || 0;
-      if (!client || !name || totalValue <= 0) return alert("Valid client details required!");
-      
-      if (!db.projects) db.projects = [];
-      db.projects.push({ id: 'P' + Date.now(), client, name, totalValue, received: 0 });
-      await saveCloudMasterDB(db);
-      closeAllModals();
-      renderAllViews();
+      alert(`✓ ${name} add ho gaya!`);
     }
 
     function toggleTheme() {
       const root = document.documentElement;
       root.setAttribute('data-theme', root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
     }
-
-    setInterval(() => {
-      const c = document.getElementById('liveClockDisplay');
-      if (c) c.innerText = `Delhi • ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`;
-    }, 1000);
 
     if (sessionStorage.getItem('vijay_admin_token')) {
       document.getElementById('adminLockOverlay').classList.add('hidden');
