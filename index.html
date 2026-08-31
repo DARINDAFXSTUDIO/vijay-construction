@@ -233,9 +233,6 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <button onclick="triggerHaptic(); refreshFromCloud()" class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-xs active:scale-90" title="Sync Cloud Now">
-          🔄
-        </button>
         <button onclick="triggerHaptic(); toggleAdminLanguage()" class="px-2.5 py-1 rounded-full text-[11px] font-black bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 active:scale-95" id="adminLangToggleBtn">
           🌐 हिन्दी
         </button>
@@ -245,7 +242,7 @@
       </div>
     </header>
 
-    <!-- Main Body Container -->
+    <!-- Main Dynamic Body Container -->
     <main class="flex-1 overflow-y-auto no-scrollbar px-4 pt-3 pb-28 space-y-4" id="mainAppScroll">
 
       <!-- TAB 1: 🏠 DASHBOARD -->
@@ -383,7 +380,7 @@
           <button onclick="triggerHaptic(); openAddWorkerModal()" class="px-3.5 py-2 rounded-xl bg-blue-600 text-white text-[11.5px] font-black">+ Worker</button>
         </div>
 
-        <!-- HERO BANNER 2: LABOUR FINANCIAL CALCULATOR -->
+        <!-- HERO BANNER 2: LABOUR CALCULATOR -->
         <div class="hero-pulse space-y-3" style="background: var(--neo-hero-labour);">
           <div class="flex justify-between items-start">
             <div>
@@ -408,7 +405,6 @@
           </div>
         </div>
 
-        <!-- Attendance Controls -->
         <div class="space-y-2">
           <div class="grid grid-cols-2 gap-2">
             <button onclick="triggerHaptic(); markAllPresent()" class="h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-extrabold text-[12px] flex items-center justify-center gap-1 active:scale-98">
@@ -830,12 +826,6 @@
     async function initAdminApp() {
       db = await getCloudMasterDB();
       renderAllViews();
-    }
-
-    async function refreshFromCloud() {
-      db = await getCloudMasterDB();
-      renderAllViews();
-      alert("☁️ Cloud Database Live Refresh Ho Gaya!");
     }
 
     async function saveState() {
@@ -1633,7 +1623,6 @@
       document.getElementById('newWRate').value = (r === 'Mistri' || r === 'Plumber' || r === 'Electrician') ? 800 : 500;
     }
     
-    // NAYA WORKER ADD & CLOUD ME BROADCAST
     async function submitNewWorker() {
       const name = document.getElementById('newWName').value.trim();
       const role = document.getElementById('newWRole').value;

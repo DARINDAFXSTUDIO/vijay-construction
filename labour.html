@@ -225,7 +225,7 @@
       </div>
     </header>
 
-    <!-- Professional Login Form (Live Cloud Auth) -->
+    <!-- Login Form -->
     <div id="view-login" class="flex-1 px-4 py-8 flex flex-col justify-center max-w-sm mx-auto w-full space-y-5">
       <div class="glass-card space-y-4 shadow-xl border-t-4 border-blue-600">
         <div class="text-center pt-2 pb-1">
@@ -645,7 +645,6 @@
       if (currentLabourUser) setupNav();
     }
 
-    // 🚀 LIVE CLOUD LOGIN HANDLER
     async function handleLogin() {
       const p = document.getElementById('inpPhone').value.trim();
       const pin = document.getElementById('inpPin').value.trim();
@@ -653,7 +652,6 @@
       const btn = document.getElementById('btnLogin');
       btn.innerText = "Connecting to Cloud 🔄...";
       
-      // Pull fresh data from cloud server before validating login
       liveDB = await getCloudMasterDB();
       btn.innerText = i18n[currentLang].loginBtn;
 

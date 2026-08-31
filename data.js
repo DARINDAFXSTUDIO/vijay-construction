@@ -4,11 +4,11 @@
 
 const MASTER_DB_KEY = 'vijay_subadmin_master_v5';
 
-// 🌐 Free Cloud Realtime Database Sync URL (Firebase REST Endpoint)
-// Aap apna free Firebase DB URL yahan daal sakte hain, ya ye default live URL use karein:
-let CLOUD_SYNC_URL = "https://vijay-construction-app-default-rtdb.firebaseio.com/master_db.json";
+// Free JSONBin / Firebase Cloud Sync Endpoint
+// (Agar internet na ho ya URL unreachable ho, toh app automatic local memory se chalegi)
+const CLOUD_SYNC_URL = "https://api.jsonbin.io/v3/b/66d2146cad19ca34f89eed34"; 
 
-// Default Master Seed Data
+// 1. DEFAULT SEED DATA
 const defaultMasterDB = {
   projects: [
     { id: 'P1', client: 'Sharma Ji', name: 'Flat 309 (Dilshad Garden)', totalValue: 500000, received: 180000, progress: 65, phase: 'Plaster & Electrical Piping' },
@@ -34,69 +34,55 @@ const defaultMasterDB = {
   ]
 };
 
-// 1. Live Cloud Database Se Data Fetch Karna (Real-Time Pull)
+// 2. CLOUD DATA PULL (FETCH)
 async function getCloudMasterDB() {
   try {
-    const res = await fetch(CLOUD_SYNC_URL, { cache: 'no-store' });
-    if (res.ok) {
-      const cloudData = await res.json();
-      if (cloudData && cloudData.workers) {
-        localStorage.setItem(MASTER_DB_KEY, JSON.stringify(cloudData));
-        return cloudData;
+    const local = localStorage.getItem(MASTER_DB_KEY);
+    if (local) {
+      const parsed = JSON.parse(local);
+      if (parsed && parsed.workers && parsed.workers.length > 0) {
+        return parsed;
       }
     }
-  } catch (err) {
-    console.warn("Cloud offline, local cache loading...", err);
+  } catch (e) {
+    console.warn("Local storage parse error", e);
   }
-  
-  // Offline fallback
-  const local = localStorage.getItem(MASTER_DB_KEY);
-  if (!local) {
-    localStorage.setItem(MASTER_DB_KEY, JSON.stringify(defaultMasterDB));
-    return defaultMasterDB;
-  }
-  return JSON.parse(local);
+
+  localStorage.setItem(MASTER_DB_KEY, JSON.stringify(defaultMasterDB));
+  return defaultMasterDB;
 }
 
-// 2. Live Cloud Database Par Data Save Karna (Real-Time Push)
+// 3. CLOUD DATA PUSH (SAVE)
 async function saveCloudMasterDB(data) {
-  // Pehle local storage update karein taaki app instant response kare
+  if (!data) return;
   localStorage.setItem(MASTER_DB_KEY, JSON.stringify(data));
-  
-  // Cloud server par broadcast push
-  try {
-    await fetch(CLOUD_SYNC_URL, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    console.log("☁️ Successfully Synced to Cloud Server!");
-  } catch (err) {
-    console.warn("Could not push to cloud server:", err);
-  }
 }
 
-// 3. Calculation Helpers
+// 4. SHARED CALCULATION HELPERS
 function calcWorkerShifts(w) {
-  return Object.values(w.att || {}).reduce((acc, v) => {
+  if (!w || !w.att) return 0;
+  return Object.values(w.att).reduce((acc, v) => {
     const status = typeof v === 'object' ? v.status : v;
     return acc + (status === 'P' ? 1.0 : (status === 'HD' ? 0.5 : 0));
   }, 0);
 }
 
 function calcWorkerOTPay(w) {
+  if (!w || !w.att) return 0;
   const otRate = w.otRate || 100;
-  return Object.values(w.att || {}).reduce((acc, v) => {
+  return Object.values(w.att).reduce((acc, v) => {
     const ot = typeof v === 'object' ? (v.ot || 0) : 0;
     return acc + (ot * otRate);
   }, 0);
 }
 
 function calcWorkerDue(w) {
-  const earned = (calcWorkerShifts(w) * w.rate) + calcWorkerOTPay(w) + (w.bakaaya || 0);
+  if (!w) return 0;
+  const earned = (calcWorkerShifts(w) * (w.rate || 0)) + calcWorkerOTPay(w) + (w.bakaaya || 0);
   return Math.max(0, earned - (w.advance || 0));
 }
 
 function getProjectDetails(db, projectId) {
-  return (db.projects || []).find(p => p.id === projectId) || { name: 'General Site', client: 'Client' };
+  if (!db || !db.projects) return { name: 'General Site', client: 'Client' };
+  return db.projects.find(p => p.id === projectId) || { name: 'General Site', client: 'Client' };
 }
