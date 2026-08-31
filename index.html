@@ -241,7 +241,7 @@
       </div>
     </header>
 
-    <!-- Main Dynamic Body Container -->
+    <!-- Main Body Container -->
     <main class="flex-1 overflow-y-auto no-scrollbar px-4 pt-3 pb-28 space-y-4" id="mainAppScroll">
 
       <!-- ========================================== -->
@@ -249,7 +249,6 @@
       <!-- ========================================== -->
       <section id="view-dashboard" class="space-y-4">
         
-        <!-- Site Filter Selector -->
         <div class="flex items-center justify-between p-2 rounded-2xl bg-black/5 dark:bg-white/5">
           <span class="text-[11.5px] font-black px-2 text-slate-500" id="lblFilterSite">Filter Site:</span>
           <select id="dashSiteFilterSelect" onchange="renderDashboardView()" class="h-9 px-3 rounded-xl font-black text-[12px] bg-white dark:bg-slate-800 text-blue-600 border border-black/10 outline-none">
@@ -257,7 +256,7 @@
           </select>
         </div>
 
-        <!-- HERO BANNER 1: MASTER PROFIT & LOSS CALCULATOR -->
+        <!-- HERO BANNER 1: MASTER PROFIT & LOSS -->
         <div class="hero-pulse space-y-3" style="background: var(--neo-hero-dash);">
           <div class="flex justify-between items-start">
             <div>
@@ -282,7 +281,7 @@
           </div>
         </div>
 
-        <!-- 💼 SATURDAY CASH BAG PREDICTOR WIDGET -->
+        <!-- 💼 SATURDAY CASH BAG WIDGET -->
         <div class="b-card border-l-4 border-amber-500 flex justify-between items-center py-3">
           <div>
             <div class="flex items-center gap-1.5">
@@ -297,7 +296,7 @@
           </div>
         </div>
 
-        <!-- Manpower Radar & Attendance Status -->
+        <!-- Manpower Status -->
         <div class="b-card space-y-3">
           <div class="flex justify-between items-center">
             <span class="text-[13.5px] font-black" style="color: var(--text-main);" id="lblManpowerTitle">👥 Manpower & Live Sites</span>
@@ -329,7 +328,7 @@
           <div id="siteProofGalleryContainer" class="space-y-2 text-[12px]"></div>
         </div>
 
-        <!-- Direct Field Controls -->
+        <!-- Direct Controls -->
         <div class="space-y-2.5">
           <span class="text-[11.5px] font-extrabold uppercase tracking-wider px-1" style="color: var(--text-sub);" id="lblDirectControls">Direct Field Controls</span>
           <div class="tile-grid">
@@ -375,7 +374,7 @@
       </section>
 
       <!-- ========================================== -->
-      <!-- TAB 2: 👷 LABOUR (WITH SITE RE-ASSIGNMENT) -->
+      <!-- TAB 2: 👷 LABOUR (WITH DEDICATED HERO) -->
       <!-- ========================================== -->
       <section id="view-labour" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
@@ -409,7 +408,7 @@
           </div>
         </div>
 
-        <!-- Actions & Lock Controls -->
+        <!-- Attendance Controls -->
         <div class="space-y-2">
           <div class="grid grid-cols-2 gap-2">
             <button onclick="triggerHaptic(); markAllPresent()" class="h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-extrabold text-[12px] flex items-center justify-center gap-1 active:scale-98">
@@ -420,7 +419,6 @@
             </button>
           </div>
 
-          <!-- Search Bar with 🎤 Voice-to-Text -->
           <div class="flex gap-1.5 items-center">
             <input id="workerSearchInput" oninput="renderWorkersList()" type="text" placeholder="🔍 Search worker or site..." class="flex-1 h-12 px-4 rounded-2xl font-bold text-[13px] outline-none border border-black/10 dark:border-white/10" style="background: var(--card-bg); color: var(--text-main);" />
             <button onclick="triggerHaptic(); startVoiceInput('workerSearchInput')" class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-lg active:scale-90 shadow-md" title="Speak to Search">
@@ -433,7 +431,7 @@
       </section>
 
       <!-- ========================================== -->
-      <!-- TAB 3: ⚡ THEKEDAR (WITH PAYMENT & PROGRESS) -->
+      <!-- TAB 3: ⚡ THEKEDAR -->
       <!-- ========================================== -->
       <section id="view-thekedar" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
@@ -442,7 +440,7 @@
           <button onclick="triggerHaptic(); openModal('modalThekedar')" class="px-3.5 py-2 rounded-xl bg-purple-600 text-white text-[11.5px] font-black">+ Contract</button>
         </div>
 
-        <!-- HERO BANNER 3: THEKEDAR FINANCIAL CALCULATOR -->
+        <!-- HERO BANNER 3: THEKEDAR CALCULATOR -->
         <div class="hero-pulse space-y-3" style="background: var(--neo-hero-thekedar);">
           <div class="flex justify-between items-start">
             <div>
@@ -505,7 +503,6 @@
           </div>
         </div>
 
-        <!-- Filter Sub-Tabs -->
         <div class="p-1 rounded-2xl bg-black/5 dark:bg-white/5 grid grid-cols-3 gap-1">
           <button id="fltDemAll" onclick="triggerHaptic(); filterDemands('ALL')" class="py-2 rounded-xl font-black text-[11.5px] bg-white dark:bg-slate-800 text-blue-600 shadow-sm">All Demands</button>
           <button id="fltDemMat" onclick="triggerHaptic(); filterDemands('material')" class="py-2 rounded-xl font-bold text-[11.5px] text-slate-500">📦 Saman</button>
@@ -516,7 +513,7 @@
       </section>
 
       <!-- ========================================== -->
-      <!-- TAB 5: 📢 CLIENT & PROJECT HUB (TEAM + PROGRESS) -->
+      <!-- TAB 5: 📢 CLIENT & PROJECT PROGRESS -->
       <!-- ========================================== -->
       <section id="view-client" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
@@ -525,7 +522,7 @@
           <button onclick="triggerHaptic(); openModal('modalAddProject')" class="px-3.5 py-2 rounded-xl bg-blue-600 text-white text-[11.5px] font-black">+ Project</button>
         </div>
 
-        <!-- HERO BANNER 5: CLIENT MARKET RECOVERY CALCULATOR -->
+        <!-- HERO BANNER 5: CLIENT CALCULATOR -->
         <div class="hero-pulse space-y-3" style="background: var(--neo-hero-client);">
           <div class="flex justify-between items-start">
             <div>
@@ -575,10 +572,7 @@
       </button>
     </nav>
 
-    <!-- ========================================== -->
-    <!-- MODALS & POPUPS -->
-    <!-- ========================================== -->
-
+    <!-- Modals -->
     <!-- Modal: Pay Thekedar -->
     <div id="modalPayThekedar" class="modal-backdrop hidden" onclick="closeAllModals()">
       <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
@@ -1075,7 +1069,6 @@
       applyAdminLanguage();
     }
 
-    // 🏠 Dashboard
     function renderDashboardView() {
       const filterSite = document.getElementById('dashSiteFilterSelect')?.value || 'ALL';
       const filteredLedger = filterSite === 'ALL' ? (db.ledger || []) : (db.ledger || []).filter(l => l.site === filterSite);
@@ -1168,7 +1161,6 @@
       recognition.start();
     }
 
-    // 👷 Labour Attendance & Site Re-assignment
     function reassignWorkerSite(wId, newSiteId) {
       triggerHaptic();
       const w = db.workers.find(x => x.id === wId);
@@ -1289,7 +1281,6 @@
                 </div>
               </div>
 
-              <!-- Haziri & Lock Actions -->
               <div class="flex items-center gap-1.5 shrink-0" onclick="event.stopPropagation()">
                 <div class="flex gap-0.5 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 ${isLocked ? 'opacity-40 pointer-events-none' : ''}">
                   <button onclick="triggerHaptic(); setAttendanceQuick('${w.id}', 'P')" class="w-8 h-8 rounded-lg text-[10.5px] font-black ${curAtt === 'P' ? 'bg-emerald-600 text-white' : 'text-slate-400'}">P</button>
@@ -1304,8 +1295,6 @@
 
             ${isExp ? `
               <div class="pt-2.5 border-t border-black/5 dark:border-white/10 space-y-2.5" onclick="event.stopPropagation()">
-                
-                <!-- 📍 LIVE SITE RE-ASSIGNMENT SELECTOR -->
                 <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 space-y-1">
                   <div class="flex justify-between items-center">
                     <span class="text-[10.5px] font-bold text-slate-500 uppercase">Change Assigned Site:</span>
@@ -1355,9 +1344,7 @@
       }).join('');
     }
 
-    // ==========================================
-    // ⚡ THEKEDAR CONTRACTS & PAYMENT LOGGING
-    // ==========================================
+    // ⚡ Thekedar Payments & Milestones
     function openThekedarPayModal(tId) {
       currentThekedarPayId = tId;
       const t = db.thekedars.find(x => x.id === tId);
@@ -1600,7 +1587,6 @@
         const siteExpenses = (db.ledger || []).filter(l => l.site === p.id && l.type === 'expense').reduce((a, b) => a + b.amount, 0);
         const isOverspent = siteExpenses > (p.received || 0);
 
-        // Find assigned workers and thekedars for this site
         const assignedWorkers = db.workers.filter(w => w.site === p.id);
         const assignedThekedars = (db.thekedars || []).filter(t => t.site === p.id || t.work.includes(p.name));
         const prog = p.progress || 0;
@@ -1628,7 +1614,7 @@
               </div>
             </div>
 
-            <!-- Assigned Manpower & Thekedar Badges -->
+            <!-- Active Team Badges -->
             <div class="space-y-1.5 pt-1">
               <span class="text-[10px] font-extrabold uppercase text-slate-400 block tracking-wider">Active Team Assigned:</span>
               <div class="flex flex-wrap gap-1.5">

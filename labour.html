@@ -259,7 +259,7 @@
     <!-- Logged-in Portal -->
     <div id="view-portal" class="hidden flex-1 overflow-y-auto no-scrollbar px-4 pt-3 pb-28 space-y-4">
       
-      <!-- Profile Card with Photo & UPI Status -->
+      <!-- Profile Card with Photo & Audio Ledger -->
       <div class="glass-card flex justify-between items-center py-3 px-4">
         <div class="flex items-center gap-3">
           <div class="relative cursor-pointer" onclick="document.getElementById('profilePicInput').click()" title="Change Profile Photo">
@@ -340,7 +340,7 @@
             </button>
             <div id="photoProofPreviewContainer" class="hidden pt-2">
               <img id="photoProofPreviewImg" class="w-full h-44 object-cover rounded-2xl border border-emerald-500/30" />
-              <span class="text-[10px] font-bold text-emerald-600 block mt-1">✓ Compressed, Geo-tagged & Verified</span>
+              <span class="text-[10px] font-bold text-emerald-600 block mt-1">✓ Compressed, Geo-tagged & Synced to Papa Hub</span>
             </div>
           </div>
 
@@ -397,7 +397,6 @@
         <!-- TAB 3: 📦 DUAL DEMAND (MATERIAL + LABOUR / MANPOWER) -->
         <div id="labour-tab-demand" class="role-tab-view hidden space-y-4">
           
-          <!-- Demand Type Switcher -->
           <div class="p-1 rounded-2xl bg-black/5 dark:bg-white/5 grid grid-cols-2 gap-1 border border-black/5 dark:border-white/5">
             <button id="btnDemandTypeMat" onclick="triggerHaptic(); switchDemandForm('material')" class="py-2.5 rounded-xl font-black text-[12.5px] bg-blue-600 text-white shadow-sm transition-all">
               📦 Saman / Material
@@ -527,11 +526,22 @@
         <div id="subcon-tab-work" class="role-tab-view space-y-3">
           <div class="glass-card space-y-3">
             <span class="text-[14px] font-black" style="color: var(--text-main);" id="subconWorkTitle">Assigned Scope</span>
+            
+            <div class="space-y-1 bg-black/5 dark:bg-white/5 p-3 rounded-2xl">
+              <div class="flex justify-between text-[11px] font-black">
+                <span class="text-slate-400">Contract Progress:</span>
+                <span class="text-blue-600" id="subconProgText">0%</span>
+              </div>
+              <div class="w-full h-2.5 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
+                <div id="subconProgBar" class="h-full bg-blue-600 rounded-full transition-all" style="width: 0%"></div>
+              </div>
+            </div>
+
             <div class="grid grid-cols-4 gap-1.5 pt-1">
-              <button onclick="triggerHaptic(); alert('Milestone 25% logged!')" class="p-2 rounded-xl border text-[10px] font-extrabold" style="background: var(--glass-bg); color: var(--text-main);">25%</button>
-              <button onclick="triggerHaptic(); alert('Milestone 50% logged!')" class="p-2 rounded-xl border text-[10px] font-extrabold" style="background: var(--glass-bg); color: var(--text-main);">50%</button>
-              <button onclick="triggerHaptic(); alert('Milestone 75% logged!')" class="p-2 rounded-xl border text-[10px] font-extrabold" style="background: var(--glass-bg); color: var(--text-main);">75%</button>
-              <button onclick="triggerHaptic(); alert('Milestone 100% completed!')" class="p-2 rounded-xl border text-[10px] font-black text-emerald-600" style="background: var(--glass-bg);">100% ✓</button>
+              <button onclick="triggerHaptic(); logSubconMilestone(25)" class="p-2 rounded-xl border text-[10px] font-extrabold" style="background: var(--glass-bg); color: var(--text-main);">25%</button>
+              <button onclick="triggerHaptic(); logSubconMilestone(50)" class="p-2 rounded-xl border text-[10px] font-extrabold" style="background: var(--glass-bg); color: var(--text-main);">50%</button>
+              <button onclick="triggerHaptic(); logSubconMilestone(75)" class="p-2 rounded-xl border text-[10px] font-extrabold" style="background: var(--glass-bg); color: var(--text-main);">75%</button>
+              <button onclick="triggerHaptic(); logSubconMilestone(100)" class="p-2 rounded-xl border text-[10px] font-black text-emerald-600" style="background: var(--glass-bg);">100% ✓</button>
             </div>
           </div>
         </div>
@@ -639,13 +649,14 @@
 
     function getMasterData() {
       return JSON.parse(localStorage.getItem(MASTER_DB_KEY)) || {
-        projects: [{ id: 'P1', name: 'Flat 309 (Dilshad Garden)' }],
+        projects: [{ id: 'P1', client: 'Sharma Ji', name: 'Flat 309 (Dilshad Garden)', totalValue: 500000, received: 180000, progress: 65, phase: 'Plaster & Electrical Piping' }],
         workers: [
           { id: 'W1', name: 'Ramesh Mistri', role: 'Mistri', rate: 800, otRate: 100, site: 'P1', phone: '9811000001', pin: '1234', photo: '', att: {}, advance: 0, advanceList: [], bakaaya: 0 },
           { id: 'W2', name: 'Suresh Mazdoor', role: 'Mazdoor', rate: 500, otRate: 65, site: 'P1', phone: '9811000004', pin: '1234', photo: '', att: {}, advance: 0, advanceList: [], bakaaya: 0 }
         ],
-        thekedars: [{ id: 'T1', name: 'Raju Electrical Thekedar', work: 'Conduit & DB Wiring', value: 85000, paid: 54200 }],
-        materials: []
+        thekedars: [{ id: 'T1', name: 'Raju Electrical Thekedar', site: 'P1', work: 'Conduit & DB Wiring', value: 85000, paid: 54200, progress: 60 }],
+        materials: [],
+        siteProofs: []
       };
     }
 
@@ -662,7 +673,8 @@
       const data = getMasterData();
       
       const workerMatch = data.workers.find(w => w.phone === p && (w.pin || '1234') === pin);
-      
+      const thekMatch = (data.thekedars || []).find(t => t.phone === p && (t.pin || '1234') === pin);
+
       if (workerMatch) {
         currentLabourUser = {
           id: workerMatch.id,
@@ -673,6 +685,17 @@
           photo: workerMatch.photo || '',
           av: workerMatch.name.slice(0,2).toUpperCase(),
           rate: `₹${workerMatch.rate}/Day (OT: ₹${workerMatch.otRate || 100}/hr)`
+        };
+        routePortal();
+      } else if (thekMatch) {
+        currentLabourUser = {
+          id: thekMatch.id,
+          phone: thekMatch.phone || p,
+          name: thekMatch.name,
+          role: 'subcon',
+          trade: thekMatch.work,
+          av: thekMatch.name.slice(0,2).toUpperCase(),
+          rate: 'RA Milestone Contract'
         };
         routePortal();
       } else if (demoUsers[p] && demoUsers[p].pin === pin) {
@@ -837,10 +860,25 @@
         renderAdvanceHistory(w);
         renderCombinedDemands();
       } else if (currentLabourUser.role === 'subcon') {
-        const t = data.thekedars[0];
+        const t = (data.thekedars || []).find(x => x.name.includes(currentLabourUser.name) || x.id === currentLabourUser.id) || data.thekedars[0];
         const bal = Math.max(0, t.value - t.paid);
+        const prog = t.progress || 0;
+
         document.getElementById('subconNetDueText').innerText = `₹${bal.toLocaleString('en-IN')}`;
         document.getElementById('subconWorkTitle').innerText = `${t.work} (${t.name})`;
+        document.getElementById('subconProgText').innerText = `${prog}%`;
+        document.getElementById('subconProgBar').style.width = `${prog}%`;
+      }
+    }
+
+    function logSubconMilestone(pct) {
+      const data = getMasterData();
+      const t = (data.thekedars || []).find(x => x.name.includes(currentLabourUser.name) || x.id === currentLabourUser.id) || data.thekedars[0];
+      if (t) {
+        t.progress = pct;
+        localStorage.setItem(MASTER_DB_KEY, JSON.stringify(data));
+        syncLiveRoleData();
+        alert(`✓ Milestone ${pct}% logged to Papa's Hub!`);
       }
     }
 
@@ -917,7 +955,6 @@
       window.open(`https://api.whatsapp.com/send?phone=919268880221&text=${txt}`, '_blank');
     }
 
-    // Material Demand Submit
     function submitMaterialDemandPro() {
       const cat = document.getElementById('demMatCategory').value;
       const item = document.getElementById('workerDemandItem').value.trim();
@@ -926,13 +963,14 @@
       if (!item) return alert(currentLang === 'hi' ? "सामान का नाम व क्वांटिटी लिखें!" : "Enter item details!");
       
       const data = getMasterData();
+      const w = data.workers.find(x => x.phone === currentLabourUser.phone) || { site: 'P1' };
       data.materials.unshift({
         id: 'M' + Date.now(),
         type: 'material',
         category: cat,
         item: item,
         urgency: urgency,
-        site: 'P1',
+        site: w.site || 'P1',
         supplier: 'Gupta Building Material',
         requestedBy: currentLabourUser.name,
         time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
@@ -944,16 +982,16 @@
       alert(currentLang === 'hi' ? "📦 सामान मांग एडमिन को भेज दी गई!" : "📦 Material request sent to Admin!");
     }
 
-    // Manpower Demand Submit
     function submitManpowerDemandPro() {
       const trade = document.getElementById('demLabTrade').value;
       const count = document.getElementById('demLabCount').value;
       const desc = document.getElementById('demLabWorkDetail').value.trim();
       const shift = document.getElementById('demLabShift').value;
 
-      if (!desc) return alert(currentLang === 'hi' ? "काम का विवरण दर्ज करें (जैसे: कल ढलाई के लिए)!" : "Enter work description!");
+      if (!desc) return alert(currentLang === 'hi' ? "काम का विवरण दर्ज करें!" : "Enter work description!");
 
       const data = getMasterData();
+      const w = data.workers.find(x => x.phone === currentLabourUser.phone) || { site: 'P1' };
       data.materials.unshift({
         id: 'LBR' + Date.now(),
         type: 'manpower',
@@ -961,7 +999,7 @@
         item: `${count} - ${trade} (${desc})`,
         shift: shift,
         urgency: 'Urgent',
-        site: 'P1',
+        site: w.site || 'P1',
         requestedBy: currentLabourUser.name,
         time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
         status: 'Pending'
@@ -996,6 +1034,7 @@
       }).join('');
     }
 
+    // 📸 Photo Proof Compression & Sync to Papa's Hub
     function processProofPhoto(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1003,7 +1042,7 @@
       reader.onload = function(e) {
         const img = new Image();
         img.onload = function() {
-          const maxDim = 900;
+          const maxDim = 800;
           let w = img.width, h = img.height;
           if (w > maxDim || h > maxDim) {
             if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
@@ -1015,17 +1054,32 @@
           ctx.drawImage(img, 0, 0, w, h);
 
           ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
-          ctx.fillRect(0, canvas.height - 60, canvas.width, 60);
+          ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
           ctx.fillStyle = "#ffffff";
-          ctx.font = "bold 16px 'Plus Jakarta Sans', sans-serif";
-          ctx.fillText(`VIJAY CONSTRUCTION • ${new Date().toLocaleString('en-IN')}`, 16, canvas.height - 35);
-          ctx.font = "12px 'Plus Jakarta Sans', sans-serif";
-          ctx.fillText(`📍 Dilshad Garden Site Verified`, 16, canvas.height - 16);
+          ctx.font = "bold 15px 'Plus Jakarta Sans', sans-serif";
+          ctx.fillText(`VIJAY CONSTRUCTION • ${new Date().toLocaleTimeString('en-IN')}`, 14, canvas.height - 30);
+          ctx.font = "11px 'Plus Jakarta Sans', sans-serif";
+          ctx.fillText(`📍 Dilshad Garden • Verified Pack-Up`, 14, canvas.height - 12);
 
           const finalData = canvas.toDataURL('image/jpeg', 0.65);
           document.getElementById('photoProofPreviewImg').src = finalData;
           document.getElementById('photoProofPreviewContainer').classList.remove('hidden');
-          alert(currentLang === 'hi' ? "📸 साइट फोटो सुरक्षित अपलोड हो गई!" : "📸 Site Photo compressed & saved!");
+
+          // Sync Photo into Master Hub
+          const data = getMasterData();
+          if (!data.siteProofs) data.siteProofs = [];
+          const currentWorker = data.workers.find(x => x.phone === currentLabourUser.phone) || { site: 'P1' };
+          const projObj = (data.projects || []).find(p => p.id === currentWorker.site) || { name: 'Flat 309 (Dilshad Garden)' };
+
+          data.siteProofs.unshift({
+            id: 'SP' + Date.now(),
+            worker: currentLabourUser.name,
+            site: projObj.name,
+            time: `Today • ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`,
+            img: finalData
+          });
+          localStorage.setItem(MASTER_DB_KEY, JSON.stringify(data));
+          alert(currentLang === 'hi' ? "📸 साइट फोटो पापा के कंट्रोल हब पर लाइव सेव हो गई!" : "📸 Site Photo synced to Papa's Master Hub!");
         };
         img.src = e.target.result;
       };
