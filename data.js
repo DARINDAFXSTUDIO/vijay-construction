@@ -1,50 +1,76 @@
-const MASTER_DB_KEY = 'vijay_subadmin_master_v5';
+// =========================================================================
+// 🌐 FRONTEND API CONNECTOR & CALCULATION UTILITIES
+// =========================================================================
 
-// 1. Cloud Se Fresh Data Lena
-async function getCloudMasterDB() {
-  try {
-    const res = await fetch('/api/sync', { cache: 'no-store' });
-    if (res.ok) {
-      const json = await res.json();
-      if (json && json.data && json.data.workers) {
-        localStorage.setItem(MASTER_DB_KEY, JSON.stringify(json.data));
-        return json.data;
-      }
-    }
-  } catch (err) {
-    console.warn("Using local cache...", err);
-  }
+const API_AUTH = '/api/auth';
+const API_WORKER = '/api/worker';
+const API_ADMIN = '/api/admin';
 
-  const local = localStorage.getItem(MASTER_DB_KEY);
-  if (local) return JSON.parse(local);
-  return defaultMasterDB;
+// 1. AUTHENTICATION CALLS
+async function apiLoginAdmin(adminPin) {
+  const res = await fetch(API_AUTH, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'admin_login', adminPin })
+  });
+  return await res.json();
 }
 
-// 2. Cloud Par Data Save Karna
-async function saveCloudMasterDB(data) {
-  if (!data) return;
-  localStorage.setItem(MASTER_DB_KEY, JSON.stringify(data));
-
-  try {
-    await fetch('/api/sync', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-  } catch (err) {
-    console.warn("Cloud save error:", err);
-  }
+async function apiLoginWorker(phone, pin) {
+  const res = await fetch(API_AUTH, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'worker_login', phone, pin })
+  });
+  return await res.json();
 }
 
-// 3. Calculation Helpers
+// 2. SCOPED WORKER DATA & ACTIONS
+async function apiGetWorkerPortal(workerId) {
+  const res = await fetch(`${API_WORKER}?workerId=${workerId}`, { cache: 'no-store' });
+  return await res.json();
+}
+
+async function apiWorkerAction(action, workerId, payload) {
+  const res = await fetch(API_WORKER, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action, workerId, payload })
+  });
+  return await res.json();
+}
+
+// 3. ADMIN OPERATIONS
+async function apiGetAdminData() {
+  const res = await fetch(API_ADMIN, { cache: 'no-store' });
+  return await res.json();
+}
+
+async function apiAdminAction(action, payload) {
+  const res = await fetch(API_ADMIN, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action, payload })
+  });
+  return await res.json();
+}
+
+// 4. CALCULATION HELPERS
 function calcWorkerShifts(w) {
   if (!w || !w.att) return 0;
-  return Object.values(w.att).reduce((acc, v) => acc + ((v.status || v) === 'P' ? 1 : ((v.status || v) === 'HD' ? 0.5 : 0)), 0);
+  return Object.values(w.att).reduce((acc, v) => {
+    const status = typeof v === 'object' ? v.status : v;
+    return acc + (status === 'P' ? 1.0 : (status === 'HD' ? 0.5 : 0));
+  }, 0);
 }
 
 function calcWorkerOTPay(w) {
   if (!w || !w.att) return 0;
-  return Object.values(w.att).reduce((acc, v) => acc + ((v.ot || 0) * (w.otRate || 100)), 0);
+  const otRate = w.otRate || 100;
+  return Object.values(w.att).reduce((acc, v) => {
+    const ot = typeof v === 'object' ? (v.ot || 0) : 0;
+    return acc + (ot * otRate);
+  }, 0);
 }
 
 function calcWorkerDue(w) {
