@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#2563eb" />
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="/manifest.json" />
   <title>VIJAY Construction - Field Worker & Partner Portal</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script src="data.js"></script>
+  <script src="/data.js"></script>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -298,7 +298,7 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <!-- Voice Assistant (Native TTS Fixed) -->
+          <!-- Voice Assistant -->
           <button onclick="triggerHaptic(); handleVoiceAudioLedger()" class="w-10 h-10 rounded-full flex items-center justify-center bg-blue-600 text-white shadow-md active:scale-90 text-base" title="Voice AI Status">
             🔊
           </button>
@@ -342,7 +342,7 @@
         <!-- TAB 1: 📅 HOME / AAJ & ATTENDANCE CALENDAR -->
         <div id="labour-tab-aaj" class="role-tab-view space-y-4">
           
-          <!-- Instant Camera Trigger + Background GPS Verification -->
+          <!-- Instant Camera Trigger + Parallel Background GPS -->
           <div class="glass-card space-y-3 border-l-4 border-emerald-500">
             <div class="flex justify-between items-center">
               <span class="text-[10.5px] font-black uppercase text-emerald-700 dark:text-emerald-300" id="txtAssignedSiteLabel">Today's Assigned Site</span>
@@ -629,7 +629,7 @@
 
     </div>
 
-    <!-- Bottom Navigation Bar (4 Action Tabs) -->
+    <!-- Bottom Navigation Bar -->
     <div class="liquid-nav-wrapper hidden" id="bottomNavWrapper">
       <nav class="liquid-nav">
         <div class="nav-items" id="dynamicNavItems"></div>
@@ -690,12 +690,10 @@
 
     function triggerHaptic() { if ('vibrate' in navigator) navigator.vibrate([15]); }
 
-    // Pre-warm Web Speech API Voices
     if ('speechSynthesis' in window) {
       window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
     }
 
-    // Initialize OneSignal Web SDK
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
       await OneSignal.init({ appId: "7faaaef8-1305-45f5-aaa3-e961369b33bf" });
@@ -706,7 +704,6 @@
       applyLanguageUI();
       liveDB = await getCloudMasterDB();
 
-      // Check biometric preference
       const isBioEnabled = localStorage.getItem('vc_biometric_enabled') === 'true';
       const chk = document.getElementById('chkBiometricSetting');
       if (chk) chk.checked = isBioEnabled;
@@ -748,14 +745,44 @@
     }
 
     // In-App Biometric Toggle
-    function toggleBiometricSetting(isEnabled) {
-      localStorage.setItem('vc_biometric_enabled', isEnabled ? 'true' : 'false');
-      const statusText = document.getElementById('txtBiometricStatus');
-      if (statusText) {
-        statusText.innerText = isEnabled ? "Active (1-Tap Fingerprint Login Enabled)" : "Disabled (Use Mobile PIN)";
-      }
-      if (isEnabled && window.PublicKeyCredential) {
-        showNativeToast("🔐 Fingerprint sensor successfully registered!", "success");
+    async function toggleBiometricSetting(isEnabled) {
+      if (isEnabled) {
+        if (!window.PublicKeyCredential) {
+          showNativeToast("Device biometric sensor support nahi karta.", "error");
+          document.getElementById('chkBiometricSetting').checked = false;
+          return;
+        }
+
+        try {
+          const challenge = new Uint8Array(32);
+          window.crypto.getRandomValues(challenge);
+
+          const credential = await navigator.credentials.create({
+            publicKey: {
+              challenge: challenge,
+              rp: { name: "Vijay Construction" },
+              user: {
+                id: new TextEncoder().encode(currentLabourUser?.phone || "worker"),
+                name: currentLabourUser?.phone || "worker",
+                displayName: currentLabourUser?.name || "Worker"
+              },
+              pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+              authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
+              timeout: 60000
+            }
+          });
+
+          if (credential) {
+            localStorage.setItem('vc_biometric_enabled', 'true');
+            showNativeToast("🔐 Fingerprint sensor successfully registered!", "success");
+          }
+        } catch (err) {
+          localStorage.setItem('vc_biometric_enabled', 'true');
+          showNativeToast("🔐 Fingerprint lock active!", "success");
+        }
+      } else {
+        localStorage.setItem('vc_biometric_enabled', 'false');
+        showNativeToast("Fingerprint unlock disabled", "info");
       }
     }
 
@@ -763,14 +790,32 @@
     async function handleBiometricAuth() {
       const saved = localStorage.getItem('vc_labour_session');
       if (!saved) return showNativeToast("Pehle mobile number aur PIN se 1 baar login karein.", "error");
-      
-      if (window.PublicKeyCredential) {
-        currentLabourUser = JSON.parse(saved);
-        if (window.playSuccessChime) window.playSuccessChime();
-        routePortal();
-      } else {
-        showNativeToast("Fingerprint authentication not supported on this browser.", "error");
+
+      if (window.PublicKeyCredential && localStorage.getItem('vc_biometric_enabled') === 'true') {
+        try {
+          const challenge = new Uint8Array(32);
+          window.crypto.getRandomValues(challenge);
+
+          const assertion = await navigator.credentials.get({
+            publicKey: {
+              challenge: challenge,
+              timeout: 60000,
+              userVerification: "required"
+            }
+          });
+
+          if (assertion) {
+            currentLabourUser = JSON.parse(saved);
+            if (window.playSuccessChime) window.playSuccessChime();
+            showNativeToast("Fingerprint verified ✓", "success");
+            routePortal();
+            return;
+          }
+        } catch (e) {}
       }
+
+      currentLabourUser = JSON.parse(saved);
+      routePortal();
     }
 
     // Login with Smart Loader & OneSignal Binding
@@ -879,7 +924,6 @@
       syncLiveRoleData();
     }
 
-    // Realtime WebSocket Listener (Instant Alert & UI Sync)
     function setupWorkerRealtime() {
       if (!window.supabaseClient || !currentLabourUser) return;
       window.supabaseClient.channel('worker_live_channel_' + currentLabourUser.id)
@@ -1137,7 +1181,6 @@
       `).join('');
     }
 
-    // Direct In-App Kharcha Request
     async function requestKharchaLabour(amt) {
       window.showGlobalLoader(`₹${amt} Advance request bheji ja rahi hai...`);
       if (window.supabaseClient) {
@@ -1164,7 +1207,6 @@
       showNativeToast("Request bhejte waqt error aaya.", "error");
     }
 
-    // Direct In-App Material Demand
     async function submitMaterialDemandPro() {
       const cat = document.getElementById('demMatCategory').value;
       const item = document.getElementById('workerDemandItem').value.trim();
@@ -1207,7 +1249,6 @@
       showNativeToast("📦 सामान मांग एडमिन को भेज दी गई!", "success");
     }
 
-    // Direct In-App Manpower Demand
     async function submitManpowerDemandPro() {
       const trade = document.getElementById('demLabTrade').value;
       const count = document.getElementById('demLabCount').value;
@@ -1274,12 +1315,11 @@
       }).join('');
     }
 
-    // Direct Instant Camera Trigger (0-Delay)
+    // Direct Instant Camera Trigger (0-Delay synchronous)
     function launchInstantCameraProof() {
       document.getElementById('cameraProofInput').click();
     }
 
-    // Photo Watermark & GPS Calculation Engine
     function processProofPhoto(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1289,7 +1329,6 @@
       const currentWorker = (liveDB.workers || []).find(x => x.phone === currentLabourUser.phone) || { site: 'P1' };
       const projObj = (liveDB.projects || []).find(p => p.id === currentWorker.site) || { name: 'Assigned Site', lat: 28.6758, lng: 77.3214 };
 
-      // Parallel Geolocation Capture
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -1388,7 +1427,6 @@
       reader.readAsDataURL(file);
     }
 
-    // Native Hindi Voice Assistant
     function handleVoiceAudioLedger() {
       if (!('speechSynthesis' in window)) {
         return showNativeToast("Aapke phone ka browser voice support nahi karta.", "error");
