@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
-  <!-- FIX #7: Instant Anti-Flash Synchronous Script -->
+  <!-- FIX: Instant Anti-Flash Synchronous Script -->
   <script>
     (function() {
       const sess = localStorage.getItem('vc_labour_session');
@@ -25,7 +25,6 @@
     })();
   </script>
 
-  <!-- FIX #1: Zero-Lag Lightweight GPU Accelerated Styling -->
   <style>
     :root {
       --bg-app: #f4f6f9;
@@ -233,7 +232,6 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <!-- FIX #3: Language Switcher Toggle -->
         <button onclick="triggerHaptic(); toggleLabourLang()" class="px-2.5 py-1 rounded-full text-[11px] font-black bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20 active:scale-95" id="btnLangToggle">
           🌐 हिन्दी
         </button>
@@ -246,7 +244,7 @@
       </div>
     </header>
 
-    <!-- Professional Login Form (UPGRADE #2: Persistent Auto-Login + Device Binding + WebAuthn) -->
+    <!-- Login Form -->
     <div id="view-login" class="flex-1 px-4 py-8 flex flex-col justify-center max-w-sm mx-auto w-full space-y-5">
       <div class="glass-card space-y-4 shadow-xl border-t-4 border-blue-600 text-center">
         <div class="w-14 h-14 rounded-3xl bg-blue-600/10 border border-blue-600/20 text-blue-600 mx-auto flex items-center justify-center text-2xl font-black shadow-inner">
@@ -270,7 +268,6 @@
           Login Portal ⚡
         </button>
 
-        <!-- FIX #8: Biometric Fingerprint Trigger -->
         <button onclick="triggerHaptic(); handleBiometricAuth()" class="btn-secondary text-[13px] flex items-center justify-center gap-2">
           <span>🔐</span> <span id="txtBiometricBtn">Fingerprint Se Kholein</span>
         </button>
@@ -306,7 +303,6 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <!-- UPGRADE #6 & FIX #2: HINDI VOICE ASSISTANT (TTS PRE-WARMED) -->
           <button onclick="triggerHaptic(); handleVoiceAudioLedger()" class="w-10 h-10 rounded-full flex items-center justify-center bg-blue-600 text-white shadow-md active:scale-90 text-base" title="Voice AI Status">
             🔊
           </button>
@@ -353,7 +349,6 @@
         <!-- TAB 1: 📅 HOME / AAJ & ATTENDANCE CALENDAR -->
         <div id="labour-tab-aaj" class="role-tab-view space-y-4">
           
-          <!-- 📍 GPS-VERIFIED PACK-UP CARD (200m GEOFENCING & PHOTO WATERMARKING) -->
           <div class="glass-card space-y-3 border-l-4 border-emerald-500">
             <div class="flex justify-between items-center">
               <span class="text-[10.5px] font-black uppercase text-emerald-700 dark:text-emerald-300" id="txtAssignedSiteLabel">Today's Assigned Site</span>
@@ -411,7 +406,7 @@
 
         </div>
 
-        <!-- TAB 2: 💰 HISAAB & CASH ADVANCE (UPGRADE #7: DIRECT IN-APP REQUEST TO SUPABASE) -->
+        <!-- TAB 2: 💰 HISAAB & CASH ADVANCE -->
         <div id="labour-tab-hisaab" class="role-tab-view hidden space-y-4">
           <div class="glass-card space-y-3">
             <span class="text-[14px] font-black" style="color: var(--text-main);" id="txtKharchaTitle">Request Mid-Week Cash Advance (खर्ची)</span>
