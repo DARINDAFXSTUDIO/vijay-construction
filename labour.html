@@ -477,7 +477,7 @@
       if (document.getElementById('btnSendDemand')) document.getElementById('btnSendDemand').innerText = d.sendDemand;
     }
 
-    // --- In-App Live Camera Engine ---
+    // --- In-App Live Camera Engine & GPS Proof Upload ---
     async function openLiveCamera() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -509,7 +509,7 @@
       const ctx = canvas.getContext('2d');
       ctx.drawImage(video, 0, 0, 640, 480);
 
-      // Canvas Watermark
+      // Watermark canvas
       ctx.fillStyle = "rgba(10, 15, 29, 0.85)";
       ctx.fillRect(0, canvas.height - 68, canvas.width, 68);
       ctx.fillStyle = "#ffffff";
@@ -524,8 +524,41 @@
       document.getElementById('photoProofPreviewContainer').classList.remove('hidden');
 
       closeLiveCamera();
+
+      // GPS Geofence Check & Cloud Proof Recording
+      if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          let dist = null;
+          let isVerified = true;
+
+          if (currentLabourUser && currentLabourUser.siteLat && currentLabourUser.siteLng) {
+            dist = calculateGPSDistanceMeters(lat, lng, currentLabourUser.siteLat, currentLabourUser.siteLng);
+            isVerified = dist <= (currentLabourUser.siteRadius || 250);
+          }
+
+          document.getElementById('proofGPSLabel').innerText = isVerified ? "✓ Location Verified" : "⚠️ Site Out-of-Range";
+          document.getElementById('proofGPSLabel').className = isVerified ? "text-emerald-600" : "text-rose-500";
+          document.getElementById('proofDistanceLabel').innerText = dist !== null ? `${dist}m from site` : "GPS Logged";
+
+          if (window.supabaseClient && currentLabourUser) {
+            await window.supabaseClient.from('site_proofs').insert([{
+              labour_id: currentLabourUser.id,
+              project_id: currentLabourUser.siteId || null,
+              photo_url: photoData,
+              gps_lat: lat,
+              gps_lng: lng,
+              distance_meters: dist
+            }]);
+          }
+        }, () => {
+          document.getElementById('proofDistanceLabel').innerText = "GPS Offline";
+        }, { enableHighAccuracy: true, timeout: 8000 });
+      }
+
       if (window.playSuccessChime) window.playSuccessChime();
-      showNativeToast("📸 Photo successfully captured!", "success");
+      showNativeToast("📸 Photo successfully captured & recorded!", "success");
     }
 
     // --- Biometric Authentication ---
@@ -577,11 +610,16 @@
 
       window.showGlobalLoader("Connecting to Vijay Construction Cloud...");
 
-      liveDB = await getCloudMasterDB();
-
       if (window.supabaseClient) {
         try {
-          const { data: wData } = await window.supabaseClient.from('labour').select('*').eq('mobile', p).eq('pin', pin).single();
+          // 1. Worker Check
+          const { data: wData } = await window.supabaseClient
+            .from('labour')
+            .select('*, projects(id, name, lat, lng, geofence_radius_meters)')
+            .eq('mobile', p)
+            .eq('pin', pin)
+            .single();
+
           if (wData) {
             const currentDevice = window.getDeviceToken();
             let playerId = null;
@@ -607,7 +645,39 @@
               name: wData.name,
               role: 'labour',
               trade: wData.role || 'Labour',
-              rate: `₹${wData.daily_rate}/Day`
+              rate: `₹${wData.daily_rate}/Day`,
+              siteId: wData.assigned_project_id,
+              siteName: wData.projects?.name || 'Flat 309 (Dilshad Garden)',
+              siteLat: wData.projects?.lat ? Number(wData.projects.lat) : null,
+              siteLng: wData.projects?.lng ? Number(wData.projects.lng) : null,
+              siteRadius: wData.projects?.geofence_radius_meters || 250
+            };
+            localStorage.setItem('vc_labour_session', JSON.stringify(currentLabourUser));
+            document.documentElement.classList.add('user-authenticated');
+            window.hideGlobalLoader();
+            if (window.playSuccessChime) window.playSuccessChime();
+            routePortal();
+            return;
+          }
+
+          // 2. Thekedar Check
+          const { data: sData } = await window.supabaseClient
+            .from('thekedars')
+            .select('*, projects(id, name)')
+            .eq('phone', p)
+            .eq('pin', pin)
+            .single();
+
+          if (sData) {
+            currentLabourUser = {
+              id: sData.id,
+              phone: sData.phone,
+              name: sData.name,
+              role: 'subcon',
+              trade: sData.work_scope || 'Contractor',
+              rate: 'RA Milestone Contract',
+              siteId: sData.assigned_project_id,
+              siteName: sData.projects?.name || 'Live Site'
             };
             localStorage.setItem('vc_labour_session', JSON.stringify(currentLabourUser));
             document.documentElement.classList.add('user-authenticated');
@@ -621,26 +691,8 @@
         }
       }
 
-      // Thekedar Fallback
-      const thekMatch = (liveDB.thekedars || []).find(t => String(t.phone).trim() === p && String(t.pin || '1234').trim() === pin);
-      if (thekMatch) {
-        currentLabourUser = {
-          id: thekMatch.id,
-          phone: thekMatch.phone || p,
-          name: thekMatch.name,
-          role: 'subcon',
-          trade: thekMatch.work,
-          rate: 'RA Milestone Contract'
-        };
-        localStorage.setItem('vc_labour_session', JSON.stringify(currentLabourUser));
-        document.documentElement.classList.add('user-authenticated');
-        window.hideGlobalLoader();
-        if (window.playSuccessChime) window.playSuccessChime();
-        routePortal();
-      } else {
-        window.hideGlobalLoader();
-        showNativeToast("गलत मोबाइल नंबर या PIN!", "error");
-      }
+      window.hideGlobalLoader();
+      showNativeToast("गलत मोबाइल नंबर या PIN!", "error");
     }
 
     function handleLogout() {
@@ -664,6 +716,10 @@
 
       document.querySelectorAll('[id^="role-container-"]').forEach(el => el.classList.add('hidden'));
       document.getElementById(`role-container-${currentLabourUser.role}`).classList.remove('hidden');
+
+      if (currentLabourUser.role === 'labour') {
+        document.getElementById('labourAssignedSite').innerText = `📍 ${currentLabourUser.siteName || 'Assigned Site'}`;
+      }
 
       setupNav();
       setupWorkerRealtime();
@@ -719,6 +775,11 @@
           const photoData = canvas.toDataURL('image/jpeg', 0.75);
           currentLabourUser.photo = photoData;
           localStorage.setItem('vc_labour_session', JSON.stringify(currentLabourUser));
+
+          if (window.supabaseClient && currentLabourUser.role === 'labour') {
+            await window.supabaseClient.from('labour').update({ photo_url: photoData }).eq('id', currentLabourUser.id);
+          }
+
           renderAvatarDisplay();
           window.hideGlobalLoader();
           showNativeToast("✓ Profile photo updated!", "success");
@@ -788,22 +849,42 @@
 
     async function syncLiveRoleData() {
       if (currentLabourUser.role === 'labour') {
-        let w = { rate: 500, advance: 0, att: {}, site: 'P1' };
+        let w = { rate: 500, otRate: 100, advance: 0, att: {}, site: currentLabourUser.siteId };
+        let advanceList = [];
+
         if (window.supabaseClient) {
           const { data: sLab } = await window.supabaseClient.from('labour').select('*').eq('id', currentLabourUser.id).single();
           const { data: sAtts } = await window.supabaseClient.from('attendance').select('*').eq('labour_id', currentLabourUser.id);
+          const { data: sAdvs } = await window.supabaseClient.from('labour_advances').select('*').eq('labour_id', currentLabourUser.id).order('created_at', { ascending: false });
+
           if (sLab) {
             let attObj = {};
-            (sAtts || []).forEach(a => { attObj[a.date] = { status: a.status, ot: 0, locked: true }; });
+            // ✅ OT PERSISTENCE FIX: Reading actual ot_hours instead of hardcoded 0
+            (sAtts || []).forEach(a => { 
+              attObj[a.date] = { 
+                status: a.status, 
+                ot: Number(a.ot_hours) || 0, 
+                locked: a.is_locked || false 
+              }; 
+            });
+
             w = {
               id: sLab.id,
               name: sLab.name,
               role: sLab.role,
               rate: Number(sLab.daily_rate) || 500,
-              advance: Number(sLab.advance) || 0,
+              otRate: Number(sLab.ot_rate_per_hour) || 100,
+              advance: Number(sLab.current_advance !== undefined ? sLab.current_advance : sLab.advance) || 0,
               att: attObj,
-              site: 'P1'
+              site: sLab.assigned_project_id
             };
+          }
+          if (sAdvs) {
+            advanceList = sAdvs.map(adv => ({
+              date: adv.advance_date,
+              amount: Number(adv.amount),
+              reason: adv.reason
+            }));
           }
         }
 
@@ -818,7 +899,7 @@
         });
 
         const earned = shifts * w.rate;
-        const otEarning = totalOtHours * 100;
+        const otEarning = totalOtHours * (w.otRate || 100);
         const net = Math.max(0, earned + otEarning - (w.advance || 0));
 
         document.getElementById('labourNetDueText').innerText = `₹${net.toLocaleString('en-IN')}`;
@@ -827,31 +908,33 @@
         document.getElementById('labourAdvanceHero').innerText = `-₹${(w.advance || 0).toLocaleString('en-IN')}`;
         document.getElementById('labourShiftsCount').innerText = `${shifts} D`;
 
+        w.advanceList = advanceList;
         renderCalendarGrid(w);
         renderAdvanceHistory(w);
         renderCombinedDemands();
       } else if (currentLabourUser.role === 'subcon') {
-        const t = (liveDB.thekedars || []).find(x => x.name.includes(currentLabourUser.name) || x.id === currentLabourUser.id) || liveDB.thekedars[0];
-        const bal = Math.max(0, t.value - t.paid);
-        document.getElementById('subconNetDueText').innerText = `₹${bal.toLocaleString('en-IN')}`;
-        document.getElementById('subconWorkTitle').innerText = `${t.work} (${t.name})`;
-        document.getElementById('subconProgText').innerText = `${t.progress || 0}%`;
-        document.getElementById('subconProgBar').style.width = `${t.progress || 0}%`;
+        if (window.supabaseClient) {
+          const { data: t } = await window.supabaseClient.from('thekedars').select('*').eq('id', currentLabourUser.id).single();
+          if (t) {
+            const bal = Math.max(0, Number(t.contract_value || 0) - Number(t.paid_amount || 0));
+            document.getElementById('subconNetDueText').innerText = `₹${bal.toLocaleString('en-IN')}`;
+            document.getElementById('subconWorkTitle').innerText = `${t.work_scope} (${t.name})`;
+            document.getElementById('subconProgText').innerText = `${t.progress_pct || 0}%`;
+            document.getElementById('subconProgBar').style.width = `${t.progress_pct || 0}%`;
+          }
+        }
       }
     }
 
     async function logSubconMilestone(pct) {
       window.showGlobalLoader("Milestone save ho raha hai...");
-      liveDB = await getCloudMasterDB();
-      const t = (liveDB.thekedars || []).find(x => x.name.includes(currentLabourUser.name) || x.id === currentLabourUser.id) || liveDB.thekedars[0];
-      if (t) {
-        t.progress = pct;
-        await saveCloudMasterDB(liveDB);
+      if (window.supabaseClient && currentLabourUser) {
+        await window.supabaseClient.from('thekedars').update({ progress_pct: pct }).eq('id', currentLabourUser.id);
         syncLiveRoleData();
-        window.hideGlobalLoader();
-        if (window.playSuccessChime) window.playSuccessChime();
-        showNativeToast(`✓ Milestone ${pct}% logged!`, 'success');
       }
+      window.hideGlobalLoader();
+      if (window.playSuccessChime) window.playSuccessChime();
+      showNativeToast(`✓ Milestone ${pct}% logged!`, 'success');
     }
 
     function renderCalendarGrid(w) {
@@ -915,10 +998,11 @@
       if (window.supabaseClient && currentLabourUser) {
         const { error } = await window.supabaseClient.from('requests').insert([{
           labour_id: currentLabourUser.id,
+          project_id: currentLabourUser.siteId || null,
           request_type: 'Advance',
           amount: amt,
           description: 'Field Kharcha Request',
-          site_name: 'Flat 309 (Dilshad Garden)',
+          site_name: currentLabourUser.siteName || 'Assigned Site',
           status: 'Pending'
         }]);
 
@@ -926,6 +1010,7 @@
         if (!error) {
           if (window.playSuccessChime) window.playSuccessChime();
           showNativeToast(`✓ ₹${amt} Advance request bhej di gayi hai!`, 'success');
+          renderCombinedDemands();
           return;
         }
       }
@@ -940,34 +1025,27 @@
 
       window.showGlobalLoader("📦 Saman Demand submit...");
       if (window.supabaseClient && currentLabourUser) {
-        await window.supabaseClient.from('requests').insert([{
+        const { error } = await window.supabaseClient.from('requests').insert([{
           labour_id: currentLabourUser.id,
+          project_id: currentLabourUser.siteId || null,
           request_type: 'Material',
           amount: 0,
           description: `${cat}: ${item}`,
-          site_name: 'Flat 309 (Dilshad Garden)',
+          site_name: currentLabourUser.siteName || 'Assigned Site',
           status: 'Pending'
         }]);
-      }
 
-      liveDB = await getCloudMasterDB();
-      if (!liveDB.materials) liveDB.materials = [];
-      liveDB.materials.unshift({
-        id: 'M' + Date.now(),
-        type: 'material',
-        category: cat,
-        item: item,
-        site: 'P1',
-        requestedBy: currentLabourUser.name,
-        time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-        status: 'Pending'
-      });
-      await saveCloudMasterDB(liveDB);
-      document.getElementById('workerDemandItem').value = '';
-      renderCombinedDemands();
+        window.hideGlobalLoader();
+        if (!error) {
+          document.getElementById('workerDemandItem').value = '';
+          if (window.playSuccessChime) window.playSuccessChime();
+          showNativeToast("📦 सामान मांग एडमिन को भेज दी गई!", "success");
+          renderCombinedDemands();
+          return;
+        }
+      }
       window.hideGlobalLoader();
-      if (window.playSuccessChime) window.playSuccessChime();
-      showNativeToast("📦 सामान मांग एडमिन को भेज दी गई!", "success");
+      showNativeToast("Demand send nahi ho payi.", "error");
     }
 
     async function submitManpowerDemandPro() {
@@ -978,49 +1056,52 @@
 
       window.showGlobalLoader("👷 Karigar Demand submit...");
       if (window.supabaseClient && currentLabourUser) {
-        await window.supabaseClient.from('requests').insert([{
+        const { error } = await window.supabaseClient.from('requests').insert([{
           labour_id: currentLabourUser.id,
-          request_type: 'Material',
+          project_id: currentLabourUser.siteId || null,
+          request_type: 'Manpower', // ✅ FIX: Correct Manpower request type
           amount: 0,
           description: `Manpower: ${count} - ${trade} (${desc})`,
-          site_name: 'Flat 309 (Dilshad Garden)',
+          site_name: currentLabourUser.siteName || 'Assigned Site',
           status: 'Pending'
         }]);
-      }
 
-      liveDB = await getCloudMasterDB();
-      if (!liveDB.materials) liveDB.materials = [];
-      liveDB.materials.unshift({
-        id: 'LBR' + Date.now(),
-        type: 'manpower',
-        category: 'Manpower',
-        item: `${count} - ${trade} (${desc})`,
-        site: 'P1',
-        requestedBy: currentLabourUser.name,
-        time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-        status: 'Pending'
-      });
-      await saveCloudMasterDB(liveDB);
-      document.getElementById('demLabWorkDetail').value = '';
-      renderCombinedDemands();
+        window.hideGlobalLoader();
+        if (!error) {
+          document.getElementById('demLabWorkDetail').value = '';
+          if (window.playSuccessChime) window.playSuccessChime();
+          showNativeToast("👷‍♂️ लेबर/कारीगर मांग भेज दी गई!", "success");
+          renderCombinedDemands();
+          return;
+        }
+      }
       window.hideGlobalLoader();
-      if (window.playSuccessChime) window.playSuccessChime();
-      showNativeToast("👷‍♂️ लेबर/कारीगर मांग भेज दी गई!", "success");
+      showNativeToast("Demand send nahi ho payi.", "error");
     }
 
-    function renderCombinedDemands() {
+    async function renderCombinedDemands() {
       const container = document.getElementById('workerCombinedDemandList');
-      if (!liveDB.materials || liveDB.materials.length === 0) {
+      if (!container || !window.supabaseClient || !currentLabourUser) return;
+
+      const { data: reqs } = await window.supabaseClient
+        .from('requests')
+        .select('*')
+        .eq('labour_id', currentLabourUser.id)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (!reqs || reqs.length === 0) {
         container.innerHTML = `<div class="text-slate-400 p-2">कोई पेंडिंग मांग नहीं है।</div>`;
         return;
       }
-      container.innerHTML = liveDB.materials.slice(0, 5).map(m => {
-        const isManpower = m.type === 'manpower';
+      container.innerHTML = reqs.map(m => {
+        const isManpower = m.request_type === 'Manpower';
+        const isAdvance = m.request_type === 'Advance';
         return `
-          <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 flex justify-between items-center border-l-4 ${isManpower ? 'border-emerald-500' : 'border-blue-500'}">
+          <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 flex justify-between items-center border-l-4 ${isAdvance ? 'border-amber-500' : (isManpower ? 'border-emerald-500' : 'border-blue-500')}">
             <div>
-              <span class="font-black block text-[13px]" style="color: var(--text-main);">${isManpower ? '👷 ' : '📦 '} ${m.item}</span>
-              <span class="text-[10px] font-bold text-slate-400">${m.category} • ${m.time || 'Today'}</span>
+              <span class="font-black block text-[13px]" style="color: var(--text-main);">${isAdvance ? `💵 Advance ₹${m.amount}` : (isManpower ? '👷 ' : '📦 ') + m.description}</span>
+              <span class="text-[10px] font-bold text-slate-400">${m.request_type} • ${new Date(m.created_at).toLocaleDateString('en-IN')}</span>
             </div>
             <span class="px-2.5 py-1 rounded-full text-[10px] font-black ${m.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-600' : 'bg-amber-500/20 text-amber-600'}">
               ${m.status}

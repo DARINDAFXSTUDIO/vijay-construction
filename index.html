@@ -254,7 +254,9 @@
     <!-- Main Dynamic Scroll Body -->
     <main class="flex-1 overflow-y-auto no-scrollbar px-4 pt-3 pb-28 space-y-4" id="mainAppScroll">
 
+      <!-- ========================================== -->
       <!-- TAB 1: 🏠 DASHBOARD -->
+      <!-- ========================================== -->
       <section id="view-dashboard" class="space-y-4">
         
         <!-- Site Filter Selector -->
@@ -265,7 +267,7 @@
           </select>
         </div>
 
-        <!-- PENDING IN-APP REQUESTS HUB -->
+        <!-- 🔔 PENDING IN-APP REQUESTS HUB -->
         <div id="requests-container" class="b-card border-l-4 border-amber-500 hidden space-y-3">
           <div class="flex justify-between items-center">
             <div class="flex items-center gap-2">
@@ -277,7 +279,7 @@
           <div id="requests-list" class="space-y-2.5"></div>
         </div>
 
-        <!-- 1-CLICK EXCEL / CSV REPORT DOWNLOAD BAR -->
+        <!-- 📊 1-CLICK EXCEL / CSV REPORT DOWNLOAD BAR -->
         <div class="b-card flex items-center justify-between py-2.5 px-3.5 bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-transparent border border-emerald-500/20">
           <div class="flex items-center gap-2">
             <span class="text-xl">📊</span>
@@ -328,7 +330,7 @@
           </div>
         </div>
 
-        <!-- SATURDAY CASH BAG WIDGET -->
+        <!-- 💼 SATURDAY CASH BAG WIDGET -->
         <div class="b-card border-l-4 border-amber-500 flex justify-between items-center py-3">
           <div>
             <div class="flex items-center gap-1.5">
@@ -410,7 +412,7 @@
           </div>
         </div>
 
-        <!-- SITE PACK-UP PROOFS GALLERY -->
+        <!-- 📸 SITE PACK-UP PROOFS GALLERY -->
         <div class="b-card space-y-3">
           <div class="flex justify-between items-center">
             <span class="text-[13.5px] font-black" style="color: var(--text-main);">📸 Live Site Pack-Up Proofs</span>
@@ -420,7 +422,9 @@
         </div>
       </section>
 
+      <!-- ========================================== -->
       <!-- TAB 2: 👷 LABOUR -->
+      <!-- ========================================== -->
       <section id="view-labour" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
@@ -476,7 +480,9 @@
         <div id="workersListContainer" class="space-y-3 pb-8"></div>
       </section>
 
+      <!-- ========================================== -->
       <!-- TAB 3: 📐 THEKEDAR MEASUREMENT BOOK (MB) -->
+      <!-- ========================================== -->
       <section id="view-thekedar" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
@@ -510,7 +516,9 @@
         <div id="thekedarListContainer" class="space-y-3 pb-8"></div>
       </section>
 
+      <!-- ========================================== -->
       <!-- TAB 4: 📦 SUPPLIER & VENDOR KHATA -->
+      <!-- ========================================== -->
       <section id="view-suppliers" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
@@ -544,7 +552,9 @@
         <div id="suppliersListContainer" class="space-y-3 pb-8"></div>
       </section>
 
+      <!-- ========================================== -->
       <!-- TAB 5: 📋 DEMANDS HUB -->
+      <!-- ========================================== -->
       <section id="view-demands" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
@@ -571,7 +581,9 @@
         <div id="materialsListContainer" class="space-y-3 pb-8"></div>
       </section>
 
+      <!-- ========================================== -->
       <!-- TAB 6: 🏛️ CLIENT BILLING & PROFIT MARGINS -->
+      <!-- ========================================== -->
       <section id="view-client" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
@@ -607,7 +619,7 @@
 
     </main>
 
-    <!-- Bottom Navigation Bar -->
+    <!-- Bottom Navigation Bar (6 Clean Action Tabs) -->
     <nav class="b-nav">
       <button class="b-nav-btn active" id="tabNav-dashboard" onclick="triggerHaptic(); switchTab('dashboard')">
         <span class="icon-wrap text-xl">🏠</span><span>Home</span>
@@ -630,7 +642,10 @@
       </button>
     </nav>
 
-    <!-- Modals -->
+    <!-- ========================================== -->
+    <!-- ALL 14 MODALS (100% WIRED & FUNCTIONAL) -->
+    <!-- ========================================== -->
+
     <!-- Modal 1: Add Worker -->
     <div id="modalAddWorker" class="modal-backdrop hidden" onclick="closeAllModals()">
       <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
@@ -1095,7 +1110,32 @@
             }));
           }
 
-          // 2. Fetch Labours & Attendance (OT Preserved)
+          // 2. Fetch Thekedars & Suppliers
+          const { data: theks } = await window.supabaseClient.from('thekedars').select('*');
+          if (theks) {
+            db.thekedars = theks.map(t => ({
+              id: t.id,
+              name: t.name,
+              phone: t.phone,
+              site: t.assigned_project_id || db.projects[0]?.id || 'P1',
+              work: t.work_scope,
+              value: Number(t.contract_value) || 0,
+              paid: Number(t.paid_amount) || 0,
+              progress: t.progress_pct || 0
+            }));
+          }
+
+          const { data: sups } = await window.supabaseClient.from('suppliers').select('*');
+          if (sups) {
+            db.suppliers = sups.map(s => ({
+              id: s.id,
+              name: s.name,
+              phone: s.phone,
+              category: s.category
+            }));
+          }
+
+          // 3. Fetch Labours & Attendance (OT Preserved)
           const { data: labours } = await window.supabaseClient.from('labour').select('*');
           const { data: atts } = await window.supabaseClient.from('attendance').select('*');
           
@@ -1134,7 +1174,7 @@
           console.warn("Supabase fetch fallback:", e);
         }
 
-        // 3. Realtime Listener (Zero Reload Required)
+        // 4. Realtime Listener (Zero Reload Required)
         if (!window._adminRealtimeActive) {
           window._adminRealtimeActive = true;
           window.supabaseClient.channel('admin_live_channel')

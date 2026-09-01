@@ -154,7 +154,7 @@ window.playSuccessChime = function() {
 };
 
 // =========================================================================
-// 🗄️ 4. BACKEND ENGINE (SUPABASE + FIREBASE HYBRID SYNC)
+// 🗄️ 4. BACKEND ENGINE (SUPABASE SINGLE SOURCE OF TRUTH)
 // =========================================================================
 const SUPABASE_URL = 'https://lcacvkjmsmhbxipnkuvn.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_uRAQfZWY4J4pg95Yw5e9_A_DbUo7XT1';
@@ -167,7 +167,6 @@ window.initSupabase = function() {
 };
 
 const MASTER_DB_KEY = 'vijay_subadmin_master_v5';
-const PERSISTENT_DB_URL = "https://vijay-construction-50c0f-default-rtdb.firebaseio.com/master_db.json";
 
 const defaultMasterDB = {
   projects: [
@@ -181,13 +180,7 @@ const defaultMasterDB = {
       totalValue: 500000, 
       received: 180000, 
       progress: 65, 
-      phase: 'Plaster & Electrical Piping',
-      milestones: [
-        { id: 'M1', name: 'Booking Advance', targetAmt: 100000, status: 'Received' },
-        { id: 'M2', name: 'Conduit & Electrical Piping', targetAmt: 150000, status: 'Received' },
-        { id: 'M3', name: 'Plaster & Flooring Complete', targetAmt: 150000, status: 'Pending' },
-        { id: 'M4', name: 'Final Paint & Handover', targetAmt: 100000, status: 'Pending' }
-      ]
+      phase: 'Plaster & Electrical Piping'
     },
     { 
       id: 'P2', 
@@ -199,76 +192,33 @@ const defaultMasterDB = {
       totalValue: 1200000, 
       received: 400000, 
       progress: 35, 
-      phase: 'Brickwork & Conduit Wiring',
-      milestones: [
-        { id: 'M1', name: 'Site Agreement & Advance', targetAmt: 250000, status: 'Received' },
-        { id: 'M2', name: 'Structure & Brickwork', targetAmt: 350000, status: 'Partially Received' },
-        { id: 'M3', name: 'Sanitary & Electrical Rough-in', targetAmt: 350000, status: 'Pending' },
-        { id: 'M4', name: 'Finishing & Key Handover', targetAmt: 250000, status: 'Pending' }
-      ]
+      phase: 'Brickwork & Conduit Wiring'
     }
   ],
-  clientPayments: [
-    { id: 'CPAY1', projectId: 'P1', amount: 100000, mode: 'Bank Transfer (NEFT)', milestone: 'Booking Advance', note: 'Token Advance', date: '2026-08-15' },
-    { id: 'CPAY2', projectId: 'P1', amount: 80000, mode: 'UPI (GooglePay)', milestone: 'Conduit & Piping', note: '2nd Stage Installment', date: '2026-08-28' }
-  ],
-  suppliers: [
-    { id: 'SUP1', name: 'Gupta Building Material', phone: '9811000005', category: 'Cement & Masonry', totalPurchased: 45000, totalPaid: 25000 },
-    { id: 'SUP2', name: 'Aggarwal Hardware & Tools', phone: '9811000006', category: 'Hardware & Tools', totalPurchased: 18500, totalPaid: 10000 }
-  ],
+  clientPayments: [],
+  suppliers: [],
   supplierBills: [],
   supplierPayments: [],
-  thekedars: [
-    { id: 'T1', name: 'Raju Electrical Thekedar', phone: '9811000002', pin: '1234', site: 'P2', work: 'Wiring & DB Dressing @ Villa 12', value: 85000, paid: 54200, progress: 60 },
-    { id: 'T2', name: 'Manoj Tiles Thekedar', phone: '9811000008', pin: '1234', site: 'P1', work: 'Vitrified Flooring & Bathroom Tiles', value: 45000, paid: 20000, progress: 45 }
-  ],
-  measurements: [
-    { id: 'MB1', thekedarId: 'T2', siteId: 'P1', location: 'Drawing Room Flooring', length: 18.5, width: 14.0, unit: 'Sq.Ft', totalArea: 259, rate: 22, amount: 5698, date: '2026-08-28' }
-  ],
+  thekedars: [],
+  measurements: [],
   workers: [],
   materials: [],
   siteProofs: [],
-  ledger: [
-    { id: 'L1', site: 'P1', type: 'income', amount: 180000, note: 'Sharma Ji Advance (Flat 309)', date: '2026-08-28' }
-  ],
+  ledger: [],
   settlements: []
 };
 
 async function getCloudMasterDB() {
-  try {
-    const res = await fetch(PERSISTENT_DB_URL, { cache: 'no-store' });
-    if (res.ok) {
-      const cloudData = await res.json();
-      if (cloudData && cloudData.projects) {
-        localStorage.setItem(MASTER_DB_KEY, JSON.stringify(cloudData));
-        return cloudData;
-      }
-    }
-  } catch (err) {
-    console.warn("Cloud DB fetch fallback to cache:", err.message);
-  }
-
   const local = localStorage.getItem(MASTER_DB_KEY);
   if (local) {
     try { return JSON.parse(local); } catch (e) {}
   }
-
-  localStorage.setItem(MASTER_DB_KEY, JSON.stringify(defaultMasterDB));
   return defaultMasterDB;
 }
 
 async function saveCloudMasterDB(data) {
   if (!data) return;
   localStorage.setItem(MASTER_DB_KEY, JSON.stringify(data));
-  try {
-    await fetch(PERSISTENT_DB_URL, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-  } catch (err) {
-    console.error("Cloud DB write failed:", err.message);
-  }
 }
 
 // Push notifications via internal serverless route
@@ -294,10 +244,12 @@ window.getDeviceToken = function() {
   return token;
 };
 
-// Offline Attendance Queue
-window.saveOfflineAttendance = function(labourId, status, date) {
+// Offline Attendance Queue (Fixed with Upsert & OT Persistence)
+window.saveOfflineAttendance = function(labourId, status, date, projectId = null, otHours = 0) {
   let queue = JSON.parse(localStorage.getItem('vc_offline_attendance') || '[]');
-  queue.push({ labourId, status, date, timestamp: Date.now() });
+  // Avoid duplicate queuing
+  queue = queue.filter(q => !(q.labourId === labourId && q.date === date));
+  queue.push({ labourId, status, date, projectId, otHours, timestamp: Date.now() });
   localStorage.setItem('vc_offline_attendance', JSON.stringify(queue));
   showNativeToast("📶 Offline: Haziri phone me save ho gayi!");
 };
@@ -307,16 +259,26 @@ window.syncOfflineData = async function() {
   let queue = JSON.parse(localStorage.getItem('vc_offline_attendance') || '[]');
   if (queue.length === 0) return;
 
-  for (const item of queue) {
-    await window.supabaseClient.from('attendance').insert([{
-      labour_id: item.labourId,
-      status: item.status,
-      date: item.date
-    }]);
-  }
+  const payload = queue.map(item => ({
+    labour_id: item.labourId,
+    project_id: item.projectId || null,
+    status: item.status,
+    ot_hours: Number(item.otHours) || 0,
+    date: item.date,
+    is_locked: false
+  }));
 
-  localStorage.removeItem('vc_offline_attendance');
-  showNativeToast("✅ Offline Haziri server par sync ho gayi!", 'success');
+  try {
+    const { error } = await window.supabaseClient.from('attendance').upsert(payload, {
+      onConflict: 'labour_id,date'
+    });
+    if (!error) {
+      localStorage.removeItem('vc_offline_attendance');
+      showNativeToast("✅ Offline Haziri server par sync ho gayi!", 'success');
+    }
+  } catch (e) {
+    console.error("Offline sync failed:", e);
+  }
 };
 
 window.addEventListener('online', window.syncOfflineData);
@@ -359,8 +321,8 @@ function calcWorkerDue(w) {
 }
 
 function getProjectDetails(db, projectId) {
-  if (!db || !db.projects) return { name: 'General Site', client: 'Client' };
-  return db.projects.find(p => p.id === projectId) || { name: 'General Site', client: 'Client' };
+  if (!db || !db.projects) return { name: 'Flat 309 (Dilshad Garden)', client: 'Sharma Ji' };
+  return db.projects.find(p => p.id === projectId) || { name: 'Flat 309 (Dilshad Garden)', client: 'Sharma Ji' };
 }
 
 function calcProjectMargin(db, projectId) {
