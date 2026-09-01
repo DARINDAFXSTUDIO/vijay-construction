@@ -51,7 +51,7 @@ window.showGlobalLoader = function(message = "Kripya intezar karein...") {
   loader.style.display = 'flex';
 
   clearTimeout(window._loaderTimeout);
-  window._loaderTimeout = setTimeout(() => window.hideGlobalLoader(), 9000);
+  window._loaderTimeout = setTimeout(() => window.hideGlobalLoader(), 8000);
 };
 
 window.hideGlobalLoader = function() {
@@ -82,7 +82,7 @@ window.hideGlobalLoader = function() {
     }
     .vj-toast-error { border-left: 4px solid #ef4444; }
     .vj-toast-success { border-left: 4px solid #10b981; }
-    .vj-toast-warning { border-left: 4px solid #f59e0b; }
+    .vj-toast-info { border-left: 4px solid #3b82f6; }
     @keyframes vjToastSlideDown {
       0% { opacity: 0; transform: translateY(-24px) scale(0.94); }
       100% { opacity: 1; transform: translateY(0) scale(1); }
@@ -110,10 +110,10 @@ function showNativeToast(message, type = 'info') {
   let typeClass = 'vj-toast-info';
   
   const msgLower = String(message).toLowerCase();
-  if (type === 'error' || msgLower.includes('galat') || msgLower.includes('invalid') || msgLower.includes('galti') || msgLower.includes('warning') || msgLower.includes('door') || msgLower.includes('pehle se') || msgLower.includes('alert')) {
+  if (type === 'error' || msgLower.includes('galat') || msgLower.includes('invalid') || msgLower.includes('error') || msgLower.includes('alert')) {
     icon = '⚠️';
     typeClass = 'vj-toast-error';
-  } else if (type === 'success' || msgLower.includes('✓') || msgLower.includes('✅') || msgLower.includes('save') || msgLower.includes('sync') || msgLower.includes('ho gaya') || msgLower.includes('locked') || msgLower.includes('settled')) {
+  } else if (type === 'success' || msgLower.includes('✓') || msgLower.includes('✅') || msgLower.includes('save') || msgLower.includes('ho gaya')) {
     icon = '✅';
     typeClass = 'vj-toast-success';
   }
@@ -132,16 +132,12 @@ function showNativeToast(message, type = 'info') {
   }, 2800);
 }
 
-window.alert = function(msg) {
-  showNativeToast(msg);
-};
+window.alert = function(msg) { showNativeToast(msg); };
 
 window.playSuccessChime = function() {
   try {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
+    if (audioCtx.state === 'suspended') audioCtx.resume();
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.type = 'sine';
@@ -153,12 +149,12 @@ window.playSuccessChime = function() {
     osc.start();
     osc.stop(audioCtx.currentTime + 0.35);
   } catch (e) {
-    console.warn("Audio Context blocked", e);
+    console.warn("Audio chime failed:", e);
   }
 };
 
 // =========================================================================
-// 🗄️ 4. SUPABASE + FIREBASE HYBRID BACKEND ENGINE
+// 🗄️ 4. BACKEND ENGINE (SUPABASE + FIREBASE HYBRID SYNC)
 // =========================================================================
 const SUPABASE_URL = 'https://lcacvkjmsmhbxipnkuvn.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_uRAQfZWY4J4pg95Yw5e9_A_DbUo7XT1';
@@ -264,7 +260,6 @@ async function getCloudMasterDB() {
 async function saveCloudMasterDB(data) {
   if (!data) return;
   localStorage.setItem(MASTER_DB_KEY, JSON.stringify(data));
-
   try {
     await fetch(PERSISTENT_DB_URL, {
       method: 'PUT',
@@ -276,44 +271,20 @@ async function saveCloudMasterDB(data) {
   }
 }
 
-// =========================================================================
-// 🔔 5. ONESIGNAL PUSH NOTIFICATIONS (SAFE RUNTIME KEY)
-// =========================================================================
-// Key split to prevent GitHub secret scanner regex triggers
-const ONESIGNAL_REST_KEY = ["os_v2_app_", "p6vk56atavc7lkvd5fqtngztx6nkibk3p45uojmwaolar3lkfyhhtk75c77yipsmxtlouhguvxekrpika5isdlevgntsbbxbe7jjy5q"].join('');
-
+// Push notifications via internal serverless route
 window.sendPushNotification = async function(title, message, targetPlayerId = null) {
-  const payload = {
-    app_id: "7faaaef8-1305-45f5-aaa3-e961369b33bf",
-    headings: { en: title },
-    contents: { en: message }
-  };
-
-  if (targetPlayerId) {
-    payload.include_player_ids = [targetPlayerId];
-  } else {
-    payload.included_segments = ["Total Subscriptions"];
-  }
-
   try {
-    const res = await fetch('https://onesignal.com/api/v1/notifications', {
+    const res = await fetch('/api/notify', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Key ${ONESIGNAL_REST_KEY}`
-      },
-      body: JSON.stringify(payload)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, message, targetPlayerId })
     });
-    const data = await res.json();
-    console.log("Push Dispatch Result:", data);
+    return await res.json();
   } catch (err) {
-    console.warn("OneSignal Dispatch Error:", err);
+    console.warn("Notification Relay Error:", err);
   }
 };
 
-// =========================================================================
-// 🔐 6. DEVICE BINDING & OFFLINE ATTENDANCE QUEUE
-// =========================================================================
 window.getDeviceToken = function() {
   let token = localStorage.getItem('vc_device_token');
   if (!token) {
@@ -323,11 +294,12 @@ window.getDeviceToken = function() {
   return token;
 };
 
+// Offline Attendance Queue
 window.saveOfflineAttendance = function(labourId, status, date) {
   let queue = JSON.parse(localStorage.getItem('vc_offline_attendance') || '[]');
   queue.push({ labourId, status, date, timestamp: Date.now() });
   localStorage.setItem('vc_offline_attendance', JSON.stringify(queue));
-  showNativeToast("📶 Internet nahi hai. Haziri phone me save ho gayi!");
+  showNativeToast("📶 Offline: Haziri phone me save ho gayi!");
 };
 
 window.syncOfflineData = async function() {
@@ -350,24 +322,19 @@ window.syncOfflineData = async function() {
 window.addEventListener('online', window.syncOfflineData);
 
 // =========================================================================
-// 📍 7. GPS HAVERSINE DISTANCE ENGINE
+// 📍 5. GPS DISTANCE & CALCULATION ENGINES
 // =========================================================================
 function calculateGPSDistanceMeters(lat1, lon1, lat2, lon2) {
   if (!lat1 || !lon1 || !lat2 || !lon2) return null;
   const R = 6371e3;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = 
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return Math.round(R * c);
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 }
 
-// =========================================================================
-// 🧮 8. LABOUR, FINANCIAL & MARGIN CALCULATIONS
-// =========================================================================
 function calcWorkerShifts(w) {
   if (!w || !w.att) return 0;
   return Object.values(w.att).reduce((acc, v) => {
@@ -399,16 +366,12 @@ function getProjectDetails(db, projectId) {
 function calcProjectMargin(db, projectId) {
   const project = (db.projects || []).find(p => p.id === projectId) || { totalValue: 0, received: 0, name: 'Site' };
   const inward = Number(project.received || 0);
-
   const siteLedger = (db.ledger || []).filter(l => l.site === projectId && l.type === 'expense');
   const materialAndDirectExp = siteLedger.reduce((sum, item) => sum + Number(item.amount || 0), 0);
-
   const siteWorkers = (db.workers || []).filter(w => w.site === projectId);
   const labourCost = siteWorkers.reduce((sum, w) => sum + (calcWorkerShifts(w) * w.rate) + calcWorkerOTPay(w), 0);
-
   const siteThekedars = (db.thekedars || []).filter(t => t.site === projectId || (t.work && t.work.includes(project.name)));
   const thekedarCost = siteThekedars.reduce((sum, t) => sum + Number(t.paid || 0), 0);
-
   const totalCost = materialAndDirectExp + labourCost + thekedarCost;
   const netProfit = inward - totalCost;
   const profitMarginPct = inward > 0 ? Math.round((netProfit / inward) * 100) : 0;
@@ -427,68 +390,47 @@ function calcProjectMargin(db, projectId) {
   };
 }
 
-// =========================================================================
-// 📦 9. SUPPLIER & THEKEDAR MB CALCULATIONS
-// =========================================================================
 function calcSupplierBalance(db, supId) {
   const sup = (db.suppliers || []).find(s => (typeof s === 'object' ? s.id : s) === supId);
   if (!sup || typeof sup !== 'object') return { totalPurchased: 0, totalPaid: 0, balanceDue: 0, billsCount: 0, paymentsCount: 0 };
-
   const bills = (db.supplierBills || []).filter(b => b.supplierId === supId);
   const payments = (db.supplierPayments || []).filter(p => p.supplierId === supId);
-
   const totalPurchased = bills.reduce((acc, b) => acc + Number(b.amount || 0), 0);
   const totalPaid = payments.reduce((acc, p) => acc + Number(p.amount || 0), 0);
-  const balanceDue = Math.max(0, totalPurchased - totalPaid);
-
-  return { totalPurchased, totalPaid, balanceDue, billsCount: bills.length, paymentsCount: payments.length };
+  return { totalPurchased, totalPaid, balanceDue: Math.max(0, totalPurchased - totalPaid), billsCount: bills.length, paymentsCount: payments.length };
 }
 
 function calcThekedarMBStats(db, thekedarId) {
   const t = (db.thekedars || []).find(x => x.id === thekedarId);
   if (!t) return { totalArea: 0, totalMBValue: 0, totalPaid: 0, netDue: 0, entriesCount: 0, mbEntries: [] };
-
   const mbEntries = (db.measurements || []).filter(m => m.thekedarId === thekedarId);
   const totalArea = mbEntries.reduce((sum, m) => sum + Number(m.totalArea || 0), 0);
   const totalMBValue = mbEntries.reduce((sum, m) => sum + Number(m.amount || 0), 0);
   const totalPaid = Number(t.paid || 0);
   const effectiveContractVal = totalMBValue > 0 ? totalMBValue : Number(t.value || 0);
-  const netDue = Math.max(0, effectiveContractVal - totalPaid);
-
-  return {
-    totalArea: Math.round(totalArea * 100) / 100,
-    totalMBValue,
-    totalPaid,
-    netDue,
-    entriesCount: mbEntries.length,
-    mbEntries
-  };
+  return { totalArea: Math.round(totalArea * 100) / 100, totalMBValue, totalPaid, netDue: Math.max(0, effectiveContractVal - totalPaid), entriesCount: mbEntries.length, mbEntries };
 }
 
 function calcClientBillingStats(db, projectId) {
   const p = (db.projects || []).find(x => x.id === projectId) || { totalValue: 0, received: 0, name: 'Site', client: 'Client' };
   const payments = (db.clientPayments || []).filter(cp => cp.projectId === projectId);
-  
   const totalReceived = payments.reduce((sum, cp) => sum + Number(cp.amount || 0), 0) || Number(p.received || 0);
   const totalContract = Number(p.totalValue || 0);
   const balanceRecovery = Math.max(0, totalContract - totalReceived);
   const collectionPct = totalContract > 0 ? Math.round((totalReceived / totalContract) * 100) : 0;
-
   return { totalContract, totalReceived, balanceRecovery, collectionPct, paymentsList: payments };
 }
 
 // =========================================================================
-// 📲 10. WHATSAPP ENGINE (PARCHAS, RECEIPTS & REMINDERS)
+// 📲 6. WHATSAPP ENGINE & CSV EXPORTERS
 // =========================================================================
 function generateWorkerWhatsAppSlip(w, siteName) {
   const shifts = calcWorkerShifts(w);
   const otPay = calcWorkerOTPay(w);
   const earned = shifts * (w.rate || 0);
   const gross = earned + otPay + (w.bakaaya || 0);
-  const advance = w.advance || 0;
-  const netPayable = Math.max(0, gross - advance);
+  const netPayable = Math.max(0, gross - (w.advance || 0));
   const dateStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-
   return encodeURIComponent(
 `*🔨 VIJAY CONSTRUCTION - HAFTAWRI SLIP*
 ---------------------------------------
@@ -500,123 +442,73 @@ function generateWorkerWhatsAppSlip(w, siteName) {
 💰 *Shift Wages:* ₹${earned.toLocaleString('en-IN')}
 ⏱️ *OT Pay:* +₹${otPay.toLocaleString('en-IN')}
 ${w.bakaaya > 0 ? `⏮️ *Pichhla Bakaaya:* +₹${w.bakaaya.toLocaleString('en-IN')}\n` : ''}💵 *Gross Total:* ₹${gross.toLocaleString('en-IN')}
-🔻 *Advance Cut (खर्ची):* -₹${advance.toLocaleString('en-IN')}
+🔻 *Advance Cut (खर्ची):* -₹${(w.advance || 0).toLocaleString('en-IN')}
 ---------------------------------------
 🟢 *SATURDAY NET PAYABLE: ₹${netPayable.toLocaleString('en-IN')}*
 ---------------------------------------
-_Verified & Approved by: Vijay Sir_`
+_Verified by Vijay Sir_`
   );
 }
 
 function generateSupplierWhatsAppSlip(sup, db) {
   const fin = calcSupplierBalance(db, sup.id);
   const dateStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-
   return encodeURIComponent(
 `*📦 VIJAY CONSTRUCTION - SUPPLIER KHATA*
 ---------------------------------------
 🏬 *Supplier:* ${sup.name}
-📂 *Category:* ${sup.category || 'Building Material'}
 📅 *Statement Date:* ${dateStr}
 ---------------------------------------
 🛒 *Total Purchases Logged:* ₹${fin.totalPurchased.toLocaleString('en-IN')} (${fin.billsCount} Bills)
 💳 *Total Payment Released:* ₹${fin.totalPaid.toLocaleString('en-IN')} (${fin.paymentsCount} Txns)
 ---------------------------------------
-🔴 *NET OUTSTANDING DUE (बाकी): ₹${fin.balanceDue.toLocaleString('en-IN')}*
----------------------------------------
-_Account Managed by: Vijay Sir • Dilshad Garden, Delhi_`
+🔴 *NET OUTSTANDING DUE (बाकी): ₹${fin.balanceDue.toLocaleString('en-IN')}*`
   );
 }
 
 function generateThekedarMBWhatsAppSlip(t, db) {
   const stats = calcThekedarMBStats(db, t.id);
   const siteName = getProjectDetails(db, t.site).name;
-  const dateStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-
-  let itemsListText = '';
-  stats.mbEntries.forEach((m, idx) => {
-    itemsListText += `${idx + 1}. *${m.location}*\n   📏 ${m.length} × ${m.width} = *${m.totalArea} ${m.unit}* @ ₹${m.rate} = *₹${m.amount.toLocaleString('en-IN')}*\n`;
-  });
-
-  if (!itemsListText) {
-    itemsListText = `1. *${t.work}* (Lump Sum Contract)\n   💵 Contract Value: ₹${t.value.toLocaleString('en-IN')}\n`;
-  }
-
   return encodeURIComponent(
 `*📐 VIJAY CONSTRUCTION - THEKEDAR MB BILL*
 ---------------------------------------
 👤 *Thekedar:* ${t.name}
 🔨 *Work:* ${t.work}
 📍 *Site:* ${siteName}
-📅 *Date:* ${dateStr}
----------------------------------------
-*MEASUREMENT DETAILS (नाप-तोल हिसाब):*
-${itemsListText}---------------------------------------
 📐 *Total Measured Area:* ${stats.totalArea} Sq.Ft
 💰 *Total Work Value:* ₹${(stats.totalMBValue || t.value).toLocaleString('en-IN')}
 🔻 *Total Paid So Far:* -₹${stats.totalPaid.toLocaleString('en-IN')}
 ---------------------------------------
-🟢 *NET PAYABLE BALANCE (बाकी): ₹${stats.netDue.toLocaleString('en-IN')}*
----------------------------------------
-_Verified & Certified by: Vijay Sir_`
+🟢 *NET PAYABLE BALANCE (बाकी): ₹${stats.netDue.toLocaleString('en-IN')}*`
   );
 }
 
 function generateClientWhatsAppReceipt(p, latestPayment, db) {
   const stats = calcClientBillingStats(db, p.id);
-  const dateStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-
   return encodeURIComponent(
-`*🧾 VIJAY CONSTRUCTION - OFFICIAL PAYMENT RECEIPT*
+`*🧾 VIJAY CONSTRUCTION - OFFICIAL RECEIPT*
 ---------------------------------------
 👤 *Client Name:* ${p.client}
 📍 *Project / Site:* ${p.name}
-📅 *Receipt Date:* ${dateStr}
----------------------------------------
 💵 *Amount Received:* ₹${Number(latestPayment.amount).toLocaleString('en-IN')}
-💳 *Payment Mode:* ${latestPayment.mode || 'Online Transfer'}
-📌 *Stage / Milestone:* ${latestPayment.milestone || 'Project Installment'}
-${latestPayment.note ? `📝 *Note:* ${latestPayment.note}\n` : ''}---------------------------------------
-📊 *CONTRACT ACCOUNT SUMMARY:*
-• *Total Project Value:* ₹${stats.totalContract.toLocaleString('en-IN')}
-• *Total Received to Date:* ₹${stats.totalReceived.toLocaleString('en-IN')} (${stats.collectionPct}%)
-🟢 *OUTSTANDING BALANCE (बाकी): ₹${stats.balanceRecovery.toLocaleString('en-IN')}*
----------------------------------------
-_Thank you for your business!_
-*VIJAY CONSTRUCTION*
-📞 Phone: +91 9268880221 | Dilshad Garden, Delhi`
+💳 *Payment Mode:* ${latestPayment.mode || 'Online'}
+📊 *Contract Total:* ₹${stats.totalContract.toLocaleString('en-IN')}
+🟢 *BALANCE DUE (बाकी): ₹${stats.balanceRecovery.toLocaleString('en-IN')}*`
   );
 }
 
 function generateClientPaymentReminder(p, db) {
   const stats = calcClientBillingStats(db, p.id);
-  const nextMilestone = (p.milestones || []).find(m => m.status === 'Pending') || { name: 'Next Work Stage', targetAmt: stats.balanceRecovery };
-
   return encodeURIComponent(
-`*🏗️ VIJAY CONSTRUCTION - PAYMENT INTIMATION*
+`*🏗️ VIJAY CONSTRUCTION - INTIMATION*
 ---------------------------------------
 Namaste ${p.client} Ji,
-
-Aapke project (*${p.name}*) par *${p.phase || 'running work stage'}* ka kaam schedule ke mutabiq chal raha hai.
-
-📌 *Upcoming Milestone:* ${nextMilestone.name}
-💰 *Installment Due:* ₹${Number(nextMilestone.targetAmt || stats.balanceRecovery).toLocaleString('en-IN')}
-📊 *Total Outstanding Balance:* ₹${stats.balanceRecovery.toLocaleString('en-IN')}
-
-Kripya agla installment release karne ki kripa karein taaki material aur field operations smoothly continue rahein.
-
-*Bank / UPI Details:*
-📱 GooglePay / PhonePe: *9268880221*
-
-_Regards,_
-*Vijay Sir*
-VIJAY CONSTRUCTION`
+Aapke project (*${p.name}*) par kaam chal raha hai.
+📊 *Outstanding Balance:* ₹${stats.balanceRecovery.toLocaleString('en-IN')}
+Kripya agla installment release karein taaki operations continue rahein.`
   );
 }
 
-// =========================================================================
-// 📊 11. 1-CLICK EXCEL / CSV BACKUP DOWNLOAD EXPORTERS
-// =========================================================================
 function downloadCSVFile(csvContent, filename) {
   const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
@@ -631,55 +523,55 @@ function downloadCSVFile(csvContent, filename) {
 function exportLabourReportCSV(db) {
   const workers = db.workers || [];
   const dateStr = new Date().toISOString().slice(0, 10);
-  let csv = "VIJAY CONSTRUCTION - LABOUR MUSTER & WAGE REPORT\nGenerated Date," + dateStr + "\n\nWorker ID,Name,Role,Assigned Site,Daily Rate,Shifts,OT Pay,Gross,Advance Cut,Saturday Net Due,Phone\n";
+  let csv = "VIJAY CONSTRUCTION - LABOUR MUSTER REPORT\nGenerated Date," + dateStr + "\n\nID,Name,Role,Site,Rate,Shifts,OT Pay,Gross,Advance,Net Due,Phone\n";
   workers.forEach(w => {
     const site = getProjectDetails(db, w.site).name.replace(/,/g, ' ');
     csv += `"${w.id}","${w.name}","${w.role}","${site}",${w.rate},${calcWorkerShifts(w)},${calcWorkerOTPay(w)},${(calcWorkerShifts(w)*w.rate)+calcWorkerOTPay(w)},${w.advance || 0},${calcWorkerDue(w)},"${w.phone}"\n`;
   });
-  downloadCSVFile(csv, `Vijay_Construction_Labour_${dateStr}.csv`);
+  downloadCSVFile(csv, `Labour_Report_${dateStr}.csv`);
 }
 
 function exportThekedarMBReportCSV(db) {
   const list = db.measurements || [];
   const dateStr = new Date().toISOString().slice(0, 10);
-  let csv = "VIJAY CONSTRUCTION - THEKEDAR MB REPORT\nGenerated Date," + dateStr + "\n\nID,Thekedar,Site,Location,Length,Width,Unit,Total Area,Rate,Amount,Date\n";
+  let csv = "VIJAY CONSTRUCTION - MB REPORT\nGenerated Date," + dateStr + "\n\nID,Thekedar,Site,Location,Length,Width,Unit,Area,Rate,Amount,Date\n";
   list.forEach(m => {
     const thek = (db.thekedars || []).find(t => t.id === m.thekedarId) || { name: 'Thekedar' };
     csv += `"${m.id}","${thek.name}","${getProjectDetails(db, m.siteId).name.replace(/,/g, ' ')}","${m.location.replace(/,/g, ' ')}",${m.length},${m.width},"${m.unit}",${m.totalArea},${m.rate},${m.amount},"${m.date}"\n`;
   });
-  downloadCSVFile(csv, `Vijay_Construction_MB_${dateStr}.csv`);
+  downloadCSVFile(csv, `MB_Report_${dateStr}.csv`);
 }
 
 function exportSupplierReportCSV(db) {
   const suppliers = db.suppliers || [];
   const dateStr = new Date().toISOString().slice(0, 10);
-  let csv = "VIJAY CONSTRUCTION - SUPPLIER & VENDOR KHATA\nGenerated Date," + dateStr + "\n\nID,Supplier Name,Category,Mobile,Total Purchased,Total Paid,Balance Due\n";
+  let csv = "VIJAY CONSTRUCTION - SUPPLIER KHATA\nGenerated Date," + dateStr + "\n\nID,Supplier,Category,Phone,Purchased,Paid,Balance Due\n";
   suppliers.forEach(s => {
     const supObj = typeof s === 'object' ? s : { id: s, name: s, phone: '', category: 'General' };
     const fin = calcSupplierBalance(db, supObj.id);
     csv += `"${supObj.id}","${supObj.name}","${supObj.category}","${supObj.phone}",${fin.totalPurchased},${fin.totalPaid},${fin.balanceDue}\n`;
   });
-  downloadCSVFile(csv, `Vijay_Construction_Suppliers_${dateStr}.csv`);
+  downloadCSVFile(csv, `Suppliers_${dateStr}.csv`);
 }
 
 function exportClientBillingReportCSV(db) {
   const projects = db.projects || [];
   const dateStr = new Date().toISOString().slice(0, 10);
-  let csv = "VIJAY CONSTRUCTION - CLIENT BILLING & RECOVERY\nGenerated Date," + dateStr + "\n\nID,Client,Site,Mobile,Contract Value,Total Received,Balance Recovery,Collection Pct,Phase\n";
+  let csv = "VIJAY CONSTRUCTION - CLIENT BILLING\nGenerated Date," + dateStr + "\n\nID,Client,Site,Phone,Contract Value,Received,Due,Collection Pct\n";
   projects.forEach(p => {
     const stats = calcClientBillingStats(db, p.id);
-    csv += `"${p.id}","${p.client}","${p.name}","${p.phone || ''}",${stats.totalContract},${stats.totalReceived},${stats.balanceRecovery},${stats.collectionPct}%,"${p.phase || 'Ongoing'}"\n`;
+    csv += `"${p.id}","${p.client}","${p.name}","${p.phone || ''}",${stats.totalContract},${stats.totalReceived},${stats.balanceRecovery},${stats.collectionPct}%\n`;
   });
-  downloadCSVFile(csv, `Vijay_Construction_Clients_${dateStr}.csv`);
+  downloadCSVFile(csv, `Clients_${dateStr}.csv`);
 }
 
 function exportProjectMarginsCSV(db) {
   const projects = db.projects || [];
   const dateStr = new Date().toISOString().slice(0, 10);
-  let csv = "VIJAY CONSTRUCTION - PROJECT MARGINS SUMMARY\nGenerated Date," + dateStr + "\n\nID,Client,Site,Contract Value,Inward Received,Total Cost,Net Profit,Margin Pct\n";
+  let csv = "VIJAY CONSTRUCTION - MARGINS\nGenerated Date," + dateStr + "\n\nID,Client,Site,Contract,Received,Total Cost,Profit,Margin Pct\n";
   projects.forEach(p => {
     const fin = calcProjectMargin(db, p.id);
     csv += `"${p.id}","${p.client}","${p.name}",${fin.contractValue},${fin.inwardReceived},${fin.totalCost},${fin.netProfit},${fin.profitMarginPct}%\n`;
   });
-  downloadCSVFile(csv, `Vijay_Construction_Margins_${dateStr}.csv`);
+  downloadCSVFile(csv, `Margins_${dateStr}.csv`);
 }

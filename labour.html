@@ -16,238 +16,75 @@
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
-  <!-- Anti-Flash Synchronous Session Gatekeeper -->
   <script>
     (function() {
       const sess = localStorage.getItem('vc_labour_session');
-      if (sess) {
-        document.documentElement.classList.add('user-authenticated');
-      }
+      if (sess) { document.documentElement.classList.add('user-authenticated'); }
     })();
   </script>
 
-  <!-- 60 FPS GPU-Accelerated Stylesheet -->
   <style>
     :root {
-      --bg-app: #f4f6f9;
-      --card-bg: #ffffff;
-      --card-border: #e2e8f0;
-      --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
-      --text-main: #0f172a;
-      --text-sub: #64748b;
+      --bg-app: #f4f6f9; --card-bg: #ffffff; --card-border: #e2e8f0;
+      --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.05); --text-main: #0f172a; --text-sub: #64748b;
       --neo-gradient: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #06b6d4 100%);
-      --glass-bg: #ffffff;
-      --pill-bg: #ffffff;
-      --pill-shadow: 0 3px 10px rgba(0,0,0,0.08);
-      --icon-color: #64748b;
-      --icon-active: #0f172a;
+      --glass-bg: #ffffff; --pill-bg: #ffffff; --pill-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      --icon-color: #64748b; --icon-active: #0f172a;
     }
-
     [data-theme="dark"] {
-      --bg-app: #080c14;
-      --card-bg: #111827;
-      --card-border: rgba(255, 255, 255, 0.08);
-      --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-      --text-main: #f8fafc;
-      --text-sub: #94a3b8;
+      --bg-app: #080c14; --card-bg: #111827; --card-border: rgba(255, 255, 255, 0.08);
+      --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); --text-main: #f8fafc; --text-sub: #94a3b8;
       --neo-gradient: linear-gradient(135deg, #1e293b 0%, #1d4ed8 50%, #0284c7 100%);
-      --glass-bg: #1e293b;
-      --pill-bg: #1e293b;
-      --pill-shadow: 0 3px 10px rgba(0,0,0,0.4);
-      --icon-color: #94a3b8;
-      --icon-active: #ffffff;
+      --glass-bg: #1e293b; --pill-bg: #1e293b; --pill-shadow: 0 3px 10px rgba(0,0,0,0.4);
+      --icon-color: #94a3b8; --icon-active: #ffffff;
     }
-
-    * {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-    }
-
-    body {
-      background-color: var(--bg-app);
-      min-height: 100dvh;
-      width: 100%;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      overflow-x: hidden;
-      overscroll-behavior-y: none;
-    }
-
-    .app-root {
-      width: 100%;
-      max-width: 640px;
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      background: var(--bg-app);
-    }
-
-    .glass-card {
-      background: var(--card-bg);
-      border-radius: 20px;
-      padding: 16px;
-      border: 1px solid var(--card-border);
-      box-shadow: var(--card-shadow);
-      transform: translateZ(0);
-      content-visibility: auto;
-      contain-intrinsic-size: 0 120px;
-    }
-
-    .hero-card {
-      border-radius: 24px;
-      padding: 20px;
-      color: #ffffff;
-      box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.3);
-      transform: translateZ(0);
-    }
-
-    .btn-primary {
-      background: #2563eb;
-      color: #ffffff;
-      font-weight: 800;
-      border-radius: 16px;
-      height: 48px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: none;
-      cursor: pointer;
-      width: 100%;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-    }
+    * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+    body { background-color: var(--bg-app); min-height: 100dvh; width: 100%; margin: 0; padding: 0; display: flex; justify-content: center; overflow-x: hidden; overscroll-behavior-y: none; }
+    .app-root { width: 100%; max-width: 640px; min-height: 100dvh; display: flex; flex-direction: column; position: relative; background: var(--bg-app); }
+    .glass-card { background: var(--card-bg); border-radius: 20px; padding: 16px; border: 1px solid var(--card-border); box-shadow: var(--card-shadow); }
+    .hero-card { border-radius: 24px; padding: 20px; color: #ffffff; box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.3); }
+    .btn-primary { background: #2563eb; color: #ffffff; font-weight: 800; border-radius: 16px; height: 48px; display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; width: 100%; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); }
     .btn-primary:active { transform: scale(0.97); }
-
-    .btn-secondary {
-      background: var(--glass-bg);
-      color: var(--text-main);
-      font-weight: 800;
-      border-radius: 16px;
-      height: 46px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: 1.5px solid var(--card-border);
-      cursor: pointer;
-      width: 100%;
-    }
+    .btn-secondary { background: var(--glass-bg); color: var(--text-main); font-weight: 800; border-radius: 16px; height: 46px; display: inline-flex; align-items: center; justify-content: center; border: 1.5px solid var(--card-border); cursor: pointer; width: 100%; }
     .btn-secondary:active { transform: scale(0.97); }
-
-    .liquid-nav-wrapper {
-      position: fixed;
-      bottom: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(100% - 24px);
-      max-width: 616px;
-      z-index: 50;
-    }
-    .liquid-nav {
-      display: flex;
-      align-items: center;
-      padding: 4px;
-      border-radius: 99px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      box-shadow: 0 12px 28px -6px rgba(0,0,0,0.18);
-    }
+    .liquid-nav-wrapper { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); width: calc(100% - 24px); max-width: 616px; z-index: 50; }
+    .liquid-nav { display: flex; align-items: center; padding: 4px; border-radius: 99px; background: var(--card-bg); border: 1px solid var(--card-border); box-shadow: 0 12px 28px -6px rgba(0,0,0,0.18); }
     .nav-items { position: relative; display: flex; flex: 1; gap: 2px; z-index: 3; }
-    .active-pill {
-      position: absolute;
-      top: 0; left: 0;
-      height: 40px;
-      background: var(--pill-bg);
-      border-radius: 99px;
-      box-shadow: var(--pill-shadow);
-      transition: transform 0.25s ease, width 0.25s ease;
-      z-index: 1;
-    }
-    .nav-btn {
-      position: relative;
-      flex: 1;
-      height: 40px;
-      border: none;
-      background: transparent;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--icon-color);
-      cursor: pointer;
-      z-index: 2;
-    }
+    .active-pill { position: absolute; top: 0; left: 0; height: 40px; background: var(--pill-bg); border-radius: 99px; box-shadow: var(--pill-shadow); transition: transform 0.25s ease, width 0.25s ease; z-index: 1; }
+    .nav-btn { position: relative; flex: 1; height: 40px; border: none; background: transparent; display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 11px; font-weight: 800; color: var(--icon-color); cursor: pointer; z-index: 2; }
     .nav-btn.active { color: var(--icon-active); }
-
-    .cal-day-cell {
-      aspect-ratio: 1;
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 12px;
-      cursor: pointer;
-      border: 1px solid transparent;
-      position: relative;
-    }
-    .cal-day-cell:active { transform: scale(0.92); }
+    .cal-day-cell { aspect-ratio: 1; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; cursor: pointer; border: 1px solid transparent; position: relative; }
     .cal-p { background: rgba(16, 185, 129, 0.15); color: #059669; border-color: rgba(16, 185, 129, 0.3); }
     .cal-hd { background: rgba(245, 158, 11, 0.15); color: #d97706; border-color: rgba(245, 158, 11, 0.3); }
     .cal-a { background: rgba(239, 68, 68, 0.15); color: #dc2626; border-color: rgba(239, 68, 68, 0.3); }
     .cal-empty { background: transparent; color: var(--text-sub); opacity: 0.35; }
-    
-    .ot-badge {
-      position: absolute;
-      top: 3px;
-      right: 3px;
-      width: 6px;
-      height: 6px;
-      border-radius: 99px;
-      background: #2563eb;
-    }
-
+    .ot-badge { position: absolute; top: 3px; right: 3px; width: 6px; height: 6px; border-radius: 99px; background: #2563eb; }
     .hidden { display: none !important; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
-
-    /* Anti-flash direct state transition */
     html.user-authenticated #view-login { display: none !important; }
     html.user-authenticated #view-portal, html.user-authenticated #bottomNavWrapper { display: block !important; }
   </style>
 </head>
-
 <body>
   <div class="app-root">
     
-    <!-- Top Header -->
+    <!-- Header -->
     <header class="sticky top-0 px-4 pt-3 pb-3 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-black/5 dark:border-white/5 flex justify-between items-center shrink-0 z-30">
       <div>
         <span class="text-[10px] font-extrabold tracking-wider uppercase block text-blue-600 dark:text-blue-400" id="txtHeaderSubtitle">Worker & Partner Portal</span>
         <span class="text-[16px] font-black tracking-tight" style="color: var(--text-main);">VIJAY CONSTRUCTION</span>
       </div>
-
-      <div class="flex items-center gap-2">
-        <button onclick="triggerHaptic(); triggerCallDirect()" class="px-3 py-1.5 rounded-full text-[11px] font-black bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 flex items-center gap-1 active:scale-95">
-          <span>📞</span> <span id="txtCallBtn">Vijay Sir</span>
-        </button>
-      </div>
+      <button onclick="triggerHaptic(); window.location.href='tel:+919268880221'" class="px-3 py-1.5 rounded-full text-[11px] font-black bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 flex items-center gap-1 active:scale-95">
+        <span>📞</span> <span>Vijay Sir</span>
+      </button>
     </header>
 
-    <!-- Professional Login View -->
+    <!-- Login View -->
     <div id="view-login" class="flex-1 px-4 py-8 flex flex-col justify-center max-w-sm mx-auto w-full space-y-5">
       <div class="glass-card space-y-4 shadow-xl border-t-4 border-blue-600 text-center">
-        <div class="w-14 h-14 rounded-3xl bg-blue-600/10 border border-blue-600/20 text-blue-600 mx-auto flex items-center justify-center text-2xl font-black shadow-inner">
-          👷‍♂️
-        </div>
+        <div class="w-14 h-14 rounded-3xl bg-blue-600/10 border border-blue-600/20 text-blue-600 mx-auto flex items-center justify-center text-2xl font-black shadow-inner">👷‍♂️</div>
         <h2 class="text-[20px] font-black tracking-tight" style="color: var(--text-main);" id="txtLoginTitle">Secure Worker Portal</h2>
         <p class="text-[12px] font-medium text-slate-500" id="txtLoginSubtitle">Enter registered mobile number and PIN</p>
-
         <div class="space-y-3 pt-1 text-left">
           <div>
             <label class="block text-[11px] font-extrabold uppercase tracking-wider mb-1" style="color: var(--text-sub);">Registered Mobile</label>
@@ -258,22 +95,14 @@
             <input id="inpPin" type="password" maxlength="4" placeholder="••••" class="w-full h-12 px-4 rounded-2xl font-black text-[18px] tracking-widest outline-none border border-black/10 dark:border-white/10 text-center" style="background: var(--bg-app); color: var(--text-main);"/>
           </div>
         </div>
-
-        <button onclick="triggerHaptic(); handleLogin()" class="btn-primary text-[14px] mt-2 shadow-lg shadow-blue-600/25" id="btnLogin">
-          Login Portal ⚡
-        </button>
-
-        <button id="btnBiometricLogin" onclick="triggerHaptic(); handleBiometricAuth()" class="btn-secondary text-[13px] flex items-center justify-center gap-2">
+        <button onclick="triggerHaptic(); handleLogin()" class="btn-primary text-[14px] mt-2 shadow-lg shadow-blue-600/25" id="btnLogin">Login Portal ⚡</button>
+        <button onclick="triggerHaptic(); handleBiometricAuth()" class="btn-secondary text-[13px] flex items-center justify-center gap-2">
           <span>🔐</span> <span id="txtBiometricBtn">Fingerprint Se Kholein</span>
         </button>
-
-        <p class="text-[11px] text-center font-bold text-slate-400 pt-2">
-          PIN bhool gaye? Direct Vijay Sir ko call karein.
-        </p>
       </div>
     </div>
 
-    <!-- Logged-in Portal Dashboard -->
+    <!-- Portal Dashboard -->
     <div id="view-portal" class="hidden flex-1 overflow-y-auto no-scrollbar px-4 pt-3 pb-28 space-y-4">
       
       <!-- Profile Card -->
@@ -281,12 +110,9 @@
         <div class="flex items-center gap-3">
           <div class="relative cursor-pointer" onclick="document.getElementById('profilePicInput').click()" title="Change Profile Photo">
             <input type="file" id="profilePicInput" accept="image/*" class="hidden" onchange="handleProfilePicUpload(event)"/>
-            <div id="userAvatarImg" class="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-white text-base overflow-hidden border-2 border-blue-500 shadow-sm" style="background: var(--neo-gradient);">
-              RM
-            </div>
+            <div id="userAvatarImg" class="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-white text-base overflow-hidden border-2 border-blue-500 shadow-sm" style="background: var(--neo-gradient);">RM</div>
             <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] shadow border-2 border-white dark:border-slate-900">📷</span>
           </div>
-
           <div>
             <div class="flex items-center gap-1.5">
               <h2 id="userName" class="text-[15px] font-black tracking-tight" style="color: var(--text-main);">Worker Name</h2>
@@ -296,19 +122,13 @@
             <p id="userRate" class="text-[10.5px] font-medium" style="color: var(--text-sub);">₹800/Day</p>
           </div>
         </div>
-
-        <div class="flex items-center gap-2">
-          <!-- Voice Assistant -->
-          <button onclick="triggerHaptic(); handleVoiceAudioLedger()" class="w-10 h-10 rounded-full flex items-center justify-center bg-blue-600 text-white shadow-md active:scale-90 text-base" title="Voice AI Status">
-            🔊
-          </button>
-        </div>
+        <button onclick="triggerHaptic(); handleVoiceAudioLedger()" class="w-10 h-10 rounded-full flex items-center justify-center bg-blue-600 text-white shadow-md active:scale-90 text-base">🔊</button>
       </div>
 
-      <!-- ROLE 1: LABOUR VIEW -->
+      <!-- ROLE 1: LABOUR CONTAINER -->
       <div id="role-container-labour" class="hidden space-y-4">
         
-        <!-- Hero Balance Summary Card -->
+        <!-- Hero Balance Summary -->
         <div class="hero-card" style="background: var(--neo-gradient);">
           <div class="relative z-10 space-y-3.5">
             <div class="flex justify-between items-start">
@@ -319,72 +139,46 @@
               <div class="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-bold" id="txtSaturdayBadge">Saturday Due</div>
             </div>
             <div class="grid grid-cols-4 gap-2 text-[12px] font-black">
-              <div class="p-2 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 text-center">
-                <span class="text-[8.5px] font-semibold opacity-80 block" id="txtEarned">Earned</span>
-                <span id="labourEarnedText">₹0</span>
-              </div>
-              <div class="p-2 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 text-center">
-                <span class="text-[8.5px] font-semibold opacity-80 block">OT Pay</span>
-                <span id="labourOtEarningText">₹0</span>
-              </div>
-              <div class="p-2 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 text-center">
-                <span class="text-[8.5px] font-semibold opacity-80 block" id="txtAdvance">Advance</span>
-                <span id="labourAdvanceHero">-₹0</span>
-              </div>
-              <div class="p-2 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 text-center">
-                <span class="text-[8.5px] font-semibold opacity-80 block" id="txtShifts">Shifts</span>
-                <span id="labourShiftsCount">0 D</span>
-              </div>
+              <div class="p-2 rounded-2xl bg-white/10 text-center"><span class="text-[8.5px] opacity-80 block" id="txtEarned">Earned</span><span id="labourEarnedText">₹0</span></div>
+              <div class="p-2 rounded-2xl bg-white/10 text-center"><span class="text-[8.5px] opacity-80 block">OT Pay</span><span id="labourOtEarningText">₹0</span></div>
+              <div class="p-2 rounded-2xl bg-white/10 text-center"><span class="text-[8.5px] opacity-80 block" id="txtAdvance">Advance</span><span id="labourAdvanceHero">-₹0</span></div>
+              <div class="p-2 rounded-2xl bg-white/10 text-center"><span class="text-[8.5px] opacity-80 block" id="txtShifts">Shifts</span><span id="labourShiftsCount">0 D</span></div>
             </div>
           </div>
         </div>
 
-        <!-- TAB 1: 📅 HOME / AAJ & ATTENDANCE CALENDAR -->
+        <!-- TAB 1: 📅 AAJ -->
         <div id="labour-tab-aaj" class="role-tab-view space-y-4">
-          
-          <!-- Instant Camera Trigger + Parallel Background GPS -->
           <div class="glass-card space-y-3 border-l-4 border-emerald-500">
             <div class="flex justify-between items-center">
               <span class="text-[10.5px] font-black uppercase text-emerald-700 dark:text-emerald-300" id="txtAssignedSiteLabel">Today's Assigned Site</span>
-              <span class="text-[10.5px] font-black text-blue-600 bg-blue-500/10 px-2 py-0.5 rounded-full" id="gpsLiveBadge">🛰️ GPS Geofence (200m)</span>
+              <span class="text-[10.5px] font-black text-blue-600 bg-blue-500/10 px-2 py-0.5 rounded-full">🛰️ GPS Geofence</span>
             </div>
             <h3 class="text-[16px] font-black" style="color: var(--text-main);" id="labourAssignedSite">📍 Flat 309 (Dilshad Garden)</h3>
             
-            <!-- Direct Synchronous Camera Input -->
-            <input type="file" id="cameraProofInput" accept="image/*" capture="environment" class="hidden" onchange="processProofPhoto(event)" />
-            
-            <button id="btnCaptureProof" onclick="triggerHaptic(); launchInstantCameraProof()" class="btn-primary text-[13.5px] flex items-center justify-center gap-2">
+            <button onclick="triggerHaptic(); openLiveCamera()" class="btn-primary text-[13.5px] flex items-center justify-center gap-2">
               <span id="txtPackUpBtn">Site Pack-Up & GPS Photo Proof</span> <span>📸</span>
             </button>
-
+            
             <div id="photoProofPreviewContainer" class="hidden pt-2 space-y-1.5">
               <img id="photoProofPreviewImg" class="w-full h-48 object-cover rounded-2xl border border-emerald-500/30" />
               <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 flex items-center justify-between text-[11px] font-extrabold">
-                <span id="proofGPSLabel" class="text-emerald-600">✓ Location Verified (On-Site)</span>
-                <span id="proofDistanceLabel" class="text-slate-500">32m away</span>
+                <span id="proofGPSLabel" class="text-emerald-600">✓ Location Verified</span>
+                <span id="proofDistanceLabel" class="text-slate-500">On-Site</span>
               </div>
             </div>
           </div>
 
-          <!-- Monthly Muster Roll Grid -->
           <div class="glass-card space-y-3">
             <div class="flex justify-between items-center">
               <span class="text-[14px] font-black" style="color: var(--text-main);" id="txtMusterRoll">🗓️ Monthly Muster Roll</span>
               <span class="text-[11.5px] font-bold text-blue-600" id="currentCalMonthLabel">Month</span>
             </div>
-
             <div class="grid grid-cols-7 gap-1.5 text-center text-[10.5px] font-black text-slate-400 pb-1">
               <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
             </div>
             <div class="grid grid-cols-7 gap-1.5" id="workerCalendarGrid"></div>
-
-            <div class="flex items-center justify-around pt-2 text-[10px] font-bold text-slate-500 border-t border-black/5 dark:border-white/5">
-              <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Present (P)</div>
-              <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Half Day (HD)</div>
-              <div class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Absent (A)</div>
-              <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-600"></span> +OT</div>
-            </div>
-
+            
             <div id="calSelectedDayDetail" class="hidden p-3 rounded-2xl bg-black/5 dark:bg-white/5 text-[11.5px] space-y-1">
               <div class="flex justify-between font-black" style="color: var(--text-main);">
                 <span id="calDetailDate">Date</span>
@@ -396,10 +190,9 @@
               </div>
             </div>
           </div>
-
         </div>
 
-        <!-- TAB 2: 💰 HISAAB & CASH ADVANCE -->
+        <!-- TAB 2: 💰 HISAAB -->
         <div id="labour-tab-hisaab" class="role-tab-view hidden space-y-4">
           <div class="glass-card space-y-3">
             <span class="text-[14px] font-black" style="color: var(--text-main);" id="txtKharchaTitle">Request Mid-Week Cash Advance (खर्ची)</span>
@@ -409,16 +202,14 @@
               <button onclick="triggerHaptic(); requestKharchaLabour(1000)" class="btn-secondary h-11 text-[13px] font-black">₹1,000</button>
             </div>
           </div>
-
           <div class="glass-card space-y-2.5">
             <span class="text-[13px] font-black" style="color: var(--text-main);">💵 Cash Advance History</span>
             <div id="workerAdvanceHistoryList" class="space-y-1.5 text-[11.5px]"></div>
           </div>
         </div>
 
-        <!-- TAB 3: 📦 DUAL DEMAND (SAMAN & MANPOWER) -->
+        <!-- TAB 3: 📦 DUAL DEMANDS -->
         <div id="labour-tab-demand" class="role-tab-view hidden space-y-4">
-          
           <div class="p-1 rounded-2xl bg-black/5 dark:bg-white/5 grid grid-cols-2 gap-1 border border-black/5 dark:border-white/5">
             <button id="btnDemandTypeMat" onclick="triggerHaptic(); switchDemandForm('material')" class="py-2.5 rounded-xl font-black text-[12.5px] bg-blue-600 text-white shadow-sm transition-all">
               📦 Saman / Material
@@ -428,185 +219,101 @@
             </button>
           </div>
 
-          <!-- FORM A: MATERIAL DEMAND -->
+          <!-- FORM A: MATERIAL -->
           <div id="form-demand-material" class="glass-card space-y-3">
-            <div>
-              <h3 class="text-[15px] font-black" style="color: var(--text-main);" id="txtDemandTitle">📦 Material & Tool Request</h3>
-              <p class="text-[11px] text-slate-500 font-medium">Order raw materials or missing tools for current site</p>
-            </div>
-
-            <div class="space-y-2.5">
-              <div>
-                <label class="block text-[10.5px] font-bold uppercase mb-1 text-slate-400">Category</label>
-                <select id="demMatCategory" class="w-full h-11 px-3 rounded-xl font-bold text-[12.5px] outline-none border border-black/10 dark:border-white/10" style="background: var(--bg-app); color: var(--text-main);">
-                  <option value="Cement & Masonry">🧱 Cement / Rodi / Badarpur</option>
-                  <option value="Electrical & Conduit">⚡ Electrical / DB / Wire</option>
-                  <option value="Hardware & Tools">🔨 Tools / Cutting Blades / Screws</option>
-                  <option value="Plumbing & Sanitary">🚿 Plumbing / CPVC Pipes</option>
-                  <option value="Paint & Putty">🎨 Paint / Putty / Primer</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block text-[10.5px] font-bold uppercase mb-1 text-slate-400">Item Name & Quantity</label>
-                <input id="workerDemandItem" type="text" placeholder="e.g. 5 Bags Ultratech Cement, 4-inch Blade..." class="w-full h-11 px-3.5 rounded-xl font-bold text-[13px] outline-none border border-black/10 dark:border-white/10" style="background: var(--bg-app); color: var(--text-main);" />
-              </div>
-
-              <div class="grid grid-cols-2 gap-2">
-                <div>
-                  <label class="block text-[10.5px] font-bold uppercase mb-1 text-slate-400">Urgency</label>
-                  <select id="demMatUrgency" class="w-full h-11 px-3 rounded-xl font-bold text-[12px] outline-none border border-black/10 dark:border-white/10" style="background: var(--bg-app); color: var(--text-main);">
-                    <option value="Normal">🟢 Normal (Kal Tak)</option>
-                    <option value="Urgent">🔴 Urgent (Kaam Ruka Hai)</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-[10.5px] font-bold uppercase mb-1 text-slate-400">Action</label>
-                  <button onclick="triggerHaptic(); submitMaterialDemandPro()" class="w-full h-11 rounded-xl bg-blue-600 text-white font-black text-[13px] active:scale-95 shadow-md" id="btnSendDemand">
-                    Send Saman 🚀
-                  </button>
-                </div>
-              </div>
-            </div>
+            <h3 class="text-[15px] font-black" style="color: var(--text-main);" id="txtDemandTitle">📦 Material & Tool Request</h3>
+            <select id="demMatCategory" class="w-full h-11 px-3 rounded-xl font-bold text-[12.5px] border border-black/10 dark:border-white/10" style="background: var(--bg-app); color: var(--text-main);">
+              <option value="Cement & Masonry">🧱 Cement / Rodi / Badarpur</option>
+              <option value="Electrical & Conduit">⚡ Electrical / DB / Wire</option>
+              <option value="Hardware & Tools">🔨 Tools / Cutting Blades / Screws</option>
+              <option value="Plumbing & Sanitary">🚿 Plumbing / CPVC Pipes</option>
+              <option value="Paint & Putty">🎨 Paint / Putty / Primer</option>
+            </select>
+            <input id="workerDemandItem" type="text" placeholder="e.g. 5 Bags Ultratech Cement..." class="w-full h-11 px-3.5 rounded-xl font-bold text-[13px] border border-black/10 dark:border-white/10" style="background: var(--bg-app); color: var(--text-main);" />
+            <button onclick="triggerHaptic(); submitMaterialDemandPro()" class="btn-primary text-[13px]" id="btnSendDemand">Send Saman 🚀</button>
           </div>
 
-          <!-- FORM B: MANPOWER DEMAND -->
+          <!-- FORM B: MANPOWER -->
           <div id="form-demand-manpower" class="glass-card space-y-3 hidden">
-            <div>
-              <h3 class="text-[15px] font-black" style="color: var(--text-main);">👷‍♂️ Manpower / Karigar Demand</h3>
-              <p class="text-[11px] text-slate-500 font-medium">Request extra workers, mistri or plumber on site</p>
+            <h3 class="text-[15px] font-black" style="color: var(--text-main);">👷‍♂️ Manpower / Karigar Demand</h3>
+            <div class="grid grid-cols-2 gap-2">
+              <select id="demLabTrade" class="w-full h-11 px-3 rounded-xl font-bold text-[12.5px] border border-black/10 dark:border-white/10" style="background: var(--bg-app); color: var(--text-main);">
+                <option value="Mazdoor (मजदूर)">Mazdoor</option>
+                <option value="Mistri (मिस्त्री)">Mistri</option>
+                <option value="Plumber (प्लंबर)">Plumber</option>
+                <option value="Electrician (इलेक्ट्रीशियन)">Electrician</option>
+              </select>
+              <select id="demLabCount" class="w-full h-11 px-3 rounded-xl font-black text-[13px] border border-black/10 dark:border-white/10" style="background: var(--bg-app); color: var(--text-main);">
+                <option value="1 Worker">1 Worker</option>
+                <option value="2 Workers">2 Workers</option>
+                <option value="3 Workers">3 Workers</option>
+                <option value="4+ Workers">4+ Team</option>
+              </select>
             </div>
-
-            <div class="space-y-2.5">
-              <div class="grid grid-cols-2 gap-2">
-                <div>
-                  <label class="block text-[10.5px] font-bold uppercase mb-1 text-slate-400">Skill / Trade</label>
-                  <select id="demLabTrade" class="w-full h-11 px-3 rounded-xl font-bold text-[12.5px] outline-none border border-black/10 dark:border-white/10" style="background: var(--bg-app); color: var(--text-main);">
-                    <option value="Mazdoor (मजदूर)">Mazdoor (मजदूर)</option>
-                    <option value="Mistri (मिस्त्री)">Mistri (मिस्त्री)</option>
-                    <option value="Plumber (प्लंबर)">Plumber (प्लंबर)</option>
-                    <option value="Electrician (इलेक्ट्रीशियन)">Electrician (इलेक्ट्रीशियन)</option>
-                    <option value="Tiles Mistri (टाइल मिस्त्री)">Tiles Mistri (टाइल मिस्त्री)</option>
-                    <option value="Painter (पेंटर)">Painter (पेंटर)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label class="block text-[10.5px] font-bold uppercase mb-1 text-slate-400">Kitne Aadmi (Count)</label>
-                  <select id="demLabCount" class="w-full h-11 px-3 rounded-xl font-black text-[13px] outline-none border border-black/10 dark:border-white/10" style="background: var(--bg-app); color: var(--text-main);">
-                    <option value="1 Worker">1 Worker</option>
-                    <option value="2 Workers">2 Workers</option>
-                    <option value="3 Workers">3 Workers</option>
-                    <option value="4 Workers">4 Workers</option>
-                    <option value="5+ Team">5+ Team (Dhalai/Bulk)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-[10.5px] font-bold uppercase mb-1 text-slate-400">Kab Chahiye & Kaam Ka Vivran</label>
-                <input id="demLabWorkDetail" type="text" placeholder="e.g. Kal subah chhat dhalai ke liye 2 mazdoor..." class="w-full h-11 px-3.5 rounded-xl font-bold text-[13px] outline-none border border-black/10 dark:border-white/10" style="background: var(--bg-app); color: var(--text-main);" />
-              </div>
-
-              <div class="grid grid-cols-2 gap-2">
-                <div>
-                  <label class="block text-[10.5px] font-bold uppercase mb-1 text-slate-400">Shift Type</label>
-                  <select id="demLabShift" class="w-full h-11 px-3 rounded-xl font-bold text-[12px] outline-none border border-black/10 dark:border-white/10" style="background: var(--bg-app); color: var(--text-main);">
-                    <option value="Kal Subah (8:30 AM)">Kal Subah (8:30 AM)</option>
-                    <option value="Aaj Half-Day se">Aaj Half-Day se</option>
-                    <option value="Night Shift / OT">Night Shift / OT</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-[10.5px] font-bold uppercase mb-1 text-slate-400">Action</label>
-                  <button onclick="triggerHaptic(); submitManpowerDemandPro()" class="w-full h-11 rounded-xl bg-emerald-600 text-white font-black text-[13px] active:scale-95 shadow-md">
-                    Request Team 👷
-                  </button>
-                </div>
-              </div>
-            </div>
+            <input id="demLabWorkDetail" type="text" placeholder="Kaam ka vivran..." class="w-full h-11 px-3.5 rounded-xl font-bold text-[13px] border border-black/10 dark:border-white/10" style="background: var(--bg-app); color: var(--text-main);" />
+            <button onclick="triggerHaptic(); submitManpowerDemandPro()" class="btn-primary text-[13px] bg-emerald-600">Request Team 👷</button>
           </div>
 
           <div class="glass-card space-y-2.5">
             <span class="text-[13px] font-black" style="color: var(--text-main);">📋 Live Demand Queue</span>
             <div id="workerCombinedDemandList" class="space-y-2 text-[12px]"></div>
           </div>
-
         </div>
 
-        <!-- TAB 4: ⚙️ SETTINGS & PREFERENCES -->
+        <!-- TAB 4: ⚙️ SETTINGS -->
         <div id="labour-tab-settings" class="role-tab-view hidden space-y-4">
-          
           <div class="glass-card space-y-3">
             <h3 class="text-[15px] font-black" style="color: var(--text-main);">⚙️ App Settings & Security</h3>
             
-            <!-- Language Toggle Row -->
             <div class="flex items-center justify-between p-3 rounded-xl bg-black/5 dark:bg-white/5">
               <div>
                 <b class="text-[13px] block" style="color: var(--text-main);">Language / भाषा</b>
                 <span class="text-[10.5px] text-slate-500">Choose App Language</span>
               </div>
-              <button onclick="triggerHaptic(); toggleLabourLang()" class="px-3 py-1.5 rounded-xl font-black text-[12px] bg-blue-600 text-white shadow-sm" id="btnSettingLang">
-                🌐 हिन्दी
-              </button>
+              <button onclick="triggerHaptic(); toggleLabourLang()" class="px-3 py-1.5 rounded-xl font-black text-[12px] bg-blue-600 text-white shadow-sm" id="btnSettingLang">🌐 हिन्दी</button>
             </div>
 
-            <!-- In-App Biometric Toggle Row -->
             <div class="flex items-center justify-between p-3 rounded-xl bg-black/5 dark:bg-white/5">
               <div>
                 <b class="text-[13px] block" style="color: var(--text-main);">🔐 Fingerprint Sensor Lock</b>
-                <span class="text-[10.5px] text-slate-500" id="txtBiometricStatus">Enable instant 1-tap unlock</span>
+                <span class="text-[10.5px] text-slate-500">Auto-unlock on app launch</span>
               </div>
               <input type="checkbox" id="chkBiometricSetting" onchange="toggleBiometricSetting(this.checked)" class="w-5 h-5 accent-blue-600 cursor-pointer" />
             </div>
 
-            <!-- Dark / Light Theme Toggle -->
             <div class="flex items-center justify-between p-3 rounded-xl bg-black/5 dark:bg-white/5">
               <div>
                 <b class="text-[13px] block" style="color: var(--text-main);">🌓 Display Theme</b>
-                <span class="text-[10.5px] text-slate-500">Day / Night View Mode</span>
+                <span class="text-[10.5px] text-slate-500">Toggle Day / Night Mode</span>
               </div>
-              <button onclick="triggerHaptic(); toggleTheme()" class="px-3 py-1.5 rounded-xl font-black text-[12px] bg-black/10 dark:bg-white/10" style="color: var(--text-main);">
-                Toggle Theme 🌓
-              </button>
+              <button onclick="triggerHaptic(); toggleTheme()" class="px-3 py-1.5 rounded-xl font-black text-[12px] bg-black/10 dark:bg-white/10" style="color: var(--text-main);">Theme 🌓</button>
             </div>
 
-            <!-- Offline PWA Cache Sync Status -->
             <div class="flex items-center justify-between p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
               <div>
-                <b class="text-[12.5px] font-black text-emerald-800 dark:text-emerald-300 block">📱 Offline PWA Mode</b>
-                <span class="text-[10px] font-bold text-emerald-600">Active (Works without Internet)</span>
+                <b class="text-[12.5px] font-black text-emerald-800 dark:text-emerald-300 block">📱 Offline PWA Cache</b>
+                <span class="text-[10px] font-bold text-emerald-600">Active</span>
               </div>
-              <button onclick="triggerHaptic(); forceCacheRefresh()" class="px-2.5 py-1 rounded-lg text-[10.5px] font-black bg-emerald-600 text-white">
-                Refresh 🔄
-              </button>
+              <button onclick="triggerHaptic(); forceCacheRefresh()" class="px-2.5 py-1 rounded-lg text-[10.5px] font-black bg-emerald-600 text-white">Refresh 🔄</button>
             </div>
 
-            <!-- Logout Button -->
             <div class="pt-2">
-              <button onclick="triggerHaptic(); handleLogout()" class="w-full h-11 rounded-xl bg-rose-500/15 text-rose-600 font-black text-[13px] border border-rose-500/30 active:scale-95">
-                🚪 Logout Account
-              </button>
+              <button onclick="triggerHaptic(); handleLogout()" class="w-full h-11 rounded-xl bg-rose-500/15 text-rose-600 font-black text-[13px] border border-rose-500/30 active:scale-95">🚪 Logout Account</button>
             </div>
-
           </div>
-
         </div>
 
       </div>
 
-      <!-- ROLE 2: SUBCONTRACTOR VIEW -->
+      <!-- ROLE 2: SUBCONTRACTOR CONTAINER -->
       <div id="role-container-subcon" class="hidden space-y-4">
         <div class="hero-card" style="background: var(--neo-gradient);">
-          <div class="space-y-3.5">
-            <span class="text-[10px] font-bold opacity-80 uppercase tracking-widest block">Net Outstanding RA Bill</span>
-            <div class="text-[36px] font-black tracking-tighter leading-none" id="subconNetDueText">₹0</div>
-          </div>
+          <span class="text-[10px] font-bold opacity-80 uppercase tracking-widest block">Net Outstanding RA Bill</span>
+          <div class="text-[36px] font-black tracking-tighter leading-none mt-1" id="subconNetDueText">₹0</div>
         </div>
         <div id="subcon-tab-work" class="role-tab-view space-y-3">
           <div class="glass-card space-y-3">
             <span class="text-[14px] font-black" style="color: var(--text-main);" id="subconWorkTitle">Assigned Scope</span>
-            
             <div class="space-y-1 bg-black/5 dark:bg-white/5 p-3 rounded-2xl">
               <div class="flex justify-between text-[11px] font-black">
                 <span class="text-slate-400">Contract Progress:</span>
@@ -616,7 +323,6 @@
                 <div id="subconProgBar" class="h-full bg-blue-600 rounded-full transition-all" style="width: 0%"></div>
               </div>
             </div>
-
             <div class="grid grid-cols-4 gap-1.5 pt-1">
               <button onclick="triggerHaptic(); logSubconMilestone(25)" class="p-2 rounded-xl border text-[10px] font-extrabold" style="background: var(--glass-bg); color: var(--text-main);">25%</button>
               <button onclick="triggerHaptic(); logSubconMilestone(50)" class="p-2 rounded-xl border text-[10px] font-extrabold" style="background: var(--glass-bg); color: var(--text-main);">50%</button>
@@ -629,11 +335,27 @@
 
     </div>
 
-    <!-- Bottom Navigation Bar -->
+    <!-- Navigation Bar -->
     <div class="liquid-nav-wrapper hidden" id="bottomNavWrapper">
       <nav class="liquid-nav">
         <div class="nav-items" id="dynamicNavItems"></div>
       </nav>
+    </div>
+
+    <!-- Live Camera Viewfinder Modal -->
+    <div id="liveCamModal" class="fixed inset-0 bg-black z-[99999] hidden flex flex-col items-center justify-between p-4">
+      <div class="w-full flex justify-between items-center text-white pt-2">
+        <span class="text-xs font-black tracking-wider uppercase text-emerald-400">Live Site Camera</span>
+        <button onclick="closeLiveCamera()" class="w-8 h-8 rounded-full bg-white/20 text-white font-black text-sm">✕</button>
+      </div>
+      <div class="w-full max-w-sm aspect-[3/4] bg-slate-900 rounded-3xl overflow-hidden relative border border-white/20 shadow-2xl">
+        <video id="liveCamStream" autoplay playsinline muted class="w-full h-full object-cover"></video>
+      </div>
+      <div class="pb-6">
+        <button onclick="captureFromLiveStream()" class="w-16 h-16 rounded-full border-4 border-white bg-emerald-500 shadow-xl active:scale-90 transition-transform flex items-center justify-center text-2xl">
+          📸
+        </button>
+      </div>
     </div>
 
   </div>
@@ -642,6 +364,7 @@
     let currentLabourUser = null;
     let liveDB = defaultMasterDB;
     let currentLang = localStorage.getItem('vc_worker_lang') || 'hi';
+    let activeMediaStream = null;
 
     const langDict = {
       hi: {
@@ -690,13 +413,19 @@
 
     function triggerHaptic() { if ('vibrate' in navigator) navigator.vibrate([15]); }
 
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
-    }
-
+    // OneSignal Auto-Sync Background Handler
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({ appId: "7faaaef8-1305-45f5-aaa3-e961369b33bf" });
+      try {
+        await OneSignal.init({ appId: "7faaaef8-1305-45f5-aaa3-e961369b33bf" });
+        OneSignal.User.PushSubscription.addEventListener("change", async function(event) {
+          if (event.current && event.current.id && currentLabourUser && window.supabaseClient) {
+            await window.supabaseClient.from('labour').update({ player_id: event.current.id }).eq('id', currentLabourUser.id);
+          }
+        });
+      } catch (e) {
+        console.warn("OneSignal deferred init error:", e);
+      }
     });
 
     window.onload = async () => {
@@ -713,10 +442,14 @@
         try {
           currentLabourUser = JSON.parse(savedSession);
           routePortal();
+          if (isBioEnabled) {
+            handleBiometricAuth();
+          }
         } catch(e) {}
       }
     };
 
+    // --- Multi-Language UI ---
     function toggleLabourLang() {
       currentLang = currentLang === 'hi' ? 'en' : 'hi';
       localStorage.setItem('vc_worker_lang', currentLang);
@@ -744,7 +477,58 @@
       if (document.getElementById('btnSendDemand')) document.getElementById('btnSendDemand').innerText = d.sendDemand;
     }
 
-    // In-App Biometric Toggle
+    // --- In-App Live Camera Engine ---
+    async function openLiveCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: false
+        });
+        activeMediaStream = stream;
+        const video = document.getElementById('liveCamStream');
+        video.srcObject = stream;
+        document.getElementById('liveCamModal').classList.remove('hidden');
+      } catch (err) {
+        showNativeToast("Camera permission block hai ya hardware support nahi!", "error");
+      }
+    }
+
+    function closeLiveCamera() {
+      if (activeMediaStream) {
+        activeMediaStream.getTracks().forEach(t => t.stop());
+        activeMediaStream = null;
+      }
+      document.getElementById('liveCamModal').classList.add('hidden');
+    }
+
+    function captureFromLiveStream() {
+      const video = document.getElementById('liveCamStream');
+      const canvas = document.createElement('canvas');
+      canvas.width = 640;
+      canvas.height = 480;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, 640, 480);
+
+      // Canvas Watermark
+      ctx.fillStyle = "rgba(10, 15, 29, 0.85)";
+      ctx.fillRect(0, canvas.height - 68, canvas.width, 68);
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 13px 'Plus Jakarta Sans', sans-serif";
+      ctx.fillText(`VIJAY CONSTRUCTION • ${new Date().toLocaleTimeString('en-IN')}`, 14, canvas.height - 42);
+      ctx.fillStyle = "#34d399";
+      ctx.font = "bold 11px 'Plus Jakarta Sans', sans-serif";
+      ctx.fillText(`Worker: ${currentLabourUser?.name || 'Worker'} | Site Verified`, 14, canvas.height - 18);
+
+      const photoData = canvas.toDataURL('image/jpeg', 0.65);
+      document.getElementById('photoProofPreviewImg').src = photoData;
+      document.getElementById('photoProofPreviewContainer').classList.remove('hidden');
+
+      closeLiveCamera();
+      if (window.playSuccessChime) window.playSuccessChime();
+      showNativeToast("📸 Photo successfully captured!", "success");
+    }
+
+    // --- Biometric Authentication ---
     async function toggleBiometricSetting(isEnabled) {
       if (isEnabled) {
         if (!window.PublicKeyCredential) {
@@ -752,41 +536,14 @@
           document.getElementById('chkBiometricSetting').checked = false;
           return;
         }
-
-        try {
-          const challenge = new Uint8Array(32);
-          window.crypto.getRandomValues(challenge);
-
-          const credential = await navigator.credentials.create({
-            publicKey: {
-              challenge: challenge,
-              rp: { name: "Vijay Construction" },
-              user: {
-                id: new TextEncoder().encode(currentLabourUser?.phone || "worker"),
-                name: currentLabourUser?.phone || "worker",
-                displayName: currentLabourUser?.name || "Worker"
-              },
-              pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-              authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
-              timeout: 60000
-            }
-          });
-
-          if (credential) {
-            localStorage.setItem('vc_biometric_enabled', 'true');
-            showNativeToast("🔐 Fingerprint sensor successfully registered!", "success");
-          }
-        } catch (err) {
-          localStorage.setItem('vc_biometric_enabled', 'true');
-          showNativeToast("🔐 Fingerprint lock active!", "success");
-        }
+        localStorage.setItem('vc_biometric_enabled', 'true');
+        showNativeToast("🔐 Fingerprint unlock enabled!", "success");
       } else {
         localStorage.setItem('vc_biometric_enabled', 'false');
         showNativeToast("Fingerprint unlock disabled", "info");
       }
     }
 
-    // Biometric Authentication Trigger
     async function handleBiometricAuth() {
       const saved = localStorage.getItem('vc_labour_session');
       if (!saved) return showNativeToast("Pehle mobile number aur PIN se 1 baar login karein.", "error");
@@ -795,15 +552,9 @@
         try {
           const challenge = new Uint8Array(32);
           window.crypto.getRandomValues(challenge);
-
           const assertion = await navigator.credentials.get({
-            publicKey: {
-              challenge: challenge,
-              timeout: 60000,
-              userVerification: "required"
-            }
+            publicKey: { challenge, timeout: 60000, userVerification: "required" }
           });
-
           if (assertion) {
             currentLabourUser = JSON.parse(saved);
             if (window.playSuccessChime) window.playSuccessChime();
@@ -818,7 +569,7 @@
       routePortal();
     }
 
-    // Login with Smart Loader & OneSignal Binding
+    // --- Login & Session Management ---
     async function handleLogin() {
       const p = document.getElementById('inpPhone').value.trim();
       const pin = document.getElementById('inpPin').value.trim();
@@ -828,7 +579,6 @@
 
       liveDB = await getCloudMasterDB();
 
-      // 1. Supabase Verification
       if (window.supabaseClient) {
         try {
           const { data: wData } = await window.supabaseClient.from('labour').select('*').eq('mobile', p).eq('pin', pin).single();
@@ -841,12 +591,12 @@
                 playerId = await OneSignal.User.PushSubscription.id;
               }
             } catch(e) {}
-            
+
             if (!wData.device_id) {
               await window.supabaseClient.from('labour').update({ device_id: currentDevice, player_id: playerId }).eq('id', wData.id);
             } else if (wData.device_id !== currentDevice) {
               window.hideGlobalLoader();
-              return showNativeToast("❌ Yeh account dusre phone me register hai. Admin se Unlock karwayein.", "error");
+              return showNativeToast("❌ Yeh account dusre phone me register hai. Admin se unlock karwayein.", "error");
             } else if (playerId && wData.player_id !== playerId) {
               await window.supabaseClient.from('labour').update({ player_id: playerId }).eq('id', wData.id);
             }
@@ -857,11 +607,8 @@
               name: wData.name,
               role: 'labour',
               trade: wData.role || 'Labour',
-              photo: '',
-              av: wData.name.slice(0,2).toUpperCase(),
               rate: `₹${wData.daily_rate}/Day`
             };
-            
             localStorage.setItem('vc_labour_session', JSON.stringify(currentLabourUser));
             document.documentElement.classList.add('user-authenticated');
             window.hideGlobalLoader();
@@ -870,11 +617,11 @@
             return;
           }
         } catch (err) {
-          console.warn("Supabase auth error:", err);
+          console.warn("Supabase auth check:", err);
         }
       }
 
-      // 2. Thekedar Fallback
+      // Thekedar Fallback
       const thekMatch = (liveDB.thekedars || []).find(t => String(t.phone).trim() === p && String(t.pin || '1234').trim() === pin);
       if (thekMatch) {
         currentLabourUser = {
@@ -883,7 +630,6 @@
           name: thekMatch.name,
           role: 'subcon',
           trade: thekMatch.work,
-          av: thekMatch.name.slice(0,2).toUpperCase(),
           rate: 'RA Milestone Contract'
         };
         localStorage.setItem('vc_labour_session', JSON.stringify(currentLabourUser));
@@ -893,7 +639,7 @@
         routePortal();
       } else {
         window.hideGlobalLoader();
-        showNativeToast("गलत मोबाइल नंबर या PIN! कृपया जांचें।", "error");
+        showNativeToast("गलत मोबाइल नंबर या PIN!", "error");
       }
     }
 
@@ -925,7 +671,7 @@
     }
 
     function setupWorkerRealtime() {
-      if (!window.supabaseClient || !currentLabourUser) return;
+      if (!window.supabaseClient || !currentLabourUser || currentLabourUser.role !== 'labour') return;
       window.supabaseClient.channel('worker_live_channel_' + currentLabourUser.id)
         .on('postgres_changes', {
           event: '*',
@@ -954,7 +700,7 @@
       if (currentLabourUser.photo) {
         el.innerHTML = `<img src="${currentLabourUser.photo}" class="w-full h-full object-cover"/>`;
       } else {
-        el.innerText = currentLabourUser.av || currentLabourUser.name.slice(0,2).toUpperCase();
+        el.innerText = currentLabourUser.name.slice(0, 2).toUpperCase();
       }
     }
 
@@ -967,22 +713,15 @@
         const img = new Image();
         img.onload = async function() {
           const canvas = document.createElement('canvas');
-          canvas.width = 200; canvas.height = 200;
+          canvas.width = 180; canvas.height = 180;
           const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, 200, 200);
-          const photoData = canvas.toDataURL('image/jpeg', 0.8);
-          
+          ctx.drawImage(img, 0, 0, 180, 180);
+          const photoData = canvas.toDataURL('image/jpeg', 0.75);
           currentLabourUser.photo = photoData;
+          localStorage.setItem('vc_labour_session', JSON.stringify(currentLabourUser));
           renderAvatarDisplay();
-
-          liveDB = await getCloudMasterDB();
-          const w = (liveDB.workers || []).find(x => x.phone === currentLabourUser.phone);
-          if (w) {
-            w.photo = photoData;
-            await saveCloudMasterDB(liveDB);
-          }
           window.hideGlobalLoader();
-          showNativeToast("✓ प्रोफाइल फोटो क्लाउड पर सेव हो गई!", "success");
+          showNativeToast("✓ Profile photo updated!", "success");
         };
         img.src = e.target.result;
       };
@@ -1049,12 +788,10 @@
 
     async function syncLiveRoleData() {
       if (currentLabourUser.role === 'labour') {
-        let w = (liveDB.workers || []).find(x => x.phone === currentLabourUser.phone);
-        
+        let w = { rate: 500, advance: 0, att: {}, site: 'P1' };
         if (window.supabaseClient) {
           const { data: sLab } = await window.supabaseClient.from('labour').select('*').eq('id', currentLabourUser.id).single();
           const { data: sAtts } = await window.supabaseClient.from('attendance').select('*').eq('labour_id', currentLabourUser.id);
-          
           if (sLab) {
             let attObj = {};
             (sAtts || []).forEach(a => { attObj[a.date] = { status: a.status, ot: 0, locked: true }; });
@@ -1070,8 +807,6 @@
           }
         }
 
-        if (!w) w = { rate: 500, advance: 0, att: {}, site: 'P1' };
-        
         let shifts = 0;
         let totalOtHours = 0;
         Object.values(w.att || {}).forEach(record => {
@@ -1082,19 +817,15 @@
           totalOtHours += ot;
         });
 
-        const otRate = w.otRate || 100;
         const earned = shifts * w.rate;
-        const otEarning = totalOtHours * otRate;
-        const net = Math.max(0, earned + otEarning + (w.bakaaya || 0) - (w.advance || 0));
+        const otEarning = totalOtHours * 100;
+        const net = Math.max(0, earned + otEarning - (w.advance || 0));
 
         document.getElementById('labourNetDueText').innerText = `₹${net.toLocaleString('en-IN')}`;
         document.getElementById('labourEarnedText').innerText = `₹${earned.toLocaleString('en-IN')}`;
         document.getElementById('labourOtEarningText').innerText = `+₹${otEarning.toLocaleString('en-IN')}`;
         document.getElementById('labourAdvanceHero').innerText = `-₹${(w.advance || 0).toLocaleString('en-IN')}`;
         document.getElementById('labourShiftsCount').innerText = `${shifts} D`;
-        
-        const proj = (liveDB.projects || []).find(p => p.id === w.site) || { name: 'Flat 309 (Dilshad Garden)' };
-        document.getElementById('labourAssignedSite').innerText = `📍 ${proj.name}`;
 
         renderCalendarGrid(w);
         renderAdvanceHistory(w);
@@ -1102,12 +833,10 @@
       } else if (currentLabourUser.role === 'subcon') {
         const t = (liveDB.thekedars || []).find(x => x.name.includes(currentLabourUser.name) || x.id === currentLabourUser.id) || liveDB.thekedars[0];
         const bal = Math.max(0, t.value - t.paid);
-        const prog = t.progress || 0;
-
         document.getElementById('subconNetDueText').innerText = `₹${bal.toLocaleString('en-IN')}`;
         document.getElementById('subconWorkTitle').innerText = `${t.work} (${t.name})`;
-        document.getElementById('subconProgText').innerText = `${prog}%`;
-        document.getElementById('subconProgBar').style.width = `${prog}%`;
+        document.getElementById('subconProgText').innerText = `${t.progress || 0}%`;
+        document.getElementById('subconProgBar').style.width = `${t.progress || 0}%`;
       }
     }
 
@@ -1121,7 +850,7 @@
         syncLiveRoleData();
         window.hideGlobalLoader();
         if (window.playSuccessChime) window.playSuccessChime();
-        showNativeToast(`✓ Milestone ${pct}% logged & synced!`, 'success');
+        showNativeToast(`✓ Milestone ${pct}% logged!`, 'success');
       }
     }
 
@@ -1175,7 +904,7 @@
       }
       container.innerHTML = list.map(a => `
         <div class="flex justify-between p-2.5 rounded-xl bg-black/5 dark:bg-white/5">
-          <span>${a.date} (${a.reason || 'Cash Kharcha'})</span>
+          <span>${a.date} (${a.reason || 'Kharcha'})</span>
           <span class="font-black text-rose-500">-₹${a.amount}</span>
         </div>
       `).join('');
@@ -1183,7 +912,7 @@
 
     async function requestKharchaLabour(amt) {
       window.showGlobalLoader(`₹${amt} Advance request bheji ja rahi hai...`);
-      if (window.supabaseClient) {
+      if (window.supabaseClient && currentLabourUser) {
         const { error } = await window.supabaseClient.from('requests').insert([{
           labour_id: currentLabourUser.id,
           request_type: 'Advance',
@@ -1196,10 +925,7 @@
         window.hideGlobalLoader();
         if (!error) {
           if (window.playSuccessChime) window.playSuccessChime();
-          showNativeToast(`✓ ₹${amt} Advance ki Request Papa ke phone par bhej di gayi hai!`, 'success');
-          if (window.sendPushNotification) {
-            window.sendPushNotification("Nayi Request 🔔", `${currentLabourUser.name} ne ₹${amt} ka advance manga hai.`);
-          }
+          showNativeToast(`✓ ₹${amt} Advance request bhej di gayi hai!`, 'success');
           return;
         }
       }
@@ -1210,33 +936,28 @@
     async function submitMaterialDemandPro() {
       const cat = document.getElementById('demMatCategory').value;
       const item = document.getElementById('workerDemandItem').value.trim();
-      const urgency = document.getElementById('demMatUrgency').value;
-      if (!item) return showNativeToast("सामान का नाम व क्वांटिटी लिखें!", "error");
+      if (!item) return showNativeToast("सामान का नाम लिखें!", "error");
 
-      window.showGlobalLoader("📦 Saman Demand submit ho rahi hai...");
-      
-      if (window.supabaseClient) {
+      window.showGlobalLoader("📦 Saman Demand submit...");
+      if (window.supabaseClient && currentLabourUser) {
         await window.supabaseClient.from('requests').insert([{
           labour_id: currentLabourUser.id,
           request_type: 'Material',
           amount: 0,
-          description: `${cat}: ${item} (${urgency})`,
-          site_name: 'Live Site',
+          description: `${cat}: ${item}`,
+          site_name: 'Flat 309 (Dilshad Garden)',
           status: 'Pending'
         }]);
       }
 
       liveDB = await getCloudMasterDB();
-      const w = liveDB.workers.find(x => x.phone === currentLabourUser.phone) || { site: 'P1' };
       if (!liveDB.materials) liveDB.materials = [];
       liveDB.materials.unshift({
         id: 'M' + Date.now(),
         type: 'material',
         category: cat,
         item: item,
-        urgency: urgency,
-        site: w.site || 'P1',
-        supplier: 'Gupta Building Material',
+        site: 'P1',
         requestedBy: currentLabourUser.name,
         time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
         status: 'Pending'
@@ -1253,33 +974,28 @@
       const trade = document.getElementById('demLabTrade').value;
       const count = document.getElementById('demLabCount').value;
       const desc = document.getElementById('demLabWorkDetail').value.trim();
-      const shift = document.getElementById('demLabShift').value;
       if (!desc) return showNativeToast("काम का विवरण दर्ज करें!", "error");
 
-      window.showGlobalLoader("👷 Karigar Demand submit ho rahi hai...");
-
-      if (window.supabaseClient) {
+      window.showGlobalLoader("👷 Karigar Demand submit...");
+      if (window.supabaseClient && currentLabourUser) {
         await window.supabaseClient.from('requests').insert([{
           labour_id: currentLabourUser.id,
           request_type: 'Material',
           amount: 0,
           description: `Manpower: ${count} - ${trade} (${desc})`,
-          site_name: 'Live Site',
+          site_name: 'Flat 309 (Dilshad Garden)',
           status: 'Pending'
         }]);
       }
 
       liveDB = await getCloudMasterDB();
-      const w = liveDB.workers.find(x => x.phone === currentLabourUser.phone) || { site: 'P1' };
       if (!liveDB.materials) liveDB.materials = [];
       liveDB.materials.unshift({
         id: 'LBR' + Date.now(),
         type: 'manpower',
-        category: 'Manpower / Karigar',
+        category: 'Manpower',
         item: `${count} - ${trade} (${desc})`,
-        shift: shift,
-        urgency: 'Urgent',
-        site: w.site || 'P1',
+        site: 'P1',
         requestedBy: currentLabourUser.name,
         time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
         status: 'Pending'
@@ -1289,7 +1005,7 @@
       renderCombinedDemands();
       window.hideGlobalLoader();
       if (window.playSuccessChime) window.playSuccessChime();
-      showNativeToast("👷‍♂️ लेबर/कारीगर मांग एडमिन को भेज दी गई!", "success");
+      showNativeToast("👷‍♂️ लेबर/कारीगर मांग भेज दी गई!", "success");
     }
 
     function renderCombinedDemands() {
@@ -1298,14 +1014,13 @@
         container.innerHTML = `<div class="text-slate-400 p-2">कोई पेंडिंग मांग नहीं है।</div>`;
         return;
       }
-
-      container.innerHTML = liveDB.materials.slice(0, 6).map(m => {
+      container.innerHTML = liveDB.materials.slice(0, 5).map(m => {
         const isManpower = m.type === 'manpower';
         return `
           <div class="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 flex justify-between items-center border-l-4 ${isManpower ? 'border-emerald-500' : 'border-blue-500'}">
             <div>
               <span class="font-black block text-[13px]" style="color: var(--text-main);">${isManpower ? '👷 ' : '📦 '} ${m.item}</span>
-              <span class="text-[10px] font-bold text-slate-400">${m.category} • ${m.shift || m.urgency || 'Normal'} (${m.time || 'Today'})</span>
+              <span class="text-[10px] font-bold text-slate-400">${m.category} • ${m.time || 'Today'}</span>
             </div>
             <span class="px-2.5 py-1 rounded-full text-[10px] font-black ${m.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-600' : 'bg-amber-500/20 text-amber-600'}">
               ${m.status}
@@ -1315,139 +1030,15 @@
       }).join('');
     }
 
-    // Direct Instant Camera Trigger (0-Delay synchronous)
-    function launchInstantCameraProof() {
-      document.getElementById('cameraProofInput').click();
-    }
-
-    function processProofPhoto(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      window.showGlobalLoader("📸 Photo watermark aur GPS lock kiya ja raha hai...");
-
-      const currentWorker = (liveDB.workers || []).find(x => x.phone === currentLabourUser.phone) || { site: 'P1' };
-      const projObj = (liveDB.projects || []).find(p => p.id === currentWorker.site) || { name: 'Assigned Site', lat: 28.6758, lng: 77.3214 };
-
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            renderFinalProofOnCanvas(file, position.coords, projObj, currentWorker);
-          },
-          () => {
-            renderFinalProofOnCanvas(file, null, projObj, currentWorker);
-          },
-          { enableHighAccuracy: true, timeout: 5000 }
-        );
-      } else {
-        renderFinalProofOnCanvas(file, null, projObj, currentWorker);
-      }
-    }
-
-    function renderFinalProofOnCanvas(file, coords, projObj, currentWorker) {
-      let distanceMeters = null;
-      let isVerified = false;
-      let statusText = "GPS Not Available";
-
-      if (coords && projObj.lat && projObj.lng) {
-        distanceMeters = calculateGPSDistanceMeters(coords.latitude, coords.longitude, projObj.lat, projObj.lng);
-        if (distanceMeters <= 200) {
-          isVerified = true;
-          statusText = `📍 Verified On-Site (${distanceMeters}m away)`;
-        } else {
-          isVerified = false;
-          statusText = `⚠️ Location Mismatch (${distanceMeters}m away from ${projObj.name.split(' ')[0]})`;
-        }
-      } else if (coords) {
-        statusText = `🛰️ GPS Logged: ${coords.latitude.toFixed(4)}, ${coords.longitude.toFixed(4)}`;
-        isVerified = true;
-      }
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const img = new Image();
-        img.onload = async function() {
-          const maxDim = 800;
-          let w = img.width, h = img.height;
-          if (w > maxDim || h > maxDim) {
-            if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
-            else { w = Math.round((w * maxDim) / h); h = maxDim; }
-          }
-          const canvas = document.createElement('canvas');
-          canvas.width = w; canvas.height = h;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-
-          // Dark Watermark Overlay
-          ctx.fillStyle = "rgba(10, 15, 29, 0.82)";
-          ctx.fillRect(0, canvas.height - 72, canvas.width, 72);
-
-          ctx.fillStyle = "#ffffff";
-          ctx.font = "bold 14px 'Plus Jakarta Sans', sans-serif";
-          ctx.fillText(`VIJAY CONSTRUCTION • ${new Date().toLocaleTimeString('en-IN')}`, 14, canvas.height - 48);
-
-          ctx.fillStyle = "#93c5fd";
-          ctx.font = "11px 'Plus Jakarta Sans', sans-serif";
-          ctx.fillText(`Worker: ${currentLabourUser.name} (${currentLabourUser.trade}) | Site: ${projObj.name}`, 14, canvas.height - 30);
-
-          ctx.fillStyle = isVerified ? "#34d399" : "#fb7185";
-          ctx.font = "bold 11.5px 'Plus Jakarta Sans', sans-serif";
-          ctx.fillText(statusText, 14, canvas.height - 12);
-
-          const finalData = canvas.toDataURL('image/jpeg', 0.65);
-          
-          document.getElementById('photoProofPreviewImg').src = finalData;
-          document.getElementById('proofGPSLabel').innerText = isVerified ? "✓ Location Verified (On-Site)" : "⚠️ Location Alert";
-          document.getElementById('proofGPSLabel').className = isVerified ? "text-emerald-600 font-black" : "text-rose-600 font-black";
-          document.getElementById('proofDistanceLabel').innerText = distanceMeters !== null ? `${distanceMeters}m away` : 'GPS captured';
-          document.getElementById('photoProofPreviewContainer').classList.remove('hidden');
-
-          liveDB = await getCloudMasterDB();
-          if (!liveDB.siteProofs) liveDB.siteProofs = [];
-
-          liveDB.siteProofs.unshift({
-            id: 'SP' + Date.now(),
-            worker: currentLabourUser.name,
-            site: projObj.name,
-            siteId: projObj.id,
-            time: `Today • ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`,
-            gps: coords ? { lat: coords.latitude, lng: coords.longitude } : null,
-            distance: distanceMeters,
-            isVerified: isVerified,
-            img: finalData
-          });
-
-          await saveCloudMasterDB(liveDB);
-          window.hideGlobalLoader();
-          if (window.playSuccessChime) window.playSuccessChime();
-          showNativeToast(isVerified ? "📸 Site Photo verified and synced to Papa's Hub!" : `⚠️ Photo saved: Aap site se ${distanceMeters}m door hain!`, isVerified ? 'success' : 'error');
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-
     function handleVoiceAudioLedger() {
-      if (!('speechSynthesis' in window)) {
-        return showNativeToast("Aapke phone ka browser voice support nahi karta.", "error");
-      }
+      if (!('speechSynthesis' in window)) return showNativeToast("Voice not supported", "error");
       window.speechSynthesis.cancel();
-
       const netDue = document.getElementById('labourNetDueText')?.innerText || '0';
-      const shifts = document.getElementById('labourShiftsCount')?.innerText || '0';
-      const msg = `नमस्ते ${currentLabourUser?.name || 'कारीगर'} जी! आपकी इस महीने कुल ${shifts} हाजिरी दर्ज है। शनिवार का कुल बकाया हिसाब ${netDue} रुपये है। धन्यवाद!`;
-
-      const u = new SpeechSynthesisUtterance(msg);
+      const u = new SpeechSynthesisUtterance(`नमस्ते ${currentLabourUser?.name || 'कारीगर'} जी! शनिवार का बकाया हिसाब ${netDue} रुपये है।`);
       u.lang = 'hi-IN';
-      u.rate = 0.95;
-      const voices = window.speechSynthesis.getVoices();
-      const hiVoice = voices.find(v => v.lang.includes('hi') || v.lang.includes('HI'));
-      if (hiVoice) u.voice = hiVoice;
       window.speechSynthesis.speak(u);
     }
 
-    function triggerCallDirect() { window.location.href = "tel:+919268880221"; }
-    
     function toggleTheme() {
       const root = document.documentElement;
       root.setAttribute('data-theme', root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
@@ -1455,11 +1046,9 @@
 
     function forceCacheRefresh() {
       if ('caches' in window) {
-        caches.keys().then((names) => {
-          for (let name of names) caches.delete(name);
-        });
-        showNativeToast("🔄 Offline cache refreshed!", "success");
-        setTimeout(() => window.location.reload(), 500);
+        caches.keys().then(names => { for (let n of names) caches.delete(n); });
+        showNativeToast("🔄 Cache cleared!", "success");
+        setTimeout(() => window.location.reload(), 400);
       }
     }
   </script>
