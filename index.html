@@ -8,7 +8,7 @@
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="data.js"></script>
+  <script src="/data.js"></script>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -254,9 +254,7 @@
     <!-- Main Dynamic Scroll Body -->
     <main class="flex-1 overflow-y-auto no-scrollbar px-4 pt-3 pb-28 space-y-4" id="mainAppScroll">
 
-      <!-- ========================================== -->
       <!-- TAB 1: 🏠 DASHBOARD -->
-      <!-- ========================================== -->
       <section id="view-dashboard" class="space-y-4">
         
         <!-- Site Filter Selector -->
@@ -267,7 +265,7 @@
           </select>
         </div>
 
-        <!-- 🔔 UPGRADE #7: PENDING IN-APP REQUESTS HUB (SUPABASE) -->
+        <!-- PENDING IN-APP REQUESTS HUB -->
         <div id="requests-container" class="b-card border-l-4 border-amber-500 hidden space-y-3">
           <div class="flex justify-between items-center">
             <div class="flex items-center gap-2">
@@ -279,7 +277,7 @@
           <div id="requests-list" class="space-y-2.5"></div>
         </div>
 
-        <!-- 📊 1-CLICK EXCEL / CSV REPORT DOWNLOAD BAR -->
+        <!-- 1-CLICK EXCEL / CSV REPORT DOWNLOAD BAR -->
         <div class="b-card flex items-center justify-between py-2.5 px-3.5 bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-transparent border border-emerald-500/20">
           <div class="flex items-center gap-2">
             <span class="text-xl">📊</span>
@@ -330,7 +328,7 @@
           </div>
         </div>
 
-        <!-- 💼 SATURDAY CASH BAG WIDGET -->
+        <!-- SATURDAY CASH BAG WIDGET -->
         <div class="b-card border-l-4 border-amber-500 flex justify-between items-center py-3">
           <div>
             <div class="flex items-center gap-1.5">
@@ -412,7 +410,7 @@
           </div>
         </div>
 
-        <!-- 📸 SITE PACK-UP PROOFS GALLERY -->
+        <!-- SITE PACK-UP PROOFS GALLERY -->
         <div class="b-card space-y-3">
           <div class="flex justify-between items-center">
             <span class="text-[13.5px] font-black" style="color: var(--text-main);">📸 Live Site Pack-Up Proofs</span>
@@ -422,9 +420,7 @@
         </div>
       </section>
 
-      <!-- ========================================== -->
       <!-- TAB 2: 👷 LABOUR -->
-      <!-- ========================================== -->
       <section id="view-labour" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
@@ -480,9 +476,7 @@
         <div id="workersListContainer" class="space-y-3 pb-8"></div>
       </section>
 
-      <!-- ========================================== -->
       <!-- TAB 3: 📐 THEKEDAR MEASUREMENT BOOK (MB) -->
-      <!-- ========================================== -->
       <section id="view-thekedar" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
@@ -516,9 +510,7 @@
         <div id="thekedarListContainer" class="space-y-3 pb-8"></div>
       </section>
 
-      <!-- ========================================== -->
       <!-- TAB 4: 📦 SUPPLIER & VENDOR KHATA -->
-      <!-- ========================================== -->
       <section id="view-suppliers" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
@@ -552,9 +544,7 @@
         <div id="suppliersListContainer" class="space-y-3 pb-8"></div>
       </section>
 
-      <!-- ========================================== -->
       <!-- TAB 5: 📋 DEMANDS HUB -->
-      <!-- ========================================== -->
       <section id="view-demands" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
@@ -581,9 +571,7 @@
         <div id="materialsListContainer" class="space-y-3 pb-8"></div>
       </section>
 
-      <!-- ========================================== -->
       <!-- TAB 6: 🏛️ CLIENT BILLING & PROFIT MARGINS -->
-      <!-- ========================================== -->
       <section id="view-client" class="hidden space-y-3.5">
         <div class="flex justify-between items-center bg-black/5 dark:bg-white/5 p-2 rounded-2xl">
           <button onclick="triggerHaptic(); switchTab('dashboard')" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-[11.5px] font-black shadow-sm" style="color: var(--text-main);">← Back</button>
@@ -619,7 +607,7 @@
 
     </main>
 
-    <!-- Bottom Navigation Bar (6 Clean Action Tabs) -->
+    <!-- Bottom Navigation Bar -->
     <nav class="b-nav">
       <button class="b-nav-btn active" id="tabNav-dashboard" onclick="triggerHaptic(); switchTab('dashboard')">
         <span class="icon-wrap text-xl">🏠</span><span>Home</span>
@@ -642,11 +630,8 @@
       </button>
     </nav>
 
-    <!-- ========================================== -->
-    <!-- ALL 14 MODALS (100% WIRED & FUNCTIONAL) -->
-    <!-- ========================================== -->
-
-    <!-- Modal 1: Add Worker (UPGRADE #5: Site Assign Removed) -->
+    <!-- Modals -->
+    <!-- Modal 1: Add Worker -->
     <div id="modalAddWorker" class="modal-backdrop hidden" onclick="closeAllModals()">
       <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
         <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
@@ -1082,13 +1067,35 @@
 
     function triggerHaptic() { if ('vibrate' in navigator) navigator.vibrate([15]); }
 
+    // ==========================================
+    // 🧠 UNIFIED SUPABASE MASTER INITIALIZER
+    // ==========================================
     async function initAdminApp() {
       window.initSupabase();
-      db = await getCloudMasterDB();
+      
+      try {
+        db = await getCloudMasterDB();
+      } catch (e) {
+        db = defaultMasterDB;
+      }
 
-      // 🧠 SUPABASE CORE ENGINE DATA MERGE
       if (window.supabaseClient) {
         try {
+          // 1. Fetch Dynamic Projects
+          const { data: projects } = await window.supabaseClient.from('projects').select('*');
+          if (projects && projects.length > 0) {
+            db.projects = projects.map(p => ({
+              id: p.id,
+              name: p.name,
+              client: p.client_name,
+              phone: p.client_phone,
+              totalValue: Number(p.total_value) || 0,
+              received: 0,
+              phase: p.phase || 'Ongoing'
+            }));
+          }
+
+          // 2. Fetch Labours & Attendance (OT Preserved)
           const { data: labours } = await window.supabaseClient.from('labour').select('*');
           const { data: atts } = await window.supabaseClient.from('attendance').select('*');
           
@@ -1096,20 +1103,25 @@
             db.workers = labours.map(l => {
               let attObj = {};
               (atts || []).filter(a => a.labour_id === l.id).forEach(a => {
-                attObj[a.date] = { status: a.status, ot: 0, locked: true };
+                attObj[a.date] = { 
+                  status: a.status, 
+                  ot: Number(a.ot_hours) || 0, // ✅ OT FIX: Overtime persists permanently
+                  locked: a.is_locked || false 
+                };
               });
+
               return {
                 id: l.id,
                 name: l.name,
                 role: l.role || 'Labour',
                 rate: Number(l.daily_rate) || 500,
-                otRate: (l.role === 'Mistri' ? 100 : 65),
-                site: 'P1',
+                otRate: Number(l.ot_rate_per_hour) || (l.role === 'Mistri' ? 100 : 65),
+                site: l.assigned_project_id || (db.projects?.[0]?.id || 'P1'), // ✅ DYNAMIC SITE
                 phone: l.mobile,
                 pin: l.pin || '1234',
-                photo: '',
+                photo: l.photo_url || '',
                 att: attObj,
-                advance: Number(l.advance) || 0,
+                advance: Number(l.current_advance !== undefined ? l.current_advance : l.advance) || 0,
                 device_id: l.device_id,
                 player_id: l.player_id,
                 advanceList: [],
@@ -1118,18 +1130,33 @@
               };
             });
           }
-          await loadInAppRequests();
         } catch (e) {
-          console.warn("Supabase fetch fallback", e);
+          console.warn("Supabase fetch fallback:", e);
+        }
+
+        // 3. Realtime Listener (Zero Reload Required)
+        if (!window._adminRealtimeActive) {
+          window._adminRealtimeActive = true;
+          window.supabaseClient.channel('admin_live_channel')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'requests' }, async () => {
+              if (window.playSuccessChime) window.playSuccessChime();
+              await loadInAppRequests();
+              showNativeToast("🔔 Worker ki nayi Request / Demand aayi!", "info");
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'attendance' }, async () => {
+              await initAdminApp();
+            })
+            .subscribe();
         }
       }
 
+      await loadInAppRequests();
       renderAllViews();
     }
 
     async function refreshAdminData() {
       await initAdminApp();
-      alert("☁️ Live Master Data Refreshed!");
+      showNativeToast("☁️ Live Master Data Refreshed!", "success");
     }
 
     async function verifyAdminPIN() {
@@ -1139,7 +1166,7 @@
         sessionStorage.setItem('vijay_admin_token', 'active');
         await initAdminApp();
       } else {
-        alert("Galat Master PIN! '2026' enter karein.");
+        showNativeToast("Galat Master PIN! '2026' enter karein.", "error");
         document.getElementById('adminPinInput').value = '';
       }
     }
@@ -1173,7 +1200,7 @@
     }
 
     // ==========================================
-    // 🔔 IN-APP REQUESTS HUB (UPGRADE #7)
+    // 🔔 IN-APP REQUESTS HUB
     // ==========================================
     async function loadInAppRequests() {
       if (!window.supabaseClient) return;
@@ -1186,7 +1213,7 @@
       const list = document.getElementById('requests-list');
       
       if (error || !data || data.length === 0) {
-        container.classList.add('hidden');
+        if (container) container.classList.add('hidden');
         return;
       }
 
@@ -1212,15 +1239,33 @@
 
     async function handleRequestApproval(reqId, labourId, amount, type, decision, playerId) {
       if (!window.supabaseClient) return;
-      await window.supabaseClient.from('requests').update({ status: decision }).eq('id', reqId);
+      window.showGlobalLoader(`Processing Request ${decision}...`);
+
+      await window.supabaseClient.from('requests').update({ 
+        status: decision,
+        action_taken_at: new Date().toISOString()
+      }).eq('id', reqId);
       
       if (decision === 'Approved' && type === 'Advance' && labourId) {
-        const { data: lab } = await window.supabaseClient.from('labour').select('advance').eq('id', labourId).single();
-        await window.supabaseClient.from('labour').update({ advance: (Number(lab.advance) || 0) + Number(amount) }).eq('id', labourId);
+        const { data: lab } = await window.supabaseClient.from('labour').select('current_advance, advance').eq('id', labourId).single();
+        const currentAdv = Number(lab?.current_advance ?? lab?.advance ?? 0);
+        const newAdv = currentAdv + Number(amount);
+
+        await window.supabaseClient.from('labour').update({ 
+          current_advance: newAdv,
+          advance: newAdv 
+        }).eq('id', labourId);
+
+        await window.supabaseClient.from('labour_advances').insert([{
+          labour_id: labourId,
+          amount: Number(amount),
+          reason: 'Approved Field Kharcha'
+        }]);
       }
 
-      window.playSuccessChime();
-      alert(`✓ Request ${decision}!`);
+      window.hideGlobalLoader();
+      if (window.playSuccessChime) window.playSuccessChime();
+      showNativeToast(`✓ Request ${decision}!`, "success");
       
       if (playerId && window.sendPushNotification) {
         window.sendPushNotification(
@@ -1306,7 +1351,7 @@
     }
 
     function openImagePreview(imgSrc, workerName, siteName, lat, lng, dist) {
-      if (!imgSrc) return alert("Photo preview not available.");
+      if (!imgSrc) return showNativeToast("Photo preview not available.", "error");
       document.getElementById('previewImgElem').src = imgSrc;
       document.getElementById('previewImgTitle').innerText = `${workerName} - ${siteName}`;
 
@@ -1325,7 +1370,7 @@
     }
 
     // ==========================================
-    // 👷 LABOUR ATTENDANCE (UPGRADE #3: SINGLE ROW ISOLATED)
+    // 👷 LABOUR ATTENDANCE (WITH UPSERT & OT FIX)
     // ==========================================
     function renderWorkersList() {
       const totalNetDue = (db.workers || []).reduce((a, w) => a + calcWorkerDue(w), 0);
@@ -1464,26 +1509,34 @@
       renderWorkersList();
     }
 
-    // ⚡ SINGLE ROW ATTENDANCE TRIGGER
+    // ⚡ SINGLE ROW ATTENDANCE WITH UPSERT (Zero Duplicates)
     async function setAttendanceQuick(workerId, status, name, playerId) {
       const today = getTodayString();
-      
+      const w = (db.workers || []).find(x => x.id === workerId);
+      const curOt = (w && w.att && w.att[today]) ? (typeof w.att[today] === 'object' ? (w.att[today].ot || 0) : 0) : 0;
+
       if (window.supabaseClient) {
-        await window.supabaseClient.from('attendance').insert([{
-          labour_id: workerId,
-          status: status,
-          date: today
-        }]);
+        try {
+          await window.supabaseClient.from('attendance').upsert({
+            labour_id: workerId,
+            project_id: w ? w.site : null,
+            date: today,
+            status: status,
+            ot_hours: curOt,
+            is_locked: false
+          }, { onConflict: 'labour_id,date' });
+        } catch (e) {
+          console.error("Attendance upsert failed:", e);
+        }
       }
 
-      const w = (db.workers || []).find(x => x.id === workerId);
       if (w) {
         if (!w.att) w.att = {};
-        w.att[today] = { status: status, ot: 0, locked: false };
+        w.att[today] = { status: status, ot: curOt, locked: false };
       }
 
-      window.playSuccessChime();
-      alert(`✓ ${name}: ${status} Recorded!`);
+      if (window.playSuccessChime) window.playSuccessChime();
+      showNativeToast(`✓ ${name}: ${status} Recorded!`, "success");
       
       if (playerId && window.sendPushNotification) {
         window.sendPushNotification("Haziri Update ⏱️", `Namaste ${name}, aapki aaj ki haziri (${status}) lag gayi hai.`, playerId);
@@ -1497,37 +1550,70 @@
         if (window.supabaseClient) {
           await window.supabaseClient.from('labour').update({ device_id: null }).eq('id', workerId);
         }
-        window.playSuccessChime();
-        alert(`📱 ${name} ka phone unlock ho gaya!`);
+        if (window.playSuccessChime) window.playSuccessChime();
+        showNativeToast(`📱 ${name} ka phone unlock ho gaya!`, "success");
         await initAdminApp();
       }
     }
 
-    function markAllPresent() {
+    async function markAllPresent() {
       const today = getTodayString();
+      const updates = [];
+
       (db.workers || []).forEach(w => {
         if (!w.att) w.att = {};
         if (!w.att[today] || !w.att[today].locked) {
-          w.att[today] = { status: 'P', ot: 0, locked: false };
+          const ot = (typeof w.att[today] === 'object') ? (w.att[today].ot || 0) : 0;
+          w.att[today] = { status: 'P', ot: ot, locked: false };
+          updates.push({
+            labour_id: w.id,
+            project_id: w.site,
+            date: today,
+            status: 'P',
+            ot_hours: ot,
+            is_locked: false
+          });
         }
       });
-      saveCloudMasterDB(db).then(renderAllViews);
-      alert("✓ All unlocked workers marked Present (P)!");
+
+      if (window.supabaseClient && updates.length > 0) {
+        await window.supabaseClient.from('attendance').upsert(updates, { onConflict: 'labour_id,date' });
+      }
+
+      await saveCloudMasterDB(db);
+      renderAllViews();
+      if (window.playSuccessChime) window.playSuccessChime();
+      showNativeToast("✓ All unlocked workers marked Present (P)!", "success");
     }
 
     async function lockAllAttendance() {
       triggerHaptic();
       const today = getTodayString();
       let count = 0;
+      const lockedRows = [];
+
       (db.workers || []).forEach(w => {
         if (w.att && w.att[today]) {
           w.att[today].locked = true;
           count++;
+          lockedRows.push({
+            labour_id: w.id,
+            project_id: w.site,
+            date: today,
+            status: typeof w.att[today] === 'object' ? w.att[today].status : w.att[today],
+            ot_hours: typeof w.att[today] === 'object' ? (w.att[today].ot || 0) : 0,
+            is_locked: true
+          });
         }
       });
+
+      if (window.supabaseClient && lockedRows.length > 0) {
+        await window.supabaseClient.from('attendance').upsert(lockedRows, { onConflict: 'labour_id,date' });
+      }
+
       await saveCloudMasterDB(db);
       renderAllViews();
-      alert(`✅ ${count} attendance records locked!`);
+      showNativeToast(`✅ ${count} attendance records locked!`, "success");
     }
 
     function unlockAttendance(wId) {
@@ -1547,14 +1633,31 @@
       if (!w.att) w.att = {};
 
       const cur = w.att[today];
-      if (cur && cur.locked) return alert("Pehle 'Update ✏️' dabakar unlock karein.");
+      if (cur && cur.locked) return showNativeToast("Pehle 'Update ✏️' dabakar unlock karein.", "error");
       
       const curSt = typeof cur === 'object' ? cur.status : (cur || 'P');
       const curOt = Math.max(0, (typeof cur === 'object' ? (cur.ot || 0) : 0) + delta);
       
       w.att[today] = { status: curSt, ot: curOt, locked: false };
+
+      if (window.supabaseClient) {
+        try {
+          await window.supabaseClient.from('attendance').upsert({
+            labour_id: workerId,
+            project_id: w.site,
+            date: today,
+            status: curSt,
+            ot_hours: curOt,
+            is_locked: false
+          }, { onConflict: 'labour_id,date' });
+        } catch (e) {
+          console.error("OT upsert failed:", e);
+        }
+      }
+
       await saveCloudMasterDB(db);
       renderAllViews();
+      showNativeToast(`⏱️ OT: ${curOt} Hrs updated!`, "info");
     }
 
     async function reassignWorkerSite(workerId, siteId) {
@@ -1562,9 +1665,12 @@
       const w = (db.workers || []).find(x => x.id === workerId);
       if (w) {
         w.site = siteId;
+        if (window.supabaseClient) {
+          await window.supabaseClient.from('labour').update({ assigned_project_id: siteId }).eq('id', workerId);
+        }
         await saveCloudMasterDB(db);
         renderAllViews();
-        alert(`✓ Worker assigned site updated!`);
+        showNativeToast("✓ Worker assigned site updated!", "success");
       }
     }
 
@@ -1581,7 +1687,7 @@
       db.workers = db.workers.filter(x => x.id !== workerId);
       await saveCloudMasterDB(db);
       renderAllViews();
-      alert(`✓ ${w.name} delete ho gaya.`);
+      showNativeToast(`✓ ${w.name} delete ho gaya.`, "info");
     }
 
     function sendWorkerWhatsAppSlip(wId) {
@@ -1601,7 +1707,7 @@
     async function submitFastAdvance() {
       const wId = document.getElementById('advWorkerSelect').value;
       const amt = parseFloat(document.getElementById('advAmountInput').value) || 0;
-      if (amt <= 0) return alert("Valid advance amount daalein!");
+      if (amt <= 0) return showNativeToast("Valid advance amount daalein!", "error");
 
       const w = (db.workers || []).find(x => x.id === wId);
       if (w) {
@@ -1610,7 +1716,16 @@
         w.advanceList.unshift({ date: getTodayString(), amount: amt, reason: 'Field Cash' });
         
         if (window.supabaseClient) {
-          await window.supabaseClient.from('labour').update({ advance: w.advance }).eq('id', w.id);
+          await window.supabaseClient.from('labour').update({ 
+            current_advance: w.advance,
+            advance: w.advance 
+          }).eq('id', w.id);
+
+          await window.supabaseClient.from('labour_advances').insert([{
+            labour_id: w.id,
+            amount: amt,
+            reason: 'Fast Jeb Kharcha'
+          }]);
         }
 
         if (!db.ledger) db.ledger = [];
@@ -1619,8 +1734,8 @@
         await saveCloudMasterDB(db);
         closeAllModals();
         renderAllViews();
-        window.playSuccessChime();
-        alert(`₹${amt} cash advance logged!`);
+        if (window.playSuccessChime) window.playSuccessChime();
+        showNativeToast(`₹${amt} cash advance logged!`, "success");
       }
     }
 
@@ -1663,14 +1778,17 @@
       w.advance = 0;
 
       if (window.supabaseClient) {
-        await window.supabaseClient.from('labour').update({ advance: 0 }).eq('id', w.id);
+        await window.supabaseClient.from('labour').update({ 
+          current_advance: 0,
+          advance: 0 
+        }).eq('id', w.id);
       }
 
       await saveCloudMasterDB(db);
       closeAllModals();
       renderAllViews();
-      window.playSuccessChime();
-      alert(`💾 Hisaab Settled! Balance ₹${carry} carried forward.`);
+      if (window.playSuccessChime) window.playSuccessChime();
+      showNativeToast(`💾 Hisaab Settled! Balance ₹${carry} carried forward.`, "success");
     }
 
     function sendChuktaWhatsApp() {
@@ -1710,35 +1828,38 @@
       document.getElementById('newWRate').value = (r === 'Mistri' || r === 'Plumber' || r === 'Electrician') ? 800 : 500;
     }
 
-    // 👷 SUBMIT WORKER (UPGRADE #5: CLEANED UP)
     async function submitNewWorker() {
       const name = document.getElementById('newWName').value.trim();
       const role = document.getElementById('newWRole').value;
       const rate = parseFloat(document.getElementById('newWRate').value) || 500;
       const cleanPhone = document.getElementById('newWPhone').value.trim().replace(/\D/g, '');
       const pin = document.getElementById('newWPin').value.trim() || '1234';
+      const defaultSiteId = (db.projects && db.projects.length > 0) ? db.projects[0].id : null;
 
-      if (!name) return alert("Worker ka naam bharein!");
-      if (cleanPhone.length !== 10) return alert("10-digit mobile number bharein!");
+      if (!name) return showNativeToast("Worker ka naam bharein!", "error");
+      if (cleanPhone.length !== 10) return showNativeToast("10-digit mobile number bharein!", "error");
 
       if (window.supabaseClient) {
         const { error } = await window.supabaseClient.from('labour').insert([{
           name: name,
           mobile: cleanPhone,
           daily_rate: rate,
+          ot_rate_per_hour: role === 'Mistri' ? 100 : 65,
           role: role,
           pin: pin,
+          assigned_project_id: defaultSiteId,
+          current_advance: 0,
           advance: 0
         }]);
-        if (error) return alert("Error: Yeh mobile number pehle se exist karta hai.");
+        if (error) return showNativeToast("Error: Yeh mobile number pehle se exist karta hai.", "error");
       }
 
-      window.playSuccessChime();
+      if (window.playSuccessChime) window.playSuccessChime();
       document.getElementById('newWName').value = '';
       document.getElementById('newWPhone').value = '';
       closeAllModals();
       await initAdminApp();
-      alert(`✓ ${name} save ho gaya!`);
+      showNativeToast(`✓ ${name} save ho gaya!`, "success");
     }
 
     // ==========================================
@@ -1832,7 +1953,7 @@
       const r = parseFloat(document.getElementById('mbRateInput').value) || 0;
       const unit = document.getElementById('mbUnitSelect').value;
 
-      if (!loc || l <= 0 || w <= 0 || r <= 0) return alert("Sahi measurement details bharein!");
+      if (!loc || l <= 0 || w <= 0 || r <= 0) return showNativeToast("Sahi measurement details bharein!", "error");
 
       const area = Math.round((l * w) * 100) / 100;
       const amount = Math.round(area * r);
@@ -1859,8 +1980,8 @@
       document.getElementById('mbWidthInput').value = '';
       closeAllModals();
       renderAllViews();
-      window.playSuccessChime();
-      alert(`✓ ${loc} (${area} Sq.Ft = ₹${amount}) Measurement Book mein save ho gaya!`);
+      if (window.playSuccessChime) window.playSuccessChime();
+      showNativeToast(`✓ ${loc} (${area} Sq.Ft = ₹${amount}) Measurement Book mein save ho gaya!`, "success");
     }
 
     function sendThekedarMBWhatsApp(tId) {
@@ -1886,7 +2007,7 @@
       const amt = parseFloat(document.getElementById('thekPayAmountInput').value) || 0;
       const mode = document.getElementById('thekPayModeSelect').value;
       const note = document.getElementById('thekPayNoteInput').value.trim() || 'MB Stage Payment';
-      if (amt <= 0) return alert("Valid payment amount daalein!");
+      if (amt <= 0) return showNativeToast("Valid payment amount daalein!", "error");
 
       const t = (db.thekedars || []).find(x => x.id === currentThekedarPayId);
       if (t) {
@@ -1904,8 +2025,8 @@
         await saveCloudMasterDB(db);
         closeAllModals();
         renderAllViews();
-        window.playSuccessChime();
-        alert(`✓ ₹${amt.toLocaleString('en-IN')} payment logged to ${t.name}!`);
+        if (window.playSuccessChime) window.playSuccessChime();
+        showNativeToast(`✓ ₹${amt.toLocaleString('en-IN')} payment logged to ${t.name}!`, "success");
       }
     }
 
@@ -1915,7 +2036,7 @@
       const site = document.getElementById('newThekSite').value;
       const phone = document.getElementById('newThekPhone').value.trim();
 
-      if (!name || !work) return alert("Thekedar name aur work type bharein!");
+      if (!name || !work) return showNativeToast("Thekedar name aur work type bharein!", "error");
 
       if (!db.thekedars) db.thekedars = [];
       db.thekedars.unshift({ id: 'T' + Date.now(), name, work, site, phone, value: 0, paid: 0, progress: 0 });
@@ -1923,8 +2044,8 @@
       await saveCloudMasterDB(db);
       closeAllModals();
       renderAllViews();
-      window.playSuccessChime();
-      alert(`✓ ${name} Thekedar add ho gaya!`);
+      if (window.playSuccessChime) window.playSuccessChime();
+      showNativeToast(`✓ ${name} Thekedar add ho gaya!`, "success");
     }
 
     // ==========================================
@@ -2010,7 +2131,7 @@
       const amt = parseFloat(document.getElementById('supPayAmountInput').value) || 0;
       const mode = document.getElementById('supPayModeSelect').value;
       const note = document.getElementById('supPayNoteInput').value.trim() || 'Supplier Payment';
-      if (amt <= 0) return alert("Valid payment amount daalein!");
+      if (amt <= 0) return showNativeToast("Valid payment amount daalein!", "error");
 
       const sup = (db.suppliers || []).find(s => (typeof s === 'object' ? s.id : s) === currentPayingSupplierId);
       const supName = typeof sup === 'object' ? sup.name : sup;
@@ -2024,8 +2145,8 @@
       await saveCloudMasterDB(db);
       closeAllModals();
       renderAllViews();
-      window.playSuccessChime();
-      alert(`✓ ₹${amt.toLocaleString('en-IN')} payment logged to ${supName}!`);
+      if (window.playSuccessChime) window.playSuccessChime();
+      showNativeToast(`✓ ₹${amt.toLocaleString('en-IN')} payment logged to ${supName}!`, "success");
     }
 
     function sendSupplierWhatsAppKhata(supId) {
@@ -2041,7 +2162,7 @@
       const name = document.getElementById('newSupName').value.trim();
       const cat = document.getElementById('newSupCat').value;
       const phone = document.getElementById('newSupPhone').value.trim();
-      if (!name) return alert("Supplier / Shop name bharein!");
+      if (!name) return showNativeToast("Supplier / Shop name bharein!", "error");
 
       if (!db.suppliers) db.suppliers = [];
       db.suppliers.unshift({ id: 'SUP' + Date.now(), name, category: cat, phone, totalPurchased: 0, totalPaid: 0 });
@@ -2049,8 +2170,8 @@
       await saveCloudMasterDB(db);
       closeAllModals();
       renderAllViews();
-      window.playSuccessChime();
-      alert(`✓ ${name} Supplier add ho gaya!`);
+      if (window.playSuccessChime) window.playSuccessChime();
+      showNativeToast(`✓ ${name} Supplier add ho gaya!`, "success");
     }
 
     async function submitSupplierBill() {
@@ -2060,7 +2181,7 @@
       const billNo = document.getElementById('billInvoiceNo').value.trim();
       const amount = parseFloat(document.getElementById('billAmountInput').value) || 0;
 
-      if (!item || amount <= 0) return alert("Item aur valid amount bharein!");
+      if (!item || amount <= 0) return showNativeToast("Item aur valid amount bharein!", "error");
 
       if (!db.supplierBills) db.supplierBills = [];
       db.supplierBills.unshift({ id: 'BILL' + Date.now(), supplierId: supId, site, item, billNo: billNo || 'Parcha', amount, date: getTodayString() });
@@ -2068,8 +2189,8 @@
       await saveCloudMasterDB(db);
       closeAllModals();
       renderAllViews();
-      window.playSuccessChime();
-      alert(`✓ ₹${amount.toLocaleString('en-IN')} bill khata me add ho gaya!`);
+      if (window.playSuccessChime) window.playSuccessChime();
+      showNativeToast(`✓ ₹${amount.toLocaleString('en-IN')} bill khata me add ho gaya!`, "success");
     }
 
     // ==========================================
@@ -2113,7 +2234,7 @@
               </span>
             </div>
 
-            <div class="flex gap-2 pt-1 border-t border-black/5 dark:border-white/5">
+            <div class="flex gap-2 pt-1 border-t border-black/5 dark:border-white/10">
               ${m.status !== 'Approved' ? `
                 <button onclick="approveDemand('${m.id}')" class="flex-1 h-9 rounded-xl bg-emerald-600 text-white font-black text-[11.5px] active:scale-95 shadow-sm">
                   Approve ✓
@@ -2136,7 +2257,7 @@
       if (m) {
         m.status = 'Approved';
         await saveCloudMasterDB(db);
-        window.playSuccessChime();
+        if (window.playSuccessChime) window.playSuccessChime();
         renderAllViews();
       }
     }
@@ -2154,7 +2275,7 @@
       const item = document.getElementById('adminMatItemInput').value.trim();
       const type = document.getElementById('adminMatTypeSelect').value;
       const site = document.getElementById('adminMatSiteSelect').value;
-      if (!item) return alert("Item details required!");
+      if (!item) return showNativeToast("Item details required!", "error");
 
       if (!db.materials) db.materials = [];
       db.materials.unshift({
@@ -2171,8 +2292,8 @@
       await saveCloudMasterDB(db);
       closeAllModals();
       renderAllViews();
-      window.playSuccessChime();
-      alert("✓ Demand added to queue!");
+      if (window.playSuccessChime) window.playSuccessChime();
+      showNativeToast("✓ Demand added to queue!", "success");
     }
 
     function updateNavBadges() {
@@ -2283,7 +2404,7 @@
       const milestone = document.getElementById('payClientMilestoneInput').value.trim() || 'Running Installment';
       const note = document.getElementById('payClientNoteInput').value.trim();
 
-      if (amt <= 0) return alert("Valid payment amount bharein!");
+      if (amt <= 0) return showNativeToast("Valid payment amount bharein!", "error");
 
       const p = (db.projects || []).find(x => x.id === projectId);
       if (!p) return;
@@ -2304,16 +2425,16 @@
 
       closeAllModals();
       renderAllViews();
-      window.playSuccessChime();
+      if (window.playSuccessChime) window.playSuccessChime();
       window.open(`https://api.whatsapp.com/send?${phone ? 'phone=' + phone + '&' : ''}text=${receiptMsg}`, '_blank');
-      alert(`✓ ₹${amt.toLocaleString('en-IN')} inward payment logged!`);
+      showNativeToast(`✓ ₹${amt.toLocaleString('en-IN')} inward payment logged!`, "success");
     }
 
     function sendClientLatestReceiptWhatsApp(projectId) {
       triggerHaptic();
       const p = (db.projects || []).find(x => x.id === projectId);
       const payments = (db.clientPayments || []).filter(cp => cp.projectId === projectId);
-      if (!p || payments.length === 0) return alert("Is project par abhi koi payment record nahi hai!");
+      if (!p || payments.length === 0) return showNativeToast("Is project par abhi koi payment record nahi hai!", "error");
       
       const receiptMsg = generateClientWhatsAppReceipt(p, payments[0], db);
       const phone = p.phone ? `91${p.phone}` : '';
@@ -2335,21 +2456,32 @@
       const name = document.getElementById('newCSite').value.trim();
       const totalValue = parseFloat(document.getElementById('newCValue').value) || 0;
 
-      if (!client || !name || totalValue <= 0) return alert("Details required!");
+      if (!client || !name || totalValue <= 0) return showNativeToast("Details required!", "error");
+
+      if (window.supabaseClient) {
+        await window.supabaseClient.from('projects').insert([{
+          name: name,
+          client_name: client,
+          client_phone: phone,
+          total_value: totalValue,
+          phase: 'Site Layout & Demolition',
+          status: 'active'
+        }]);
+      }
 
       if (!db.projects) db.projects = [];
       db.projects.push({ id: 'P' + Date.now(), client, phone, name, totalValue, received: 0, progress: 10, phase: 'Site Layout & Demolition' });
 
       await saveCloudMasterDB(db);
       closeAllModals();
-      renderAllViews();
-      window.playSuccessChime();
-      alert(`✓ Project saved!`);
+      await initAdminApp();
+      if (window.playSuccessChime) window.playSuccessChime();
+      showNativeToast(`✓ Project saved!`, "success");
     }
 
     function startVoiceInput(targetInputId) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) return alert("Voice input requires Chrome/Safari.");
+      if (!SpeechRecognition) return showNativeToast("Voice input requires Chrome/Safari.", "error");
       const recognition = new SpeechRecognition();
       recognition.lang = currentAdminLang === 'hi' ? 'hi-IN' : 'en-IN';
       const input = document.getElementById(targetInputId);
