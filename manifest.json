@@ -1,9 +1,0 @@
-{
-  "name": "VIJAY Construction Portal",
-  "short_name": "VijayApp",
-  "start_url": "./labour.html",
-  "display": "standalone",
-  "background_color": "#f4f6f9",
-  "theme_color": "#2563eb",
-  "orientation": "portrait"
-}
