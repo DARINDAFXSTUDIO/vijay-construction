@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
-  <!-- FIX: Instant Anti-Flash Synchronous Script -->
+  <!-- FIX #7: Anti-Flash Synchronous Head Script -->
   <script>
     (function() {
       const sess = localStorage.getItem('vc_labour_session');
@@ -25,33 +25,34 @@
     })();
   </script>
 
+  <!-- FIX #1: Zero-Lag 60 FPS GPU Accelerated Styling & Content Containment -->
   <style>
     :root {
       --bg-app: #f4f6f9;
-      --card-bg: rgba(255, 255, 255, 0.95);
+      --card-bg: rgba(255, 255, 255, 0.96);
       --card-border: #e2e8f0;
-      --card-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.06);
+      --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
       --text-main: #0f172a;
       --text-sub: #64748b;
       --neo-gradient: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #06b6d4 100%);
-      --glass-bg: rgba(255, 255, 255, 0.88);
+      --glass-bg: #ffffff;
       --pill-bg: #ffffff;
-      --pill-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      --pill-shadow: 0 3px 10px rgba(0,0,0,0.08);
       --icon-color: #64748b;
       --icon-active: #0f172a;
     }
 
     [data-theme="dark"] {
       --bg-app: #080c14;
-      --card-bg: rgba(17, 24, 39, 0.94);
+      --card-bg: rgba(17, 24, 39, 0.96);
       --card-border: rgba(255, 255, 255, 0.08);
-      --card-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.8);
+      --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
       --text-main: #f8fafc;
       --text-sub: #94a3b8;
       --neo-gradient: linear-gradient(135deg, #1e293b 0%, #1d4ed8 50%, #0284c7 100%);
-      --glass-bg: rgba(30, 41, 59, 0.88);
+      --glass-bg: #1e293b;
       --pill-bg: #1e293b;
-      --pill-shadow: 0 4px 14px rgba(0,0,0,0.5);
+      --pill-shadow: 0 3px 10px rgba(0,0,0,0.4);
       --icon-color: #94a3b8;
       --icon-active: #ffffff;
     }
@@ -87,20 +88,21 @@
 
     .glass-card {
       background: var(--card-bg);
-      border-radius: 22px;
-      padding: 18px;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 16px;
       border: 1px solid var(--card-border);
       box-shadow: var(--card-shadow);
       transform: translateZ(0);
+      content-visibility: auto;
+      contain-intrinsic-size: 0 120px;
     }
 
     .hero-card {
-      border-radius: 26px;
-      padding: 22px 20px;
+      border-radius: 24px;
+      padding: 20px;
       color: #ffffff;
-      box-shadow: 0 12px 28px -6px rgba(37, 99, 235, 0.35);
+      box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.3);
+      transform: translateZ(0);
     }
 
     .btn-primary {
@@ -115,7 +117,7 @@
       border: none;
       cursor: pointer;
       width: 100%;
-      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
     }
     .btn-primary:active { transform: scale(0.97); }
 
@@ -146,13 +148,11 @@
     .liquid-nav {
       display: flex;
       align-items: center;
-      padding: 5px;
+      padding: 4px;
       border-radius: 99px;
-      background: var(--glass-bg);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
+      background: var(--card-bg);
       border: 1px solid var(--card-border);
-      box-shadow: 0 16px 36px -8px rgba(0,0,0,0.22);
+      box-shadow: 0 12px 28px -6px rgba(0,0,0,0.18);
     }
     .nav-items { position: relative; display: flex; flex: 1; gap: 2px; z-index: 3; }
     .active-pill {
@@ -162,7 +162,7 @@
       background: var(--pill-bg);
       border-radius: 99px;
       box-shadow: var(--pill-shadow);
-      transition: transform 0.35s cubic-bezier(0.34, 1.2, 0.64, 1), width 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
+      transition: transform 0.25s ease, width 0.25s ease;
       z-index: 1;
     }
     .nav-btn {
@@ -225,13 +225,14 @@
   <div class="app-root">
     
     <!-- Top Header -->
-    <header class="sticky top-0 px-4 pt-3 pb-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-black/5 dark:border-white/5 flex justify-between items-center shrink-0 z-30">
+    <header class="sticky top-0 px-4 pt-3 pb-3 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-black/5 dark:border-white/5 flex justify-between items-center shrink-0 z-30">
       <div>
         <span class="text-[10px] font-extrabold tracking-wider uppercase block text-blue-600 dark:text-blue-400" id="txtHeaderSubtitle">Worker & Partner Portal</span>
         <span class="text-[16px] font-black tracking-tight" style="color: var(--text-main);">VIJAY CONSTRUCTION</span>
       </div>
 
       <div class="flex items-center gap-2">
+        <!-- Language Switcher Toggle -->
         <button onclick="triggerHaptic(); toggleLabourLang()" class="px-2.5 py-1 rounded-full text-[11px] font-black bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20 active:scale-95" id="btnLangToggle">
           🌐 हिन्दी
         </button>
@@ -244,7 +245,7 @@
       </div>
     </header>
 
-    <!-- Login Form -->
+    <!-- Professional Login Form (Auto-Login + Device Binding + WebAuthn) -->
     <div id="view-login" class="flex-1 px-4 py-8 flex flex-col justify-center max-w-sm mx-auto w-full space-y-5">
       <div class="glass-card space-y-4 shadow-xl border-t-4 border-blue-600 text-center">
         <div class="w-14 h-14 rounded-3xl bg-blue-600/10 border border-blue-600/20 text-blue-600 mx-auto flex items-center justify-center text-2xl font-black shadow-inner">
@@ -303,6 +304,7 @@
         </div>
 
         <div class="flex items-center gap-2">
+          <!-- Voice Assistant (Native TTS Fixed) -->
           <button onclick="triggerHaptic(); handleVoiceAudioLedger()" class="w-10 h-10 rounded-full flex items-center justify-center bg-blue-600 text-white shadow-md active:scale-90 text-base" title="Voice AI Status">
             🔊
           </button>
@@ -349,6 +351,7 @@
         <!-- TAB 1: 📅 HOME / AAJ & ATTENDANCE CALENDAR -->
         <div id="labour-tab-aaj" class="role-tab-view space-y-4">
           
+          <!-- GPS Geofence & Live Photo Proof -->
           <div class="glass-card space-y-3 border-l-4 border-emerald-500">
             <div class="flex justify-between items-center">
               <span class="text-[10.5px] font-black uppercase text-emerald-700 dark:text-emerald-300" id="txtAssignedSiteLabel">Today's Assigned Site</span>
@@ -406,7 +409,7 @@
 
         </div>
 
-        <!-- TAB 2: 💰 HISAAB & CASH ADVANCE -->
+        <!-- TAB 2: 💰 HISAAB & CASH ADVANCE (DIRECT IN-APP REQUEST TO SUPABASE) -->
         <div id="labour-tab-hisaab" class="role-tab-view hidden space-y-4">
           <div class="glass-card space-y-3">
             <span class="text-[14px] font-black" style="color: var(--text-main);" id="txtKharchaTitle">Request Mid-Week Cash Advance (खर्ची)</span>
@@ -689,7 +692,7 @@
       if (document.getElementById('btnSendDemand')) document.getElementById('btnSendDemand').innerText = d.sendDemand;
     }
 
-    // FIX #8: Biometric Fingerprint Auth
+    // Biometric Fingerprint Auth
     async function handleBiometricAuth() {
       const saved = localStorage.getItem('vc_labour_session');
       if (!saved) return alert("Pehle mobile number aur PIN se 1 baar login karein.");
@@ -702,7 +705,7 @@
       }
     }
 
-    // 🔐 SMART LOGIN & DEVICE BINDING
+    // Smart Login & Device Binding + OneSignal Player ID
     async function handleLogin() {
       const p = document.getElementById('inpPhone').value.trim();
       const pin = document.getElementById('inpPin').value.trim();
@@ -718,7 +721,12 @@
         if (wData) {
           const currentDevice = window.getDeviceToken();
           let playerId = null;
-          try { playerId = await OneSignal.User.pushSubscription.id; } catch(e) {}
+          try {
+            if (window.OneSignal) {
+              await OneSignal.Notifications.requestPermission();
+              playerId = await OneSignal.User.PushSubscription.id;
+            }
+          } catch(e) {}
           
           if (!wData.device_id) {
             await window.supabaseClient.from('labour').update({ device_id: currentDevice, player_id: playerId }).eq('id', wData.id);
@@ -798,15 +806,26 @@
       syncLiveRoleData();
     }
 
-    // ⚡ REALTIME WEBSOCKET LISTENER FOR WORKER (AUTO-UPDATE)
+    // ⚡ REALTIME WEBSOCKET LISTENER FOR WORKER (INSTANT POPUP & SOUND)
     function setupWorkerRealtime() {
       if (!window.supabaseClient || !currentLabourUser) return;
-      window.supabaseClient.channel('worker_live_channel')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'attendance', filter: `labour_id=eq.${currentLabourUser.id}` }, () => {
-          window.playSuccessChime();
+      window.supabaseClient.channel('worker_live_channel_' + currentLabourUser.id)
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'attendance',
+          filter: `labour_id=eq.${currentLabourUser.id}`
+        }, (payload) => {
+          if (window.playSuccessChime) window.playSuccessChime();
+          showNativeToast(`✅ Admin ne aapki haziri (${payload.new ? payload.new.status : 'Updated'}) mark kar di!`, 'success');
           syncLiveRoleData();
         })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'labour', filter: `id=eq.${currentLabourUser.id}` }, () => {
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'labour',
+          filter: `id=eq.${currentLabourUser.id}`
+        }, () => {
           syncLiveRoleData();
         })
         .subscribe();
@@ -1038,7 +1057,7 @@
       `).join('');
     }
 
-    // 📩 IN-APP KHARCHA REQUEST (UPGRADE #7: NO WHATSAPP)
+    // Direct In-App Kharcha Request to Supabase
     async function requestKharchaLabour(amt) {
       if (window.supabaseClient) {
         const { error } = await window.supabaseClient.from('requests').insert([{
@@ -1059,7 +1078,6 @@
           return;
         }
       }
-
       alert("Error sending request to Supabase.");
     }
 
@@ -1167,7 +1185,7 @@
       }).join('');
     }
 
-    // 🛰️ GPS CAPTURE TRIGGER BEFORE CAMERA OPEN
+    // GPS Capture Trigger
     function captureSitePackUpWithGPS() {
       const msgBox = document.getElementById('gpsStatusMessage');
       msgBox.classList.remove('hidden');
@@ -1199,7 +1217,7 @@
       );
     }
 
-    // 📸 STAMP REAL GPS DATA & GEOFENCE DISTANCE ON CANVAS
+    // Stamp GPS Data on Canvas
     function processProofPhoto(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1240,21 +1258,18 @@
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, w, h);
 
-          // Dark Watermark Overlay Bar
+          // Dark Watermark Bar
           ctx.fillStyle = "rgba(10, 15, 29, 0.82)";
           ctx.fillRect(0, canvas.height - 72, canvas.width, 72);
 
-          // Top Line: Brand & Time
           ctx.fillStyle = "#ffffff";
           ctx.font = "bold 14px 'Plus Jakarta Sans', sans-serif";
           ctx.fillText(`VIJAY CONSTRUCTION • ${new Date().toLocaleTimeString('en-IN')}`, 14, canvas.height - 48);
 
-          // Middle Line: Worker & Site
           ctx.fillStyle = "#93c5fd";
           ctx.font = "11px 'Plus Jakarta Sans', sans-serif";
           ctx.fillText(`Worker: ${currentLabourUser.name} (${currentLabourUser.trade}) | Site: ${projObj.name}`, 14, canvas.height - 30);
 
-          // Bottom Line: GPS Coordinates & Verification
           ctx.fillStyle = isVerified ? "#34d399" : "#fb7185";
           ctx.font = "bold 11.5px 'Plus Jakarta Sans', sans-serif";
           ctx.fillText(statusText, 14, canvas.height - 12);
@@ -1291,22 +1306,24 @@
       reader.readAsDataURL(file);
     }
 
-    // 🗣️ SMART HINDI TTS VOICE ASSISTANT (FIX #2: ROBUST FALLBACK)
+    // Robust Native Hindi TTS Voice Assistant
     function handleVoiceAudioLedger() {
-      const netDue = document.getElementById('labourNetDueText').innerText;
-      const shifts = document.getElementById('labourShiftsCount').innerText;
-      const msg = `नमस्ते ${currentLabourUser.name} जी! आपकी इस महीने कुल ${shifts} हाजिरी दर्ज है। शनिवार का कुल बकाया हिसाब ${netDue} रुपये है। धन्यवाद!`;
-
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(msg);
-        u.lang = 'hi-IN';
-        u.rate = 0.95;
-        const voices = window.speechSynthesis.getVoices();
-        const hiVoice = voices.find(v => v.lang.includes('hi') || v.lang.includes('HI'));
-        if (hiVoice) u.voice = hiVoice;
-        window.speechSynthesis.speak(u);
+      if (!('speechSynthesis' in window)) {
+        return alert("Aapke phone ka browser voice support nahi karta.");
       }
+      window.speechSynthesis.cancel();
+
+      const netDue = document.getElementById('labourNetDueText')?.innerText || '0';
+      const shifts = document.getElementById('labourShiftsCount')?.innerText || '0';
+      const msg = `नमस्ते ${currentLabourUser?.name || 'कारीगर'} जी! आपकी इस महीने कुल ${shifts} हाजिरी दर्ज है। शनिवार का कुल बकाया हिसाब ${netDue} रुपये है। धन्यवाद!`;
+
+      const u = new SpeechSynthesisUtterance(msg);
+      u.lang = 'hi-IN';
+      u.rate = 0.95;
+      const voices = window.speechSynthesis.getVoices();
+      const hiVoice = voices.find(v => v.lang.includes('hi') || v.lang.includes('HI'));
+      if (hiVoice) u.voice = hiVoice;
+      window.speechSynthesis.speak(u);
     }
 
     function triggerCallDirect() { window.location.href = "tel:+919268880221"; }
