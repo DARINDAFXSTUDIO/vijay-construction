@@ -1,7 +1,65 @@
 // =========================================================================
-// 🚀 1. NATIVE APP TOAST ENGINE & WEB AUDIO CHIME (UPGRADE #9)
+// 🚀 1. PWA SERVICE WORKER AUTO-REGISTRATION (OFFLINE SUPPORT)
 // =========================================================================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then((reg) => {
+      console.log('✅ Service Worker Active (Offline Ready):', reg.scope);
+    }).catch((err) => {
+      console.warn('Service Worker registration failed:', err);
+    });
+  });
+}
 
+// =========================================================================
+// ⏳ 2. SMART UNIVERSAL LOADER ENGINE (0-LAG VISUAL FEEDBACK)
+// =========================================================================
+(function initLoaderStyles() {
+  const style = document.createElement('style');
+  style.innerHTML = `
+    #vj-global-loader {
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      z-index: 999999; display: none; flex-direction: column;
+      align-items: center; justify-content: center; gap: 16px; color: #ffffff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .vj-spinner {
+      width: 44px; height: 44px; border: 4px solid rgba(255, 255, 255, 0.18);
+      border-top-color: #3b82f6; border-radius: 50%;
+      animation: vjSpin 0.75s linear infinite;
+    }
+    @keyframes vjSpin { to { transform: rotate(360deg); } }
+  `;
+  document.head.appendChild(style);
+})();
+
+window.showGlobalLoader = function(message = "Kripya intezar karein...") {
+  let loader = document.getElementById('vj-global-loader');
+  if (!loader) {
+    loader = document.createElement('div');
+    loader.id = 'vj-global-loader';
+    loader.innerHTML = `
+      <div class="vj-spinner"></div>
+      <span id="vj-loader-text" style="font-size: 13.5px; font-weight: 800; text-align: center; max-width: 290px; line-height: 1.4;"></span>
+    `;
+    document.body.appendChild(loader);
+  }
+  document.getElementById('vj-loader-text').innerText = message;
+  loader.style.display = 'flex';
+
+  clearTimeout(window._loaderTimeout);
+  window._loaderTimeout = setTimeout(() => window.hideGlobalLoader(), 9000);
+};
+
+window.hideGlobalLoader = function() {
+  const loader = document.getElementById('vj-global-loader');
+  if (loader) loader.style.display = 'none';
+};
+
+// =========================================================================
+// 🚀 3. NATIVE APP TOAST ENGINE & WEB AUDIO CHIME
+// =========================================================================
 (function initNativeUIStyles() {
   const style = document.createElement('style');
   style.innerHTML = `
@@ -89,15 +147,16 @@ function showNativeToast(message, type = 'info') {
   }, 2800);
 }
 
-// Override alert globally
 window.alert = function(msg) {
   showNativeToast(msg);
 };
 
-// 🔊 Audio Chime Engine (Web Audio API)
 window.playSuccessChime = function() {
   try {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.type = 'sine';
@@ -114,9 +173,8 @@ window.playSuccessChime = function() {
 };
 
 // =========================================================================
-// 🗄️ 2. SUPABASE + FIREBASE HYBRID BACKEND ENGINE
+// 🗄️ 4. SUPABASE + FIREBASE HYBRID BACKEND ENGINE
 // =========================================================================
-
 const SUPABASE_URL = 'https://lcacvkjmsmhbxipnkuvn.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_uRAQfZWY4J4pg95Yw5e9_A_DbUo7XT1';
 window.supabaseClient = null;
@@ -234,9 +292,42 @@ async function saveCloudMasterDB(data) {
 }
 
 // =========================================================================
-// 🔐 3. DEVICE BINDING, AUTO-LOGIN & ONESIGNAL (UPGRADES #2, #4, #8)
+// 🔔 5. ONESIGNAL PUSH NOTIFICATIONS (AUTHENTICATED WITH YOUR REST KEY)
 // =========================================================================
+const ONESIGNAL_REST_KEY = "os_v2_app_p6vk56atavc7lkvd5fqtngztx6nkibk3p45uojmwaolar3lkfyhhtk75c77yipsmxtlouhguvxekrpika5isdlevgntsbbxbe7jjy5q";
 
+window.sendPushNotification = async function(title, message, targetPlayerId = null) {
+  const payload = {
+    app_id: "7faaaef8-1305-45f5-aaa3-e961369b33bf",
+    headings: { en: title },
+    contents: { en: message }
+  };
+
+  if (targetPlayerId) {
+    payload.include_player_ids = [targetPlayerId];
+  } else {
+    payload.included_segments = ["Total Subscriptions"];
+  }
+
+  try {
+    const res = await fetch('https://onesignal.com/api/v1/notifications', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Key ${ONESIGNAL_REST_KEY}`
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    console.log("Push Dispatch Result:", data);
+  } catch (err) {
+    console.warn("OneSignal Dispatch Error:", err);
+  }
+};
+
+// =========================================================================
+// 🔐 6. DEVICE BINDING & OFFLINE ATTENDANCE QUEUE
+// =========================================================================
 window.getDeviceToken = function() {
   let token = localStorage.getItem('vc_device_token');
   if (!token) {
@@ -244,31 +335,6 @@ window.getDeviceToken = function() {
     localStorage.setItem('vc_device_token', token);
   }
   return token;
-};
-
-window.sendPushNotification = async function(title, message, targetPlayerId = null) {
-  const payload = {
-    app_id: "7faaaef8-1305-45f5-aaa3-e961369b33bf",
-    headings: { en: title },
-    contents: { en: message },
-    target_channel: "push"
-  };
-
-  if (targetPlayerId) {
-    payload.include_player_ids = [targetPlayerId];
-  } else {
-    payload.included_segments = ["All"];
-  }
-
-  try {
-    await fetch('https://onesignal.com/api/v1/notifications', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-  } catch (err) {
-    console.warn("OneSignal Dispatch Error:", err);
-  }
 };
 
 window.saveOfflineAttendance = function(labourId, status, date) {
@@ -298,9 +364,8 @@ window.syncOfflineData = async function() {
 window.addEventListener('online', window.syncOfflineData);
 
 // =========================================================================
-// 📍 4. GPS HAVERSINE DISTANCE ENGINE
+// 📍 7. GPS HAVERSINE DISTANCE ENGINE
 // =========================================================================
-
 function calculateGPSDistanceMeters(lat1, lon1, lat2, lon2) {
   if (!lat1 || !lon1 || !lat2 || !lon2) return null;
   const R = 6371e3;
@@ -315,9 +380,8 @@ function calculateGPSDistanceMeters(lat1, lon1, lat2, lon2) {
 }
 
 // =========================================================================
-// 🧮 5. LABOUR, FINANCIAL & MARGIN CALCULATIONS
+// 🧮 8. LABOUR, FINANCIAL & MARGIN CALCULATIONS
 // =========================================================================
-
 function calcWorkerShifts(w) {
   if (!w || !w.att) return 0;
   return Object.values(w.att).reduce((acc, v) => {
@@ -378,9 +442,8 @@ function calcProjectMargin(db, projectId) {
 }
 
 // =========================================================================
-// 📦 6. SUPPLIER & THEKEDAR MB CALCULATIONS
+// 📦 9. SUPPLIER & THEKEDAR MB CALCULATIONS
 // =========================================================================
-
 function calcSupplierBalance(db, supId) {
   const sup = (db.suppliers || []).find(s => (typeof s === 'object' ? s.id : s) === supId);
   if (!sup || typeof sup !== 'object') return { totalPurchased: 0, totalPaid: 0, balanceDue: 0, billsCount: 0, paymentsCount: 0 };
@@ -429,9 +492,8 @@ function calcClientBillingStats(db, projectId) {
 }
 
 // =========================================================================
-// 📲 7. WHATSAPP ENGINE (PARCHAS, RECEIPTS & REMINDERS)
+// 📲 10. WHATSAPP ENGINE (PARCHAS, RECEIPTS & REMINDERS)
 // =========================================================================
-
 function generateWorkerWhatsAppSlip(w, siteName) {
   const shifts = calcWorkerShifts(w);
   const otPay = calcWorkerOTPay(w);
@@ -567,9 +629,8 @@ VIJAY CONSTRUCTION`
 }
 
 // =========================================================================
-// 📊 8. 1-CLICK EXCEL / CSV BACKUP DOWNLOAD EXPORTERS
+// 📊 11. 1-CLICK EXCEL / CSV BACKUP DOWNLOAD EXPORTERS
 // =========================================================================
-
 function downloadCSVFile(csvContent, filename) {
   const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
