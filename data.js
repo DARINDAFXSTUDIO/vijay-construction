@@ -1,5 +1,5 @@
 // =========================================================================
-// 🚀 1. NATIVE APP TOAST ENGINE & AUDIO CHIME (UPGRADE #9)
+// 🚀 1. NATIVE APP TOAST ENGINE & WEB AUDIO CHIME (UPGRADE #9)
 // =========================================================================
 
 (function initNativeUIStyles() {
@@ -67,7 +67,7 @@ function showNativeToast(message, type = 'info') {
   let typeClass = 'vj-toast-info';
   
   const msgLower = String(message).toLowerCase();
-  if (type === 'error' || msgLower.includes('galat') || msgLower.includes('invalid') || msgLower.includes('galti') || msgLower.includes('warning') || msgLower.includes('door hain') || msgLower.includes('pehle se') || msgLower.includes('alert')) {
+  if (type === 'error' || msgLower.includes('galat') || msgLower.includes('invalid') || msgLower.includes('galti') || msgLower.includes('warning') || msgLower.includes('door') || msgLower.includes('pehle se') || msgLower.includes('alert')) {
     icon = '⚠️';
     typeClass = 'vj-toast-error';
   } else if (type === 'success' || msgLower.includes('✓') || msgLower.includes('✅') || msgLower.includes('save') || msgLower.includes('sync') || msgLower.includes('ho gaya') || msgLower.includes('locked') || msgLower.includes('settled')) {
@@ -89,7 +89,7 @@ function showNativeToast(message, type = 'info') {
   }, 2800);
 }
 
-// Override default alert
+// Override alert globally
 window.alert = function(msg) {
   showNativeToast(msg);
 };
@@ -102,14 +102,14 @@ window.playSuccessChime = function() {
     const gain = audioCtx.createGain();
     osc.type = 'sine';
     osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
     osc.connect(gain);
     gain.connect(audioCtx.destination);
     osc.start();
     osc.stop(audioCtx.currentTime + 0.35);
   } catch (e) {
-    console.warn("Audio Context not supported/blocked", e);
+    console.warn("Audio Context blocked", e);
   }
 };
 
