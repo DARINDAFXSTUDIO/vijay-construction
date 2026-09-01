@@ -7,36 +7,14 @@
   <title>VIJAY Construction - Papa's Master Control Hub</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="data.js"></script>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <style>
-    /* ⚡ 1. 300ms Touch Lag & Bounce Removal */
-* {
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-}
-
-html, body {
-    overscroll-behavior-y: none;
-    -webkit-overflow-scrolling: touch;
-}
-
-/* ⚡ 2. GPU Acceleration on Cards & Modals */
-.card, .modal, .modal-content, .btn, .stat-card, input, select {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    perspective: 1000px;
-}
-
-/* ⚡ 3. Remove Laggy Backdrop Blur */
-.glass-effect, .modal, header {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    background: rgba(15, 23, 42, 0.96) !important;
-}
     :root {
       --bg-app: #f4f6f9;
       --card-bg: #ffffff;
@@ -79,7 +57,7 @@ html, body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
-      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+      touch-action: manipulation;
     }
 
     body {
@@ -91,6 +69,7 @@ html, body {
       display: flex;
       justify-content: center;
       overflow-x: hidden;
+      overscroll-behavior-y: none;
     }
 
     .app-root {
@@ -109,6 +88,7 @@ html, body {
       border-radius: 20px;
       padding: 16px;
       box-shadow: var(--card-shadow);
+      transform: translateZ(0);
     }
 
     .hero-pulse {
@@ -285,6 +265,18 @@ html, body {
           <select id="dashSiteFilterSelect" onchange="renderDashboardView()" class="h-9 px-3 rounded-xl font-black text-[12px] bg-white dark:bg-slate-800 text-blue-600 border border-black/10 outline-none">
             <option value="ALL">All Active Sites (Combined)</option>
           </select>
+        </div>
+
+        <!-- 🔔 UPGRADE #7: PENDING IN-APP REQUESTS HUB (SUPABASE) -->
+        <div id="requests-container" class="b-card border-l-4 border-amber-500 hidden space-y-3">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">🔔</span>
+              <span class="text-[14px] font-black" style="color: var(--text-main);">Worker Advance / Material Requests</span>
+            </div>
+            <span id="req-badge" class="bg-red-500 text-white text-xs font-black px-2.5 py-0.5 rounded-full">0</span>
+          </div>
+          <div id="requests-list" class="space-y-2.5"></div>
         </div>
 
         <!-- 📊 1-CLICK EXCEL / CSV REPORT DOWNLOAD BAR -->
@@ -651,10 +643,10 @@ html, body {
     </nav>
 
     <!-- ========================================== -->
-    <!-- ALL MODALS (100% WIRED & FUNCTIONAL) -->
+    <!-- ALL 14 MODALS (100% WIRED & FUNCTIONAL) -->
     <!-- ========================================== -->
 
-    <!-- Modal 1: Add Worker -->
+    <!-- Modal 1: Add Worker (UPGRADE #5: Site Assign Removed) -->
     <div id="modalAddWorker" class="modal-backdrop hidden" onclick="closeAllModals()">
       <div class="bottom-sheet space-y-4" onclick="event.stopPropagation()">
         <div class="flex justify-between items-center border-b border-black/5 pb-2.5">
@@ -674,16 +666,13 @@ html, body {
               <option value="Helper">Helper (हेल्पर)</option>
               <option value="Plumber">Plumber (प्लंबर)</option>
               <option value="Electrician">Electrician (इलेक्ट्रीशियन)</option>
+              <option value="Painter">Painter (पेंटर)</option>
             </select>
           </div>
           <div>
             <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Daily Rate (₹)</label>
             <input id="newWRate" type="number" value="800" class="w-full h-12 px-3.5 rounded-2xl font-black text-[15px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"/>
           </div>
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold uppercase mb-1 text-slate-400">Assign Site</label>
-          <select id="newWSite" class="w-full h-12 px-3 rounded-2xl font-bold text-[13px] outline-none border border-black/10" style="background: var(--bg-app); color: var(--text-main);"></select>
         </div>
         <div class="grid grid-cols-2 gap-2.5">
           <div>
@@ -1094,7 +1083,47 @@ html, body {
     function triggerHaptic() { if ('vibrate' in navigator) navigator.vibrate([15]); }
 
     async function initAdminApp() {
+      window.initSupabase();
       db = await getCloudMasterDB();
+
+      // 🧠 SUPABASE CORE ENGINE DATA MERGE
+      if (window.supabaseClient) {
+        try {
+          const { data: labours } = await window.supabaseClient.from('labour').select('*');
+          const { data: atts } = await window.supabaseClient.from('attendance').select('*');
+          
+          if (labours && labours.length > 0) {
+            db.workers = labours.map(l => {
+              let attObj = {};
+              (atts || []).filter(a => a.labour_id === l.id).forEach(a => {
+                attObj[a.date] = { status: a.status, ot: 0, locked: true };
+              });
+              return {
+                id: l.id,
+                name: l.name,
+                role: l.role || 'Labour',
+                rate: Number(l.daily_rate) || 500,
+                otRate: (l.role === 'Mistri' ? 100 : 65),
+                site: 'P1',
+                phone: l.mobile,
+                pin: l.pin || '1234',
+                photo: '',
+                att: attObj,
+                advance: Number(l.advance) || 0,
+                device_id: l.device_id,
+                player_id: l.player_id,
+                advanceList: [],
+                bakaaya: 0,
+                gpsMatch: true
+              };
+            });
+          }
+          await loadInAppRequests();
+        } catch (e) {
+          console.warn("Supabase fetch fallback", e);
+        }
+      }
+
       renderAllViews();
     }
 
@@ -1143,13 +1172,73 @@ html, body {
       updateNavBadges();
     }
 
+    // ==========================================
+    // 🔔 IN-APP REQUESTS HUB (UPGRADE #7)
+    // ==========================================
+    async function loadInAppRequests() {
+      if (!window.supabaseClient) return;
+      const { data, error } = await window.supabaseClient
+        .from('requests')
+        .select(`*, labour (name, mobile, player_id)`)
+        .eq('status', 'Pending');
+
+      const container = document.getElementById('requests-container');
+      const list = document.getElementById('requests-list');
+      
+      if (error || !data || data.length === 0) {
+        container.classList.add('hidden');
+        return;
+      }
+
+      container.classList.remove('hidden');
+      document.getElementById('req-badge').innerText = data.length;
+      list.innerHTML = data.map(req => `
+        <div class="p-3 bg-black/5 dark:bg-white/5 rounded-2xl border border-amber-500/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <div>
+            <div class="flex items-center gap-1.5">
+              <b class="text-[13px]" style="color: var(--text-main);">${req.labour ? req.labour.name : 'Worker'}</b>
+              <span class="text-[10px] font-bold text-slate-400">(${req.labour ? req.labour.mobile : 'N/A'})</span>
+            </div>
+            <p class="text-[11.5px] font-black text-blue-600">${req.request_type}: ₹${req.amount} <span class="text-[10px] text-slate-400 font-normal">📍 ${req.site_name || 'Site'}</span></p>
+            ${req.description ? `<p class="text-[10.5px] text-slate-500 font-medium">📝 ${req.description}</p>` : ''}
+          </div>
+          <div class="flex gap-1.5 w-full sm:w-auto">
+            <button onclick="handleRequestApproval('${req.id}', '${req.labour_id}', ${req.amount}, '${req.request_type}', 'Approved', '${req.labour ? req.labour.player_id : ''}')" class="flex-1 sm:flex-none px-3 py-1.5 rounded-xl bg-emerald-600 text-white font-bold text-[11px] active:scale-95 shadow-sm">✅ Approve</button>
+            <button onclick="handleRequestApproval('${req.id}', '${req.labour_id}', ${req.amount}, '${req.request_type}', 'Rejected', '${req.labour ? req.labour.player_id : ''}')" class="flex-1 sm:flex-none px-3 py-1.5 rounded-xl bg-rose-600 text-white font-bold text-[11px] active:scale-95 shadow-sm">❌ Reject</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function handleRequestApproval(reqId, labourId, amount, type, decision, playerId) {
+      if (!window.supabaseClient) return;
+      await window.supabaseClient.from('requests').update({ status: decision }).eq('id', reqId);
+      
+      if (decision === 'Approved' && type === 'Advance' && labourId) {
+        const { data: lab } = await window.supabaseClient.from('labour').select('advance').eq('id', labourId).single();
+        await window.supabaseClient.from('labour').update({ advance: (Number(lab.advance) || 0) + Number(amount) }).eq('id', labourId);
+      }
+
+      window.playSuccessChime();
+      alert(`✓ Request ${decision}!`);
+      
+      if (playerId && window.sendPushNotification) {
+        window.sendPushNotification(
+          `Request ${decision}`,
+          decision === 'Approved' ? `Aapki ₹${amount} ki request approve ho gayi hai.` : `Aapki request cancel kar di gayi.`
+        , playerId);
+      }
+
+      await initAdminApp();
+    }
+
     function renderDashboardView() {
       const filterSite = document.getElementById('dashSiteFilterSelect')?.value || 'ALL';
       const filteredLedger = filterSite === 'ALL' ? (db.ledger || []) : (db.ledger || []).filter(l => l.site === filterSite);
       const filteredWorkers = filterSite === 'ALL' ? (db.workers || []) : (db.workers || []).filter(w => w.site === filterSite);
 
-      const tIncome = filteredLedger.filter(x => x.type === 'income').reduce((a, b) => a + b.amount, 0);
-      const tExpense = filteredLedger.filter(x => x.type === 'expense').reduce((a, b) => a + b.amount, 0);
+      const tIncome = filteredLedger.filter(x => x.type === 'income').reduce((a, b) => a + Number(b.amount || 0), 0);
+      const tExpense = filteredLedger.filter(x => x.type === 'expense').reduce((a, b) => a + Number(b.amount || 0), 0);
       const tProfit = tIncome - tExpense;
       const tLabourDue = filteredWorkers.reduce((a, w) => a + calcWorkerDue(w), 0);
 
@@ -1236,7 +1325,7 @@ html, body {
     }
 
     // ==========================================
-    // 👷 LABOUR ATTENDANCE & MUSTER ROLL
+    // 👷 LABOUR ATTENDANCE (UPGRADE #3: SINGLE ROW ISOLATED)
     // ==========================================
     function renderWorkersList() {
       const totalNetDue = (db.workers || []).reduce((a, w) => a + calcWorkerDue(w), 0);
@@ -1267,7 +1356,7 @@ html, body {
         const otPay = calcWorkerOTPay(w);
         const due = calcWorkerDue(w);
         const curRecord = w.att && w.att[today];
-        const curAtt = typeof curRecord === 'object' ? curRecord.status : curRecord;
+        const curAtt = typeof curRecord === 'object' ? curRecord.status : (curRecord || '');
         const curOt = typeof curRecord === 'object' ? (curRecord.ot || 0) : 0;
         const isLocked = typeof curRecord === 'object' && curRecord.locked === true;
 
@@ -1293,9 +1382,9 @@ html, body {
 
               <div class="flex items-center gap-1.5 shrink-0" onclick="event.stopPropagation()">
                 <div class="flex gap-0.5 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 ${isLocked ? 'opacity-40 pointer-events-none' : ''}">
-                  <button onclick="triggerHaptic(); setAttendanceQuick('${w.id}', 'P')" class="w-8 h-8 rounded-lg text-[10.5px] font-black ${curAtt === 'P' ? 'bg-emerald-600 text-white' : 'text-slate-400'}">P</button>
-                  <button onclick="triggerHaptic(); setAttendanceQuick('${w.id}', 'HD')" class="w-8 h-8 rounded-lg text-[10.5px] font-black ${curAtt === 'HD' ? 'bg-amber-500 text-white' : 'text-slate-400'}">HD</button>
-                  <button onclick="triggerHaptic(); setAttendanceQuick('${w.id}', 'A')" class="w-8 h-8 rounded-lg text-[10.5px] font-black ${curAtt === 'A' ? 'bg-rose-600 text-white' : 'text-slate-400'}">A</button>
+                  <button onclick="triggerHaptic(); setAttendanceQuick('${w.id}', 'P', '${w.name}', '${w.player_id}')" class="w-8 h-8 rounded-lg text-[10.5px] font-black ${curAtt === 'P' ? 'bg-emerald-600 text-white' : 'text-slate-400'}">P</button>
+                  <button onclick="triggerHaptic(); setAttendanceQuick('${w.id}', 'HD', '${w.name}', '${w.player_id}')" class="w-8 h-8 rounded-lg text-[10.5px] font-black ${curAtt === 'HD' ? 'bg-amber-500 text-white' : 'text-slate-400'}">HD</button>
+                  <button onclick="triggerHaptic(); setAttendanceQuick('${w.id}', 'A', '${w.name}', '${w.player_id}')" class="w-8 h-8 rounded-lg text-[10.5px] font-black ${curAtt === 'A' ? 'bg-rose-600 text-white' : 'text-slate-400'}">A</button>
                 </div>
                 ${isLocked ? `
                   <button onclick="unlockAttendance('${w.id}')" class="h-9 px-2 rounded-xl bg-blue-600 text-white font-black text-[11px] shadow-md active:scale-95">Update ✏️</button>
@@ -1357,6 +1446,12 @@ html, body {
                   <button onclick="triggerHaptic(); openChuktaModal('${w.id}')" class="b-btn-primary text-[11.5px] h-11 font-black bg-emerald-600">Settle Hisaab</button>
                   <button onclick="triggerHaptic(); sendWorkerWhatsAppSlip('${w.id}')" class="b-btn-secondary text-[11.5px] h-11 font-black text-emerald-600 border-emerald-500/30">📲 Parcha</button>
                 </div>
+
+                ${w.device_id ? `
+                  <div class="text-right pt-1">
+                    <button onclick="resetWorkerDevice('${w.id}', '${w.name}')" class="text-[11px] font-bold text-slate-400 hover:text-slate-600 underline">📱 Reset Phone Binding (Device Unlock)</button>
+                  </div>
+                ` : ''}
               </div>
             ` : ''}
           </div>
@@ -1367,6 +1462,45 @@ html, body {
     function toggleExpand(wId) {
       expandedWorkerIds.has(wId) ? expandedWorkerIds.delete(wId) : expandedWorkerIds.add(wId);
       renderWorkersList();
+    }
+
+    // ⚡ SINGLE ROW ATTENDANCE TRIGGER
+    async function setAttendanceQuick(workerId, status, name, playerId) {
+      const today = getTodayString();
+      
+      if (window.supabaseClient) {
+        await window.supabaseClient.from('attendance').insert([{
+          labour_id: workerId,
+          status: status,
+          date: today
+        }]);
+      }
+
+      const w = (db.workers || []).find(x => x.id === workerId);
+      if (w) {
+        if (!w.att) w.att = {};
+        w.att[today] = { status: status, ot: 0, locked: false };
+      }
+
+      window.playSuccessChime();
+      alert(`✓ ${name}: ${status} Recorded!`);
+      
+      if (playerId && window.sendPushNotification) {
+        window.sendPushNotification("Haziri Update ⏱️", `Namaste ${name}, aapki aaj ki haziri (${status}) lag gayi hai.`, playerId);
+      }
+
+      renderAllViews();
+    }
+
+    async function resetWorkerDevice(workerId, name) {
+      if (confirm(`⚠️ Kya aap ${name} ka phone binding Reset karna chahte hain?`)) {
+        if (window.supabaseClient) {
+          await window.supabaseClient.from('labour').update({ device_id: null }).eq('id', workerId);
+        }
+        window.playSuccessChime();
+        alert(`📱 ${name} ka phone unlock ho gaya!`);
+        await initAdminApp();
+      }
     }
 
     function markAllPresent() {
@@ -1406,24 +1540,6 @@ html, body {
       }
     }
 
-    async function setAttendanceQuick(workerId, status) {
-      const today = getTodayString();
-      const w = (db.workers || []).find(x => x.id === workerId);
-      if (!w) return;
-      if (!w.att) w.att = {};
-
-      const cur = w.att[today];
-      if (cur && cur.locked) return;
-
-      const curSt = typeof cur === 'object' ? cur.status : cur;
-      const curOt = typeof cur === 'object' ? (cur.ot || 0) : 0;
-      const newSt = (curSt === status) ? '' : status;
-
-      w.att[today] = { status: newSt, ot: curOt, locked: false };
-      await saveCloudMasterDB(db);
-      renderAllViews();
-    }
-
     async function adjustOT(workerId, delta) {
       const today = getTodayString();
       const w = (db.workers || []).find(x => x.id === workerId);
@@ -1459,6 +1575,9 @@ html, body {
       const confirmDelete = confirm(`⚠️ Kya aap sach me '${w.name}' ko delete karna chahte hain?`);
       if (!confirmDelete) return;
 
+      if (window.supabaseClient) {
+        await window.supabaseClient.from('labour').delete().eq('id', workerId);
+      }
       db.workers = db.workers.filter(x => x.id !== workerId);
       await saveCloudMasterDB(db);
       renderAllViews();
@@ -1489,11 +1608,18 @@ html, body {
         w.advance = (w.advance || 0) + amt;
         if (!w.advanceList) w.advanceList = [];
         w.advanceList.unshift({ date: getTodayString(), amount: amt, reason: 'Field Cash' });
+        
+        if (window.supabaseClient) {
+          await window.supabaseClient.from('labour').update({ advance: w.advance }).eq('id', w.id);
+        }
+
         if (!db.ledger) db.ledger = [];
         db.ledger.push({ id: 'L' + Date.now(), site: w.site, type: 'expense', amount: amt, note: `Labour Advance (${w.name})`, date: getTodayString() });
+        
         await saveCloudMasterDB(db);
         closeAllModals();
         renderAllViews();
+        window.playSuccessChime();
         alert(`₹${amt} cash advance logged!`);
       }
     }
@@ -1536,9 +1662,14 @@ html, body {
       w.bakaaya = carry;
       w.advance = 0;
 
+      if (window.supabaseClient) {
+        await window.supabaseClient.from('labour').update({ advance: 0 }).eq('id', w.id);
+      }
+
       await saveCloudMasterDB(db);
       closeAllModals();
       renderAllViews();
+      window.playSuccessChime();
       alert(`💾 Hisaab Settled! Balance ₹${carry} carried forward.`);
     }
 
@@ -1579,47 +1710,35 @@ html, body {
       document.getElementById('newWRate').value = (r === 'Mistri' || r === 'Plumber' || r === 'Electrician') ? 800 : 500;
     }
 
+    // 👷 SUBMIT WORKER (UPGRADE #5: CLEANED UP)
     async function submitNewWorker() {
       const name = document.getElementById('newWName').value.trim();
       const role = document.getElementById('newWRole').value;
       const rate = parseFloat(document.getElementById('newWRate').value) || 500;
-      const site = document.getElementById('newWSite').value;
-      const rawPhone = document.getElementById('newWPhone').value.trim();
-      const cleanPhone = rawPhone.replace(/\D/g, '');
+      const cleanPhone = document.getElementById('newWPhone').value.trim().replace(/\D/g, '');
       const pin = document.getElementById('newWPin').value.trim() || '1234';
 
       if (!name) return alert("Worker ka naam bharein!");
       if (cleanPhone.length !== 10) return alert("10-digit mobile number bharein!");
 
-      const existingWorker = (db.workers || []).find(w => String(w.phone).replace(/\D/g, '') === cleanPhone);
-      if (existingWorker) {
-        return alert(`⚠️ Ye mobile number pehle se "${existingWorker.name}" ke naam par registered hai!`);
+      if (window.supabaseClient) {
+        const { error } = await window.supabaseClient.from('labour').insert([{
+          name: name,
+          mobile: cleanPhone,
+          daily_rate: rate,
+          role: role,
+          pin: pin,
+          advance: 0
+        }]);
+        if (error) return alert("Error: Yeh mobile number pehle se exist karta hai.");
       }
 
-      if (!db.workers) db.workers = [];
-      db.workers.push({
-        id: 'W' + Date.now(),
-        name,
-        role,
-        site,
-        rate,
-        otRate: (role === 'Mistri' ? 100 : 65),
-        phone: cleanPhone,
-        pin,
-        photo: '',
-        att: {},
-        advance: 0,
-        advanceList: [],
-        bakaaya: 0,
-        gpsMatch: true
-      });
-
-      await saveCloudMasterDB(db);
+      window.playSuccessChime();
       document.getElementById('newWName').value = '';
       document.getElementById('newWPhone').value = '';
       closeAllModals();
-      renderAllViews();
-      alert(`✓ ${name} add ho gaya!`);
+      await initAdminApp();
+      alert(`✓ ${name} save ho gaya!`);
     }
 
     // ==========================================
@@ -1740,6 +1859,7 @@ html, body {
       document.getElementById('mbWidthInput').value = '';
       closeAllModals();
       renderAllViews();
+      window.playSuccessChime();
       alert(`✓ ${loc} (${area} Sq.Ft = ₹${amount}) Measurement Book mein save ho gaya!`);
     }
 
@@ -1784,6 +1904,7 @@ html, body {
         await saveCloudMasterDB(db);
         closeAllModals();
         renderAllViews();
+        window.playSuccessChime();
         alert(`✓ ₹${amt.toLocaleString('en-IN')} payment logged to ${t.name}!`);
       }
     }
@@ -1802,6 +1923,7 @@ html, body {
       await saveCloudMasterDB(db);
       closeAllModals();
       renderAllViews();
+      window.playSuccessChime();
       alert(`✓ ${name} Thekedar add ho gaya!`);
     }
 
@@ -1902,6 +2024,7 @@ html, body {
       await saveCloudMasterDB(db);
       closeAllModals();
       renderAllViews();
+      window.playSuccessChime();
       alert(`✓ ₹${amt.toLocaleString('en-IN')} payment logged to ${supName}!`);
     }
 
@@ -1926,6 +2049,7 @@ html, body {
       await saveCloudMasterDB(db);
       closeAllModals();
       renderAllViews();
+      window.playSuccessChime();
       alert(`✓ ${name} Supplier add ho gaya!`);
     }
 
@@ -1944,6 +2068,7 @@ html, body {
       await saveCloudMasterDB(db);
       closeAllModals();
       renderAllViews();
+      window.playSuccessChime();
       alert(`✓ ₹${amount.toLocaleString('en-IN')} bill khata me add ho gaya!`);
     }
 
@@ -2011,6 +2136,7 @@ html, body {
       if (m) {
         m.status = 'Approved';
         await saveCloudMasterDB(db);
+        window.playSuccessChime();
         renderAllViews();
       }
     }
@@ -2045,6 +2171,7 @@ html, body {
       await saveCloudMasterDB(db);
       closeAllModals();
       renderAllViews();
+      window.playSuccessChime();
       alert("✓ Demand added to queue!");
     }
 
@@ -2105,7 +2232,6 @@ html, body {
               </div>
             </div>
 
-            <!-- Visual Cost Stack & Margins -->
             <div class="space-y-1 bg-black/5 dark:bg-white/5 p-3 rounded-2xl">
               <div class="flex justify-between text-[11px] font-black">
                 <span class="text-slate-400">Total Cost vs Inward:</span>
@@ -2178,6 +2304,7 @@ html, body {
 
       closeAllModals();
       renderAllViews();
+      window.playSuccessChime();
       window.open(`https://api.whatsapp.com/send?${phone ? 'phone=' + phone + '&' : ''}text=${receiptMsg}`, '_blank');
       alert(`✓ ₹${amt.toLocaleString('en-IN')} inward payment logged!`);
     }
@@ -2216,6 +2343,7 @@ html, body {
       await saveCloudMasterDB(db);
       closeAllModals();
       renderAllViews();
+      window.playSuccessChime();
       alert(`✓ Project saved!`);
     }
 
@@ -2248,7 +2376,6 @@ html, body {
       const workerOpts = (db.workers || []).map(w => `<option value="${w.id}">${w.name} (${getProjectDetails(db, w.site).name})</option>`).join('');
 
       if (document.getElementById('dashSiteFilterSelect')) document.getElementById('dashSiteFilterSelect').innerHTML = `<option value="ALL">All Active Sites (Combined)</option>` + siteOpts;
-      if (document.getElementById('newWSite')) document.getElementById('newWSite').innerHTML = siteOpts;
       if (document.getElementById('newThekSite')) document.getElementById('newThekSite').innerHTML = siteOpts;
       if (document.getElementById('billSupplierSelect')) document.getElementById('billSupplierSelect').innerHTML = supOpts;
       if (document.getElementById('billSiteSelect')) document.getElementById('billSiteSelect').innerHTML = siteOpts;
@@ -2277,7 +2404,7 @@ html, body {
       document.getElementById('adminLockOverlay').classList.add('hidden');
     }
 
-    initAdminApp();
+    window.onload = initAdminApp;
   </script>
 </body>
 </html>

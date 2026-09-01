@@ -7,36 +7,14 @@
   <title>VIJAY Construction - Field Worker & Partner Portal</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="data.js"></script>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <style>
-    /* ⚡ 1. 300ms Touch Lag & Bounce Removal */
-* {
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-}
-
-html, body {
-    overscroll-behavior-y: none;
-    -webkit-overflow-scrolling: touch;
-}
-
-/* ⚡ 2. GPU Acceleration on Cards & Modals */
-.card, .modal, .modal-content, .btn, .stat-card, input, select {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    perspective: 1000px;
-}
-
-/* ⚡ 3. Remove Laggy Backdrop Blur */
-.glass-effect, .modal, header {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    background: rgba(15, 23, 42, 0.96) !important;
-}
     :root {
       --bg-app: #f4f6f9;
       --card-bg: rgba(255, 255, 255, 0.95);
@@ -71,7 +49,7 @@ html, body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
-      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+      touch-action: manipulation;
     }
 
     body {
@@ -83,6 +61,7 @@ html, body {
       display: flex;
       justify-content: center;
       overflow-x: hidden;
+      overscroll-behavior-y: none;
     }
 
     .app-root {
@@ -103,6 +82,7 @@ html, body {
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--card-border);
       box-shadow: var(--card-shadow);
+      transform: translateZ(0);
     }
 
     .hero-card {
@@ -246,7 +226,7 @@ html, body {
       </div>
     </header>
 
-    <!-- Professional Login Form -->
+    <!-- Professional Login Form (UPGRADE #2: Persistent Auto-Login + Device Binding) -->
     <div id="view-login" class="flex-1 px-4 py-8 flex flex-col justify-center max-w-sm mx-auto w-full space-y-5">
       <div class="glass-card space-y-4 shadow-xl border-t-4 border-blue-600">
         <div class="text-center pt-2 pb-1">
@@ -303,7 +283,8 @@ html, body {
         </div>
 
         <div class="flex items-center gap-2">
-          <button onclick="triggerHaptic(); handleVoiceAudioLedger()" class="w-10 h-10 rounded-full flex items-center justify-center bg-blue-600 text-white shadow-md active:scale-90 text-base" title="Female Voice AI Hisaab">
+          <!-- UPGRADE #6: HINDI VOICE ASSISTANT -->
+          <button onclick="triggerHaptic(); handleVoiceAudioLedger()" class="w-10 h-10 rounded-full flex items-center justify-center bg-blue-600 text-white shadow-md active:scale-90 text-base" title="Voice AI Status">
             🔊
           </button>
           <button onclick="triggerHaptic(); handleLogout()" class="w-10 h-10 rounded-full flex items-center justify-center bg-black/5 dark:bg-white/10 active:scale-90 text-sm" style="color: var(--text-main);" title="Logout">
@@ -349,7 +330,7 @@ html, body {
         <!-- TAB 1: 📅 HOME / AAJ & ATTENDANCE CALENDAR -->
         <div id="labour-tab-aaj" class="role-tab-view space-y-4">
           
-          <!-- 📍 GPS-VERIFIED PACK-UP CARD -->
+          <!-- 📍 GPS-VERIFIED PACK-UP CARD (200m GEOFENCING & PHOTO WATERMARKING) -->
           <div class="glass-card space-y-3 border-l-4 border-emerald-500">
             <div class="flex justify-between items-center">
               <span class="text-[10.5px] font-black uppercase text-emerald-700 dark:text-emerald-300">Today's Assigned Site</span>
@@ -407,7 +388,7 @@ html, body {
 
         </div>
 
-        <!-- TAB 2: 💰 HISAAB & CASH ADVANCE -->
+        <!-- TAB 2: 💰 HISAAB & CASH ADVANCE (UPGRADE #7: DIRECT IN-APP REQUEST TO SUPABASE) -->
         <div id="labour-tab-hisaab" class="role-tab-view hidden space-y-4">
           <div class="glass-card space-y-3">
             <span class="text-[14px] font-black" style="color: var(--text-main);">Request Mid-Week Cash Advance (खर्ची)</span>
@@ -424,7 +405,7 @@ html, body {
           </div>
         </div>
 
-        <!-- TAB 3: 📦 DUAL DEMAND -->
+        <!-- TAB 3: 📦 DUAL DEMAND (SAMAN & MANPOWER) -->
         <div id="labour-tab-demand" class="role-tab-view hidden space-y-4">
           
           <div class="p-1 rounded-2xl bg-black/5 dark:bg-white/5 grid grid-cols-2 gap-1 border border-black/5 dark:border-white/5">
@@ -594,6 +575,21 @@ html, body {
 
     function triggerHaptic() { if ('vibrate' in navigator) navigator.vibrate([15]); }
 
+    window.onload = async () => {
+      window.initSupabase();
+      liveDB = await getCloudMasterDB();
+
+      const savedSession = localStorage.getItem('vc_labour_session');
+      if (savedSession) {
+        try {
+          const user = JSON.parse(savedSession);
+          currentLabourUser = user;
+          routePortal();
+        } catch(e) {}
+      }
+    };
+
+    // 🔐 SMART LOGIN & DEVICE BINDING
     async function handleLogin() {
       const p = document.getElementById('inpPhone').value.trim();
       const pin = document.getElementById('inpPin').value.trim();
@@ -602,24 +598,42 @@ html, body {
       btn.innerText = "Connecting 🔄...";
       
       liveDB = await getCloudMasterDB();
-      btn.innerText = "Login Portal ⚡";
 
-      const workerMatch = (liveDB.workers || []).find(w => String(w.phone).trim() === p && String(w.pin || '1234').trim() === pin);
+      // 1. Supabase Check First
+      if (window.supabaseClient) {
+        const { data: wData } = await window.supabaseClient.from('labour').select('*').eq('mobile', p).eq('pin', pin).single();
+        if (wData) {
+          const currentDevice = window.getDeviceToken();
+          
+          if (!wData.device_id) {
+            await window.supabaseClient.from('labour').update({ device_id: currentDevice }).eq('id', wData.id);
+            wData.device_id = currentDevice;
+          } else if (wData.device_id !== currentDevice) {
+            btn.innerText = "Login Portal ⚡";
+            return alert("❌ Yeh account dusre phone me register hai. Admin se Unlock karwayein.");
+          }
+
+          currentLabourUser = {
+            id: wData.id,
+            phone: wData.mobile,
+            name: wData.name,
+            role: 'labour',
+            trade: wData.role || 'Labour',
+            photo: '',
+            av: wData.name.slice(0,2).toUpperCase(),
+            rate: `₹${wData.daily_rate}/Day`
+          };
+          
+          localStorage.setItem('vc_labour_session', JSON.stringify(currentLabourUser));
+          window.playSuccessChime();
+          routePortal();
+          return;
+        }
+      }
+
+      // 2. Thekedar Fallback
       const thekMatch = (liveDB.thekedars || []).find(t => String(t.phone).trim() === p && String(t.pin || '1234').trim() === pin);
-
-      if (workerMatch) {
-        currentLabourUser = {
-          id: workerMatch.id,
-          phone: workerMatch.phone,
-          name: workerMatch.name,
-          role: 'labour',
-          trade: workerMatch.role,
-          photo: workerMatch.photo || '',
-          av: workerMatch.name.slice(0,2).toUpperCase(),
-          rate: `₹${workerMatch.rate}/Day (OT: ₹${workerMatch.otRate || 100}/hr)`
-        };
-        routePortal();
-      } else if (thekMatch) {
+      if (thekMatch) {
         currentLabourUser = {
           id: thekMatch.id,
           phone: thekMatch.phone || p,
@@ -629,13 +643,17 @@ html, body {
           av: thekMatch.name.slice(0,2).toUpperCase(),
           rate: 'RA Milestone Contract'
         };
+        localStorage.setItem('vc_labour_session', JSON.stringify(currentLabourUser));
+        window.playSuccessChime();
         routePortal();
       } else {
-        alert("गलत मोबाइल नंबर या PIN! कृपया एडमिन में रजिस्टर्ड नंबर जांचें।");
+        btn.innerText = "Login Portal ⚡";
+        alert("गलत मोबाइल नंबर या PIN! कृपया जांचें।");
       }
     }
 
     function handleLogout() {
+      localStorage.removeItem('vc_labour_session');
       currentLabourUser = null;
       document.getElementById('view-portal').classList.add('hidden');
       document.getElementById('bottomNavWrapper').classList.add('hidden');
@@ -753,9 +771,30 @@ html, body {
       }
     }
 
-    function syncLiveRoleData() {
+    async function syncLiveRoleData() {
       if (currentLabourUser.role === 'labour') {
-        const w = (liveDB.workers || []).find(x => x.phone === currentLabourUser.phone) || liveDB.workers[0];
+        let w = (liveDB.workers || []).find(x => x.phone === currentLabourUser.phone);
+        
+        if (window.supabaseClient) {
+          const { data: sLab } = await window.supabaseClient.from('labour').select('*').eq('id', currentLabourUser.id).single();
+          const { data: sAtts } = await window.supabaseClient.from('attendance').select('*').eq('labour_id', currentLabourUser.id);
+          
+          if (sLab) {
+            let attObj = {};
+            (sAtts || []).forEach(a => { attObj[a.date] = { status: a.status, ot: 0, locked: true }; });
+            w = {
+              id: sLab.id,
+              name: sLab.name,
+              role: sLab.role,
+              rate: Number(sLab.daily_rate) || 500,
+              advance: Number(sLab.advance) || 0,
+              att: attObj,
+              site: 'P1'
+            };
+          }
+        }
+
+        if (!w) w = { rate: 500, advance: 0, att: {}, site: 'P1' };
         
         let shifts = 0;
         let totalOtHours = 0;
@@ -803,6 +842,7 @@ html, body {
         t.progress = pct;
         await saveCloudMasterDB(liveDB);
         syncLiveRoleData();
+        window.playSuccessChime();
         alert(`✓ Milestone ${pct}% logged & synced!`);
       }
     }
@@ -862,22 +902,29 @@ html, body {
       `).join('');
     }
 
+    // 📩 IN-APP KHARCHA REQUEST (UPGRADE #7: NO WHATSAPP)
     async function requestKharchaLabour(amt) {
-      liveDB = await getCloudMasterDB();
-      const w = liveDB.workers.find(x => x.phone === currentLabourUser.phone) || liveDB.workers[0];
-      w.advance = (w.advance || 0) + amt;
-      if (!w.advanceList) w.advanceList = [];
-      const todayStr = new Date().toISOString().slice(0, 10);
-      w.advanceList.unshift({ date: todayStr, amount: amt, reason: 'Field Cash' });
-      
-      if (!liveDB.ledger) liveDB.ledger = [];
-      liveDB.ledger.push({ id: 'L' + Date.now(), site: w.site, type: 'expense', amount: amt, note: `Field Kharcha Request (${w.name})`, date: todayStr });
-      
-      await saveCloudMasterDB(liveDB);
-      syncLiveRoleData();
-      
-      const txt = encodeURIComponent(`Namaste Vijay Sir, Mujhe ₹${amt} ka cash kharcha mila hai. Name: ${w.name}`);
-      window.open(`https://api.whatsapp.com/send?phone=919268880221&text=${txt}`, '_blank');
+      if (window.supabaseClient) {
+        const { error } = await window.supabaseClient.from('requests').insert([{
+          labour_id: currentLabourUser.id,
+          request_type: 'Advance',
+          amount: amt,
+          description: 'Field Kharcha Request',
+          site_name: 'Flat 309 (Dilshad Garden)',
+          status: 'Pending'
+        }]);
+
+        if (!error) {
+          window.playSuccessChime();
+          alert(`✓ ₹${amt} Advance ki Request Papa ke phone par bhej di gayi hai!`);
+          if (window.sendPushNotification) {
+            window.sendPushNotification("Nayi Request 🔔", `${currentLabourUser.name} ne ₹${amt} ka advance manga hai.`);
+          }
+          return;
+        }
+      }
+
+      alert("Error sending request to Supabase.");
     }
 
     async function submitMaterialDemandPro() {
@@ -887,8 +934,20 @@ html, body {
 
       if (!item) return alert("सामान का नाम व क्वांटिटी लिखें!");
       
+      if (window.supabaseClient) {
+        await window.supabaseClient.from('requests').insert([{
+          labour_id: currentLabourUser.id,
+          request_type: 'Material',
+          amount: 0,
+          description: `${cat}: ${item} (${urgency})`,
+          site_name: 'Live Site',
+          status: 'Pending'
+        }]);
+      }
+
       liveDB = await getCloudMasterDB();
       const w = liveDB.workers.find(x => x.phone === currentLabourUser.phone) || { site: 'P1' };
+      if (!liveDB.materials) liveDB.materials = [];
       liveDB.materials.unshift({
         id: 'M' + Date.now(),
         type: 'material',
@@ -904,6 +963,7 @@ html, body {
       await saveCloudMasterDB(liveDB);
       document.getElementById('workerDemandItem').value = '';
       renderCombinedDemands();
+      window.playSuccessChime();
       alert("📦 सामान मांग एडमिन को भेज दी गई!");
     }
 
@@ -915,8 +975,20 @@ html, body {
 
       if (!desc) return alert("काम का विवरण दर्ज करें!");
 
+      if (window.supabaseClient) {
+        await window.supabaseClient.from('requests').insert([{
+          labour_id: currentLabourUser.id,
+          request_type: 'Material',
+          amount: 0,
+          description: `Manpower: ${count} - ${trade} (${desc})`,
+          site_name: 'Live Site',
+          status: 'Pending'
+        }]);
+      }
+
       liveDB = await getCloudMasterDB();
       const w = liveDB.workers.find(x => x.phone === currentLabourUser.phone) || { site: 'P1' };
+      if (!liveDB.materials) liveDB.materials = [];
       liveDB.materials.unshift({
         id: 'LBR' + Date.now(),
         type: 'manpower',
@@ -932,6 +1004,7 @@ html, body {
       await saveCloudMasterDB(liveDB);
       document.getElementById('demLabWorkDetail').value = '';
       renderCombinedDemands();
+      window.playSuccessChime();
       alert("👷‍♂️ लेबर/कारीगर मांग एडमिन को भेज दी गई!");
     }
 
@@ -958,7 +1031,7 @@ html, body {
       }).join('');
     }
 
-    // 🛰️ 1. GPS CAPTURE TRIGGER BEFORE CAMERA OPEN
+    // 🛰️ GPS CAPTURE TRIGGER BEFORE CAMERA OPEN
     function captureSitePackUpWithGPS() {
       const msgBox = document.getElementById('gpsStatusMessage');
       msgBox.classList.remove('hidden');
@@ -990,7 +1063,7 @@ html, body {
       );
     }
 
-    // 📸 2. STAMP REAL GPS DATA & GEOFENCE DISTANCE ON CANVAS
+    // 📸 STAMP REAL GPS DATA & GEOFENCE DISTANCE ON CANVAS
     function processProofPhoto(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1074,6 +1147,7 @@ html, body {
           });
 
           await saveCloudMasterDB(liveDB);
+          window.playSuccessChime();
           alert(isVerified ? "📸 Site Photo verified and synced to Papa's Hub!" : `⚠️ Photo saved with alert: Aap site se ${distanceMeters}m door hain!`);
         };
         img.src = e.target.result;
@@ -1081,6 +1155,7 @@ html, body {
       reader.readAsDataURL(file);
     }
 
+    // 🗣️ SMART HINDI TTS VOICE ASSISTANT
     function handleVoiceAudioLedger() {
       const w = (liveDB.workers || []).find(x => x.phone === currentLabourUser.phone) || liveDB.workers[0];
       let shifts = 0;
@@ -1090,7 +1165,7 @@ html, body {
       });
       const net = Math.max(0, (shifts * w.rate) + (w.bakaaya || 0) - (w.advance || 0));
       
-      const msg = `नमस्ते ${w.name} जी! आपकी इस महीने कुल ${shifts} दिन की हाजिरी दर्ज है। जेब एडवांस काटने के बाद, शनिवार का कुल बकाया हिसाब ₹${net} है। धन्यवाद!`;
+      const msg = `नमस्ते ${currentLabourUser.name} जी! आपकी इस महीने कुल ${shifts} दिन की हाजिरी दर्ज है। जेब एडवांस काटने के बाद, शनिवार का कुल बकाया हिसाब ₹${net} है। धन्यवाद!`;
 
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();

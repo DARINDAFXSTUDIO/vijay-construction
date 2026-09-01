@@ -1,5 +1,5 @@
 // =========================================================================
-// 🚀 1. NATIVE APP TOAST ENGINE (OVERRIDES BROWSER ALERT POPUPS)
+// 🚀 1. NATIVE APP TOAST ENGINE & AUDIO CHIME (UPGRADE #9)
 // =========================================================================
 
 (function initNativeUIStyles() {
@@ -89,14 +89,43 @@ function showNativeToast(message, type = 'info') {
   }, 2800);
 }
 
-// Override default window.alert globally
+// Override default alert
 window.alert = function(msg) {
   showNativeToast(msg);
 };
 
+// 🔊 Audio Chime Engine (Web Audio API)
+window.playSuccessChime = function() {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.35);
+  } catch (e) {
+    console.warn("Audio Context not supported/blocked", e);
+  }
+};
+
 // =========================================================================
-// 🏗️ 2. CENTRAL DATABASE SCHEMA & DEFAULT TEMPLATE
+// 🗄️ 2. SUPABASE + FIREBASE HYBRID BACKEND ENGINE
 // =========================================================================
+
+const SUPABASE_URL = 'https://lcacvkjmsmhbxipnkuvn.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_uRAQfZWY4J4pg95Yw5e9_A_DbUo7XT1';
+window.supabaseClient = null;
+
+window.initSupabase = function() {
+  if (window.supabase && !window.supabaseClient) {
+    window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  }
+};
 
 const MASTER_DB_KEY = 'vijay_subadmin_master_v5';
 const PERSISTENT_DB_URL = "https://vijay-construction-50c0f-default-rtdb.firebaseio.com/master_db.json";
@@ -157,10 +186,7 @@ const defaultMasterDB = {
   measurements: [
     { id: 'MB1', thekedarId: 'T2', siteId: 'P1', location: 'Drawing Room Flooring', length: 18.5, width: 14.0, unit: 'Sq.Ft', totalArea: 259, rate: 22, amount: 5698, date: '2026-08-28' }
   ],
-  workers: [
-    { id: 'W1', name: 'Ramesh Mistri', role: 'Mistri', rate: 800, otRate: 100, site: 'P1', phone: '9811000001', pin: '1234', photo: '', att: {}, advance: 200, advanceList: [{ date: '2026-08-28', amount: 200, reason: 'Field Cash' }], bakaaya: 0, gpsMatch: true },
-    { id: 'W2', name: 'Suresh Mazdoor', role: 'Mazdoor', rate: 500, otRate: 65, site: 'P1', phone: '9811000004', pin: '1234', photo: '', att: {}, advance: 100, advanceList: [{ date: '2026-08-28', amount: 100, reason: 'Field Cash' }], bakaaya: 0, gpsMatch: true }
-  ],
+  workers: [],
   materials: [],
   siteProofs: [],
   ledger: [
@@ -168,10 +194,6 @@ const defaultMasterDB = {
   ],
   settlements: []
 };
-
-// =========================================================================
-// ☁️ 3. CLOUD DATABASE FETCH & SAVE
-// =========================================================================
 
 async function getCloudMasterDB() {
   try {
@@ -212,7 +234,71 @@ async function saveCloudMasterDB(data) {
 }
 
 // =========================================================================
-// 📍 4. GPS HAVERSINE DISTANCE ENGINE (In Meters)
+// 🔐 3. DEVICE BINDING, AUTO-LOGIN & ONESIGNAL (UPGRADES #2, #4, #8)
+// =========================================================================
+
+window.getDeviceToken = function() {
+  let token = localStorage.getItem('vc_device_token');
+  if (!token) {
+    token = 'DEV_' + Math.random().toString(36).substring(2, 9).toUpperCase();
+    localStorage.setItem('vc_device_token', token);
+  }
+  return token;
+};
+
+window.sendPushNotification = async function(title, message, targetPlayerId = null) {
+  const payload = {
+    app_id: "7faaaef8-1305-45f5-aaa3-e961369b33bf",
+    headings: { en: title },
+    contents: { en: message },
+    target_channel: "push"
+  };
+
+  if (targetPlayerId) {
+    payload.include_player_ids = [targetPlayerId];
+  } else {
+    payload.included_segments = ["All"];
+  }
+
+  try {
+    await fetch('https://onesignal.com/api/v1/notifications', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch (err) {
+    console.warn("OneSignal Dispatch Error:", err);
+  }
+};
+
+window.saveOfflineAttendance = function(labourId, status, date) {
+  let queue = JSON.parse(localStorage.getItem('vc_offline_attendance') || '[]');
+  queue.push({ labourId, status, date, timestamp: Date.now() });
+  localStorage.setItem('vc_offline_attendance', JSON.stringify(queue));
+  showNativeToast("📶 Internet nahi hai. Haziri phone me save ho gayi!");
+};
+
+window.syncOfflineData = async function() {
+  if (!navigator.onLine || !window.supabaseClient) return;
+  let queue = JSON.parse(localStorage.getItem('vc_offline_attendance') || '[]');
+  if (queue.length === 0) return;
+
+  for (const item of queue) {
+    await window.supabaseClient.from('attendance').insert([{
+      labour_id: item.labourId,
+      status: item.status,
+      date: item.date
+    }]);
+  }
+
+  localStorage.removeItem('vc_offline_attendance');
+  showNativeToast("✅ Offline Haziri server par sync ho gayi!", 'success');
+};
+
+window.addEventListener('online', window.syncOfflineData);
+
+// =========================================================================
+// 📍 4. GPS HAVERSINE DISTANCE ENGINE
 // =========================================================================
 
 function calculateGPSDistanceMeters(lat1, lon1, lat2, lon2) {
