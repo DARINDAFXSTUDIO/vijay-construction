@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>VIJAY Construction - Master Hub</title>
+  <title>VIJAY Construction - Master Hub Pro</title>
   
   <meta name="theme-color" content="#020617" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   
+  <!-- Modern Tailwind CSS Engine -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,7 +18,7 @@
   
   <style>
     * { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
-    .glass-card { background: rgba(15, 23, 42, 0.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.07); }
+    .glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
     .glass-header { background: rgba(2, 6, 23, 0.94); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
     .glass-dock { background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255, 255, 255, 0.08); }
     .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -26,13 +27,13 @@
 </head>
 <body class="h-full bg-slate-950 text-slate-100 flex flex-col select-none overflow-hidden antialiased">
 
-  <!-- NOTIFICATION TOAST -->
+  <!-- INSTANT NOTIFICATION TOAST -->
   <div id="toast" class="fixed top-4 inset-x-4 z-[999999] p-3.5 rounded-2xl text-xs font-black shadow-2xl flex items-center justify-between transition-all duration-300 transform -translate-y-28 opacity-0 pointer-events-none">
     <span id="toast-msg">Notification</span>
     <span id="toast-icon">⚡</span>
   </div>
 
-  <!-- AUTHENTICATION GATE -->
+  <!-- 🔐 MASTER AUTHENTICATION GATE (QUICK PIN + BIOMETRIC) -->
   <div id="admin-auth-modal" class="fixed inset-0 z-[99999] bg-slate-950/95 backdrop-blur-2xl flex items-center justify-center p-4">
     <div class="glass-card w-full max-w-sm rounded-3xl p-6 border border-slate-800 shadow-2xl text-center space-y-5">
       <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-orange-500/20 mx-auto">
@@ -48,6 +49,7 @@
         <button type="button" id="tab-full-login" onclick="switchAuthTab('full')" class="flex-1 py-2 rounded-lg text-slate-400 hover:text-white transition-all">🔑 Master ID</button>
       </div>
 
+      <!-- Quick PIN Screen -->
       <div id="auth-view-quick" class="space-y-4">
         <div>
           <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2 text-left">4-Digit Security PIN</label>
@@ -73,6 +75,7 @@
         </button>
       </div>
 
+      <!-- Full Email + Password Setup -->
       <form id="admin-login-form" onsubmit="handleFullAdminLogin(event)" class="space-y-3.5 hidden text-left">
         <div>
           <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-1">Admin Email ID</label>
@@ -93,7 +96,7 @@
     </div>
   </div>
 
-  <!-- TOP APP BAR -->
+  <!-- 📱 TOP BAR (SITE SELECTOR & SYNC INDICATOR) -->
   <header class="glass-header sticky top-0 z-40 px-4 py-3 flex items-center justify-between">
     <div class="flex items-center gap-3">
       <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center font-black text-slate-950 text-base shadow-lg shadow-orange-500/20">
@@ -108,7 +111,7 @@
             LIVE
           </span>
         </div>
-        <p class="text-[10px] text-slate-400 font-bold mt-0.5" id="top-client-name">Sharma Ji • Dilshad Garden</p>
+        <p class="text-[10px] text-slate-400 font-bold mt-0.5" id="top-client-name">Loading Site...</p>
       </div>
     </div>
     
@@ -122,10 +125,10 @@
     </div>
   </header>
 
-  <!-- MAIN SCROLLABLE DASHBOARD -->
+  <!-- 📊 MAIN DASHBOARD VIEW -->
   <main class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4 pb-28">
 
-    <!-- OVERVIEW TAB -->
+    <!-- 1. OVERVIEW TAB -->
     <section id="tab-overview" class="space-y-4">
       <div class="glass-card rounded-3xl p-5 border border-blue-500/20 bg-gradient-to-br from-slate-900 via-slate-900/90 to-blue-950/40 space-y-4 shadow-xl">
         <div class="flex items-center justify-between">
@@ -157,11 +160,10 @@
         </div>
       </div>
 
+      <!-- Quick Action Strips -->
       <div class="grid grid-cols-2 gap-3">
         <div onclick="openCameraViewfinder()" class="glass-card rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:border-slate-600 active:scale-98 transition shadow-lg">
-          <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg font-black">
-            📸
-          </div>
+          <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg font-black">📸</div>
           <div>
             <h4 class="text-xs font-black text-white">Geo Camera</h4>
             <p class="text-[10px] text-slate-400">GPS Site Proof</p>
@@ -169,9 +171,7 @@
         </div>
 
         <div onclick="sendClientPaymentNotice()" class="glass-card rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:border-slate-600 active:scale-98 transition shadow-lg">
-          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg font-black">
-            💬
-          </div>
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg font-black">💬</div>
           <div>
             <h4 class="text-xs font-black text-white">WA Notice</h4>
             <p class="text-[10px] text-slate-400">Payment Reminder</p>
@@ -179,11 +179,12 @@
         </div>
       </div>
 
+      <!-- Hub Shortcuts -->
       <div class="grid grid-cols-2 gap-3">
         <div onclick="switchAppTab('labour')" class="glass-card rounded-2xl p-4 flex flex-col gap-1 cursor-pointer hover:border-slate-600 active:scale-98 transition">
           <span class="text-2xl">👷</span>
           <h4 class="text-xs font-black text-white mt-1">Labour Muster</h4>
-          <p class="text-[10px] text-slate-400" id="ov-worker-count">0 Active Workers</p>
+          <p class="text-[10px] text-slate-400" id="ov-worker-count">0 Assigned Workers</p>
         </div>
 
         <div onclick="switchAppTab('thekedar')" class="glass-card rounded-2xl p-4 flex flex-col gap-1 cursor-pointer hover:border-slate-600 active:scale-98 transition">
@@ -195,7 +196,7 @@
         <div onclick="switchAppTab('suppliers')" class="glass-card rounded-2xl p-4 flex flex-col gap-1 cursor-pointer hover:border-slate-600 active:scale-98 transition">
           <span class="text-2xl">📦</span>
           <h4 class="text-xs font-black text-white mt-1">Supplier Khata</h4>
-          <p class="text-[10px] text-slate-400">Material Invoices</p>
+          <p class="text-[10px] text-slate-400">Material Bills</p>
         </div>
 
         <div onclick="switchAppTab('ledger')" class="glass-card rounded-2xl p-4 flex flex-col gap-1 cursor-pointer hover:border-slate-600 active:scale-98 transition">
@@ -206,7 +207,7 @@
       </div>
     </section>
 
-    <!-- SITES TAB -->
+    <!-- 2. SITES / PROJECTS TAB -->
     <section id="tab-projects" class="space-y-4 hidden">
       <div class="flex items-center justify-between">
         <h3 class="text-xs font-black text-white uppercase tracking-wider">Site Projects</h3>
@@ -217,9 +218,11 @@
       <div id="projects-list-container" class="space-y-3"></div>
     </section>
 
-    <!-- LABOUR MUSTER TAB -->
+    <!-- 3. LABOUR MUSTER TAB (ATTENDANCE LOCK + SITE ASSIGN + OT STEPPER) -->
     <section id="tab-labour" class="space-y-3 hidden">
       <div class="glass-card rounded-3xl p-4 space-y-3">
+        
+        <!-- Header Strip with New Worker Button -->
         <div class="flex items-center justify-between">
           <div>
             <h3 class="text-xs font-black text-white uppercase tracking-wider">Daily Labour Muster</h3>
@@ -230,30 +233,49 @@
           </button>
         </div>
 
+        <!-- Date Picker & Attendance Lock / Unlock Controls -->
         <div class="flex items-center gap-2 pt-1">
-          <input type="date" id="admin-muster-date" onchange="renderLabourRoster()" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-black text-white outline-none" />
-          <button onclick="markAllWorkersPresent()" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/30 text-blue-400 text-xs font-black hover:bg-blue-600 hover:text-white transition active:scale-95">
-            Sabhi P Karein
+          <input type="date" id="admin-muster-date" onchange="handleDateOrFilterChange()" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-black text-white outline-none" />
+          
+          <!-- 🔥 ATTENDANCE LOCK / UNLOCK TOGGLE -->
+          <button id="btn-toggle-lock" onclick="toggleAttendanceLock()" class="px-3 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 transition active:scale-95 bg-slate-800 border border-slate-700 text-slate-300">
+            <span id="lock-icon">🔓</span>
+            <span id="lock-text">Open</span>
+          </button>
+
+          <!-- Sabhi Present Button -->
+          <button id="btn-all-present" onclick="markAllWorkersPresent()" class="px-3 py-2 rounded-xl bg-blue-600/20 border border-blue-500/30 text-blue-400 text-xs font-black hover:bg-blue-600 hover:text-white transition active:scale-95">
+            Sabhi P
           </button>
         </div>
 
+        <!-- Instamart Search & Role Filter -->
         <div class="flex items-center gap-2 pt-1">
-          <input type="text" id="worker-search-input" oninput="renderLabourRoster()" placeholder="Search worker naam ya mobile..." 
+          <input type="text" id="worker-search-input" oninput="renderLabourRoster()" placeholder="Search naam ya mobile..." 
                  class="flex-1 bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none" />
+          
           <select id="worker-role-filter" onchange="renderLabourRoster()" class="bg-slate-950/80 border border-slate-800 rounded-xl px-2 py-1.5 text-xs font-bold text-slate-300 outline-none">
             <option value="ALL">Sabhi Roles</option>
             <option value="Mistri">Mistri</option>
             <option value="Helper">Helper</option>
             <option value="Electrician">Electrician</option>
             <option value="Plumber">Plumber</option>
+            <option value="Painter">Painter</option>
+          </select>
+
+          <!-- Site Filter Mode -->
+          <select id="worker-site-filter" onchange="renderLabourRoster()" class="bg-slate-950/80 border border-slate-800 rounded-xl px-2 py-1.5 text-xs font-bold text-amber-400 outline-none">
+            <option value="ACTIVE">Is Site Ke</option>
+            <option value="ALL">Sabhi Sites Ke</option>
           </select>
         </div>
       </div>
 
+      <!-- Workers List Container -->
       <div id="admin-workers-container" class="space-y-3"></div>
     </section>
 
-    <!-- THEKEDAR MB TAB -->
+    <!-- 4. THEKEDAR MB TAB -->
     <section id="tab-thekedar" class="space-y-4 hidden">
       <div class="glass-card rounded-2xl p-4 flex items-center justify-between">
         <div>
@@ -267,12 +289,12 @@
       <div id="thekedar-list-container" class="space-y-3"></div>
     </section>
 
-    <!-- SUPPLIER KHATA TAB -->
+    <!-- 5. SUPPLIERS TAB -->
     <section id="tab-suppliers" class="space-y-4 hidden">
       <div class="glass-card rounded-2xl p-4 flex items-center justify-between">
         <div>
           <h3 class="text-xs font-black text-white uppercase tracking-wider">Suppliers Khata</h3>
-          <p class="text-[10px] text-slate-400">Material Bills & Dues Tracker</p>
+          <p class="text-[10px] text-slate-400">Material Invoices & Dues</p>
         </div>
         <button onclick="openModal('modal-supplier')" class="px-3 py-1.5 rounded-xl bg-blue-600 text-xs font-black text-white shadow-lg shadow-blue-600/30 active:scale-95">
           + Naya Supplier
@@ -281,12 +303,12 @@
       <div id="suppliers-list-container" class="space-y-3"></div>
     </section>
 
-    <!-- PETTY CASH LEDGER TAB -->
+    <!-- 6. PETTY CASH LEDGER TAB -->
     <section id="tab-ledger" class="space-y-4 hidden">
       <div class="glass-card rounded-2xl p-4 flex items-center justify-between">
         <div>
           <h3 class="text-xs font-black text-white uppercase tracking-wider">Site Cash Ledger</h3>
-          <p class="text-[10px] text-slate-400">Direct Petty Expenses (Chai, Tempo, Tool)</p>
+          <p class="text-[10px] text-slate-400">Petty Expenses (Chai, Tempo, Tool)</p>
         </div>
         <button onclick="openModal('modal-ledger')" class="px-3 py-1.5 rounded-xl bg-emerald-600 text-xs font-black text-white shadow-lg shadow-emerald-600/30 active:scale-95">
           + Entry Karein
@@ -295,7 +317,7 @@
       <div id="ledger-list-container" class="space-y-2"></div>
     </section>
 
-    <!-- REPORTS TAB -->
+    <!-- 7. REPORTS TAB -->
     <section id="tab-reports" class="space-y-4 hidden">
       <div class="glass-card rounded-2xl p-4">
         <h3 class="text-xs font-black text-white uppercase tracking-wider">One-Click Excel Reports</h3>
@@ -306,7 +328,7 @@
         <button onclick="exportLabourCSV()" class="w-full glass-card p-4 rounded-2xl flex items-center justify-between hover:border-slate-600 active:scale-98 transition">
           <div class="text-left">
             <h4 class="text-xs font-black text-white">👷 Labour Muster Sheet</h4>
-            <p class="text-[10px] text-slate-400">Total shifts, OT amount, Advance cut, Net payable</p>
+            <p class="text-[10px] text-slate-400">Total shifts, OT amount, Advance, Net payable</p>
           </div>
           <span class="text-xs font-black text-blue-400">Download ↓</span>
         </button>
@@ -323,7 +345,7 @@
 
   </main>
 
-  <!-- BOTTOM NAVIGATION DOCK -->
+  <!-- 🧭 BOTTOM DOCK NAVIGATION -->
   <nav class="glass-dock fixed bottom-0 inset-x-0 z-40 px-2 py-2 flex items-center justify-around">
     <button onclick="switchAppTab('overview')" id="nav-btn-overview" class="nav-item flex flex-col items-center gap-1 py-1 px-3 rounded-2xl text-blue-500 transition">
       <span class="text-lg">🏠</span>
@@ -347,9 +369,11 @@
     </button>
   </nav>
 
-  <!-- MODALS -->
+  <!-- ========================================================================= -->
+  <!-- 📝 MODALS: WORKER (WITH SITE ASSIGNMENT), ADVANCE, SITE, MB, LEDGER       -->
+  <!-- ========================================================================= -->
 
-  <!-- ADD / EDIT WORKER MODAL -->
+  <!-- ADD / EDIT WORKER MODAL (WITH SITE SELECTION DROPDOWN) -->
   <div id="modal-worker" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="glass-card w-full max-w-md rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
@@ -380,6 +404,14 @@
             <label class="font-black text-slate-400 block mb-1">Mobile No (10-Digit)</label>
             <input type="tel" id="w-phone" maxlength="10" placeholder="8130352691" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-bold outline-none focus:border-blue-500" />
           </div>
+        </div>
+
+        <!-- 🔥 WORKER SITE ASSIGNMENT DROPDOWN -->
+        <div>
+          <label class="font-black text-amber-400 block mb-1">📍 Site Par Assign Karein</label>
+          <select id="w-assign-site" class="w-full bg-slate-900 border border-amber-500/40 rounded-xl px-3 py-2.5 text-amber-200 font-black outline-none">
+            <!-- Dynamically injected sites + 'ALL' option -->
+          </select>
         </div>
 
         <div class="grid grid-cols-3 gap-2">
@@ -427,7 +459,7 @@
     </div>
   </div>
 
-  <!-- NEW PROJECT MODAL -->
+  <!-- NEW PROJECT / SITE MODAL -->
   <div id="modal-project" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="glass-card w-full max-w-md rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
@@ -467,7 +499,7 @@
     </div>
   </div>
 
-  <!-- MB ENTRY MODAL -->
+  <!-- THEKEDAR MB MODAL -->
   <div id="modal-mb" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="glass-card w-full max-w-md rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
@@ -505,7 +537,7 @@
     </div>
   </div>
 
-  <!-- LEDGER MODAL -->
+  <!-- CASHBOOK LEDGER MODAL -->
   <div id="modal-ledger" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="glass-card w-full max-w-sm rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
@@ -538,11 +570,32 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT LOGIC -->
+  <!-- 📸 GEO CAMERA MODAL -->
+  <div id="camera-modal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md hidden flex-col">
+    <div class="p-4 flex items-center justify-between border-b border-slate-800">
+      <h3 class="text-sm font-black text-white">Live Site GPS Photo Proof</h3>
+      <button onclick="closeCameraViewfinder()" class="p-2 text-slate-400 hover:text-white text-lg">✕</button>
+    </div>
+    <div class="flex-1 flex flex-col items-center justify-center p-4 relative">
+      <video id="camera-video" autoplay playsinline class="w-full max-w-sm rounded-3xl bg-black aspect-[3/4] object-cover shadow-2xl border border-slate-800"></video>
+      <canvas id="camera-canvas" class="hidden"></canvas>
+    </div>
+    <div class="p-6 flex items-center justify-center bg-slate-900/60 border-t border-slate-800">
+      <button onclick="captureSiteProof()" class="w-16 h-16 rounded-full border-4 border-white bg-red-600 active:scale-90 transition shadow-2xl flex items-center justify-center">
+        <div class="w-6 h-6 rounded-full bg-white"></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- ⚙️ FULL COMPREHENSIVE JAVASCRIPT ENGINE                                   -->
+  <!-- ========================================================================= -->
   <script>
-    const SUPABASE_URL = "https://aeqeqslyfxfmsuacujov.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlcWVxc2x5ZnhmbXN1YWN1am92Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIzMTA2MzcsImV4cCI6MjA1Nzg4NjYzN30.8V4XwHwV3l_fX68gO7wQO0mS0M1JvQyC4R9QpG2q7vI";
-    
+    // 🔥 1. SUPABASE EXACT MATCH ADDRESS
+    const SUPABASE_URL = "https://lcacvkjmsmhbxipnkuvn.supabase.co";
+    // Anon Key (Paste your API anon key here or keep cached)
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjYWN2a2ptc21oYnhpcG5rdXZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIzMTA2MzcsImV4cCI6MjA1Nzg4NjYzN30.8V4XwHwV3l_fX68gO7wQO0mS0M1JvQyC4R9QpG2q7vI";
+
     let supabaseClient = null;
     try {
       if (window.supabase) {
@@ -552,16 +605,19 @@
       console.warn("Supabase Init Error:", e);
     }
 
+    // 📦 APP STATE
     let appState = {
       projects: [],
       workers: [],
-      attendance: {},
+      attendance: {},        // key: labourId_date -> { status, ot, locked }
+      dateLockStatus: {},    // key: siteId_date -> boolean (true = locked)
       measurements: [],
       ledger: [],
       activeSiteId: null,
       selectedDate: new Date().toISOString().slice(0, 10)
     };
 
+    // ⚡ TOAST
     function notify(msg, type = "success") {
       const t = document.getElementById('toast');
       const m = document.getElementById('toast-msg');
@@ -574,6 +630,9 @@
       }, 3000);
     }
 
+    // -------------------------------------------------------------------------
+    // 🔐 AUTH SYSTEM
+    // -------------------------------------------------------------------------
     function switchAuthTab(type) {
       document.getElementById('auth-view-quick').classList.toggle('hidden', type !== 'quick');
       document.getElementById('admin-login-form').classList.toggle('hidden', type !== 'full');
@@ -659,6 +718,9 @@
       document.getElementById('admin-auth-modal').classList.remove('hidden');
     }
 
+    // -------------------------------------------------------------------------
+    // 🚀 INITIALIZATION & OPTIMISTIC CACHE
+    // -------------------------------------------------------------------------
     function initDashboard() {
       const cached = localStorage.getItem('vc_app_state');
       if (cached) {
@@ -701,7 +763,6 @@
             appState.projects = resProj.value.data;
           }
           
-          // 🔥 SUPABASE EXACT COLUMN NAME MAPPING
           if (resLab.status === 'fulfilled' && resLab.value.data) {
             appState.workers = resLab.value.data.map(w => ({
               id: w.id,
@@ -710,7 +771,8 @@
               role: w.role,
               rate: w.daily_rate || w.rate,
               ot_rate: w.ot_rate_per_hour || w.ot_rate,
-              pin: w.pin || '1234'
+              pin: w.pin || '1234',
+              site_id: w.site_id || 'ALL'
             }));
           }
           
@@ -719,8 +781,13 @@
             resAtt.value.data.forEach(a => {
               const k = `${a.labour_id}_${a.date}`;
               appState.attendance[k] = { status: a.status, ot: a.ot_hours || 0 };
+              if (a.is_locked) {
+                const lockKey = `${a.project_id}_${a.date}`;
+                appState.dateLockStatus[lockKey] = true;
+              }
             });
           }
+
           if (resMB.status === 'fulfilled' && resMB.value.data) {
             appState.measurements = resMB.value.data;
           }
@@ -739,6 +806,9 @@
       }
     }
 
+    // -------------------------------------------------------------------------
+    // 🎨 UI RENDER ROUTINES
+    // -------------------------------------------------------------------------
     function renderAll() {
       renderTopBar();
       renderOverview();
@@ -763,6 +833,11 @@
     function handleGlobalSiteChange(sId) {
       appState.activeSiteId = sId;
       renderAll();
+    }
+
+    function handleDateOrFilterChange() {
+      appState.selectedDate = document.getElementById('admin-muster-date').value;
+      renderLabourRoster();
     }
 
     function renderOverview() {
@@ -790,26 +865,99 @@
       document.getElementById('ov-cost-val').innerText = `₹${siteExpenses.toLocaleString('en-IN')}`;
       document.getElementById('ov-recovery-due').innerText = `Due: ₹${(totalVal - received).toLocaleString('en-IN')}`;
 
-      const activeWorkers = (appState.workers || []).filter(w => !w.site_id || String(w.site_id) === String(appState.activeSiteId));
-      document.getElementById('ov-worker-count').innerText = `${activeWorkers.length} Active Workers`;
+      // Site assigned worker count
+      const activeWorkers = (appState.workers || []).filter(w => !w.site_id || w.site_id === 'ALL' || String(w.site_id) === String(appState.activeSiteId));
+      document.getElementById('ov-worker-count').innerText = `${activeWorkers.length} Assigned Workers`;
     }
 
+    // -------------------------------------------------------------------------
+    // 🔒 ATTENDANCE LOCK ENGINE
+    // -------------------------------------------------------------------------
+    function isCurrentAttendanceLocked() {
+      const dt = appState.selectedDate;
+      const lockKey = `${appState.activeSiteId}_${dt}`;
+      return Boolean(appState.dateLockStatus[lockKey]);
+    }
+
+    async function toggleAttendanceLock() {
+      const dt = appState.selectedDate;
+      const lockKey = `${appState.activeSiteId}_${dt}`;
+      const currentlyLocked = Boolean(appState.dateLockStatus[lockKey]);
+
+      if (!currentlyLocked) {
+        // LOCK ATTENDANCE
+        appState.dateLockStatus[lockKey] = true;
+        notify(`🔒 Haziri Lock ho gayi! (${dt}) Ab koi edit nahi kar sakta.`);
+      } else {
+        // UNLOCK ATTENDANCE
+        appState.dateLockStatus[lockKey] = false;
+        notify(`🔓 Haziri Unlock ho gayi! Edit mode active.`);
+      }
+
+      localStorage.setItem('vc_app_state', JSON.stringify(appState));
+      renderLabourRoster();
+
+      // Sync lock flag to Supabase attendance
+      if (supabaseClient && navigator.onLine) {
+        try {
+          await supabaseClient
+            .from('attendance')
+            .update({ is_locked: !currentlyLocked })
+            .match({ project_id: appState.activeSiteId, date: dt });
+        } catch (e) {
+          console.warn("Lock status sync error:", e);
+        }
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // 👷 LABOUR MUSTER (WITH ATTENDANCE LOCK, SITE ASSIGN & WHATSAPP)
+    // -------------------------------------------------------------------------
     function renderLabourRoster() {
       const container = document.getElementById('admin-workers-container');
       if (!container) return;
       container.innerHTML = '';
 
-      const dt = document.getElementById('admin-muster-date').value;
-      appState.selectedDate = dt;
+      const dt = appState.selectedDate;
+      const isLocked = isCurrentAttendanceLocked();
+
+      // Update Lock/Unlock Button UI
+      const lockBtn = document.getElementById('btn-toggle-lock');
+      const lockIcon = document.getElementById('lock-icon');
+      const lockText = document.getElementById('lock-text');
+      const allPresentBtn = document.getElementById('btn-all-present');
+
+      if (isLocked) {
+        lockBtn.className = "px-3 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 transition active:scale-95 bg-rose-600/20 border border-rose-500/40 text-rose-400";
+        lockIcon.innerText = "🔒";
+        lockText.innerText = "Locked";
+        allPresentBtn.disabled = true;
+        allPresentBtn.className = "px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-600 text-xs font-black cursor-not-allowed opacity-50";
+      } else {
+        lockBtn.className = "px-3 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 transition active:scale-95 bg-slate-800 border border-slate-700 text-slate-300";
+        lockIcon.innerText = "🔓";
+        lockText.innerText = "Open";
+        allPresentBtn.disabled = false;
+        allPresentBtn.className = "px-3 py-2 rounded-xl bg-blue-600/20 border border-blue-500/30 text-blue-400 text-xs font-black hover:bg-blue-600 hover:text-white transition active:scale-95";
+      }
 
       const searchQuery = (document.getElementById('worker-search-input')?.value || '').toLowerCase();
       const roleFilter = document.getElementById('worker-role-filter')?.value || 'ALL';
+      const siteFilterMode = document.getElementById('worker-site-filter')?.value || 'ACTIVE';
 
       let workers = appState.workers || [];
 
+      // 1. Filter by Site Assignment
+      if (siteFilterMode === 'ACTIVE') {
+        workers = workers.filter(w => !w.site_id || w.site_id === 'ALL' || String(w.site_id) === String(appState.activeSiteId));
+      }
+
+      // 2. Filter by Role
       if (roleFilter !== 'ALL') {
         workers = workers.filter(w => w.role === roleFilter);
       }
+
+      // 3. Search Filter
       if (searchQuery) {
         workers = workers.filter(w => (w.name || '').toLowerCase().includes(searchQuery) || (w.phone || '').includes(searchQuery));
       }
@@ -817,7 +965,7 @@
       if (workers.length === 0) {
         container.innerHTML = `
           <div class="glass-card p-6 rounded-3xl text-center space-y-2">
-            <p class="text-xs font-bold text-slate-400">Is filter par koi worker nahi mila.</p>
+            <p class="text-xs font-bold text-slate-400">Is filter par koi worker assign nahi hai.</p>
             <button onclick="openAddWorkerModal()" class="px-4 py-2 rounded-xl bg-blue-600 text-xs font-black text-white">+ Naya Worker Add Karein</button>
           </div>
         `;
@@ -830,6 +978,13 @@
         const st = att.status;
         const ot = Number(att.ot) || 0;
 
+        // Resolve Assigned Site Name
+        let siteBadge = "🌐 All Sites";
+        if (w.site_id && w.site_id !== 'ALL') {
+          const matchedProj = appState.projects.find(p => String(p.id) === String(w.site_id));
+          siteBadge = matchedProj ? `📍 ${matchedProj.name}` : `📍 Site ${w.site_id}`;
+        }
+
         const card = document.createElement('div');
         card.className = "glass-card rounded-3xl p-4 space-y-3 shadow-lg border border-slate-800";
         card.innerHTML = `
@@ -838,6 +993,7 @@
               <div class="flex items-center gap-2">
                 <h4 class="text-xs font-black text-white">${w.name}</h4>
                 <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">${w.role}</span>
+                <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 truncate max-w-[110px]">${siteBadge}</span>
               </div>
               <p class="text-[10px] text-slate-400 mt-1 flex items-center gap-2">
                 <span>📞 ${w.phone}</span>
@@ -850,20 +1006,23 @@
             
             <div class="flex items-center gap-1.5">
               <button onclick="openAdvanceModal('${w.id}', '${w.name}')" class="px-2 py-1 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-black" title="Kharcha Cut">Kharcha</button>
+              <button onclick="sendWorkerWhatsAppSlip('${w.id}')" class="p-1.5 rounded-lg bg-slate-800 text-xs hover:text-white" title="WhatsApp Slip">💬</button>
               <button onclick="editWorker('${w.id}')" class="p-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs hover:text-white" title="Edit">✏️</button>
               <button onclick="deleteWorker('${w.id}')" class="p-1.5 rounded-lg bg-rose-950/40 text-rose-400 text-xs" title="Delete">🗑️</button>
             </div>
           </div>
 
+          <!-- Attendance Action Strip -->
           <div class="grid grid-cols-4 gap-2 pt-1 border-t border-slate-800/80">
-            <button onclick="setWorkerAtt('${w.id}', 'P')" class="py-2.5 rounded-xl text-xs font-black transition active:scale-95 ${st === 'P' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30' : 'bg-slate-900 border border-slate-800 text-slate-400'}">P (Full)</button>
-            <button onclick="setWorkerAtt('${w.id}', 'HD')" class="py-2.5 rounded-xl text-xs font-black transition active:scale-95 ${st === 'HD' ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/30' : 'bg-slate-900 border border-slate-800 text-slate-400'}">HD (Half)</button>
-            <button onclick="setWorkerAtt('${w.id}', 'A')" class="py-2.5 rounded-xl text-xs font-black transition active:scale-95 ${st === 'A' ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30' : 'bg-slate-900 border border-slate-800 text-slate-400'}">A (Absent)</button>
+            <button onclick="setWorkerAtt('${w.id}', 'P')" ${isLocked ? 'disabled' : ''} class="py-2.5 rounded-xl text-xs font-black transition active:scale-95 ${st === 'P' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30' : 'bg-slate-900 border border-slate-800 text-slate-400'} ${isLocked ? 'opacity-60 cursor-not-allowed' : ''}">P (Full)</button>
+            <button onclick="setWorkerAtt('${w.id}', 'HD')" ${isLocked ? 'disabled' : ''} class="py-2.5 rounded-xl text-xs font-black transition active:scale-95 ${st === 'HD' ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/30' : 'bg-slate-900 border border-slate-800 text-slate-400'} ${isLocked ? 'opacity-60 cursor-not-allowed' : ''}">HD (Half)</button>
+            <button onclick="setWorkerAtt('${w.id}', 'A')" ${isLocked ? 'disabled' : ''} class="py-2.5 rounded-xl text-xs font-black transition active:scale-95 ${st === 'A' ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30' : 'bg-slate-900 border border-slate-800 text-slate-400'} ${isLocked ? 'opacity-60 cursor-not-allowed' : ''}">A (Absent)</button>
             
-            <div class="flex items-center bg-slate-900 border border-slate-800 rounded-xl px-1.5 py-1 justify-between">
-              <button onclick="stepOT('${w.id}', -1)" class="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-800 text-slate-400 text-xs font-black">-</button>
+            <!-- Overtime Stepper -->
+            <div class="flex items-center bg-slate-900 border border-slate-800 rounded-xl px-1.5 py-1 justify-between ${isLocked ? 'opacity-60' : ''}">
+              <button onclick="stepOT('${w.id}', -1)" ${isLocked ? 'disabled' : ''} class="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-800 text-slate-400 text-xs font-black">-</button>
               <span class="text-[11px] font-black text-amber-400">${ot}h</span>
-              <button onclick="stepOT('${w.id}', 1)" class="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-800 text-slate-400 text-xs font-black">+</button>
+              <button onclick="stepOT('${w.id}', 1)" ${isLocked ? 'disabled' : ''} class="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-800 text-slate-400 text-xs font-black">+</button>
             </div>
           </div>
         `;
@@ -872,6 +1031,11 @@
     }
 
     async function setWorkerAtt(workerId, status) {
+      if (isCurrentAttendanceLocked()) {
+        notify("Attendance locked hai! Pehle unlock karein.", "error");
+        return;
+      }
+
       const dt = appState.selectedDate;
       const attKey = `${workerId}_${dt}`;
       const currentOT = appState.attendance[attKey]?.ot || 0;
@@ -887,15 +1051,21 @@
             project_id: appState.activeSiteId,
             status,
             ot_hours: currentOT,
-            date: dt
+            date: dt,
+            is_locked: false
           }, { onConflict: 'labour_id,date' });
         } catch (e) {
-          console.warn("Attendance sync error:", e);
+          console.warn("Attendance sync failed:", e);
         }
       }
     }
 
     async function stepOT(workerId, delta) {
+      if (isCurrentAttendanceLocked()) {
+        notify("Attendance locked hai! Pehle unlock karein.", "error");
+        return;
+      }
+
       const dt = appState.selectedDate;
       const attKey = `${workerId}_${dt}`;
       const currentSt = appState.attendance[attKey]?.status || 'P';
@@ -912,15 +1082,21 @@
             project_id: appState.activeSiteId,
             status: currentSt,
             ot_hours: currentOT,
-            date: dt
+            date: dt,
+            is_locked: false
           }, { onConflict: 'labour_id,date' });
         } catch (e) {}
       }
     }
 
     async function markAllWorkersPresent() {
+      if (isCurrentAttendanceLocked()) {
+        notify("Attendance locked hai! Pehle unlock karein.", "error");
+        return;
+      }
+
       const dt = appState.selectedDate;
-      const workers = appState.workers || [];
+      const workers = (appState.workers || []).filter(w => !w.site_id || w.site_id === 'ALL' || String(w.site_id) === String(appState.activeSiteId));
 
       const payload = [];
       workers.forEach(w => {
@@ -932,7 +1108,8 @@
           project_id: appState.activeSiteId,
           status: 'P',
           ot_hours: ot,
-          date: dt
+          date: dt,
+          is_locked: false
         });
       });
 
@@ -947,6 +1124,21 @@
       }
     }
 
+    // -------------------------------------------------------------------------
+    // 📝 WORKER CRUD WITH SITE ASSIGNMENT
+    // -------------------------------------------------------------------------
+    function populateSiteAssignmentDropdown(selectedSiteId = 'ALL') {
+      const select = document.getElementById('w-assign-site');
+      select.innerHTML = '<option value="ALL">🌐 Sabhi Sites (Floating Worker)</option>';
+      appState.projects.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.innerText = `📍 ${p.name}`;
+        if (String(p.id) === String(selectedSiteId)) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
     function openAddWorkerModal() {
       document.getElementById('modal-worker-title').innerText = "Naya Worker Register Karein";
       document.getElementById('w-edit-id').value = "";
@@ -955,6 +1147,7 @@
       document.getElementById('w-rate').value = "1000";
       document.getElementById('w-ot-rate').value = "100";
       document.getElementById('w-login-pin').value = "1234";
+      populateSiteAssignmentDropdown(appState.activeSiteId);
       openModal('modal-worker');
     }
 
@@ -969,10 +1162,10 @@
       document.getElementById('w-rate').value = w.rate;
       document.getElementById('w-ot-rate').value = w.ot_rate || 100;
       document.getElementById('w-login-pin').value = w.pin || "1234";
+      populateSiteAssignmentDropdown(w.site_id || 'ALL');
       openModal('modal-worker');
     }
 
-    // 🔥 SAVE WORKER TO SUPABASE (EXACT COLUMN NAMES)
     async function saveWorker() {
       const editId = document.getElementById('w-edit-id').value;
       const name = document.getElementById('w-name').value.trim();
@@ -981,6 +1174,7 @@
       const rate = Number(document.getElementById('w-rate').value) || 0;
       const ot_rate = Number(document.getElementById('w-ot-rate').value) || 0;
       const pin = document.getElementById('w-login-pin').value.trim() || "1234";
+      const assignedSite = document.getElementById('w-assign-site').value;
 
       if (!name || phone.length < 10) {
         notify("Worker naam aur 10-digit mobile darj karein!", "error");
@@ -1004,6 +1198,19 @@
           if (editId) {
             const { error } = await supabaseClient.from('labour').update(workerPayload).eq('id', editId);
             if (error) throw error;
+            const idx = appState.workers.findIndex(x => String(x.id) === String(editId));
+            if (idx !== -1) {
+              appState.workers[idx] = {
+                ...appState.workers[idx],
+                name,
+                phone,
+                role,
+                rate,
+                ot_rate,
+                pin,
+                site_id: assignedSite
+              };
+            }
             notify("Worker details update ho gayi!");
           } else {
             const { data, error } = await supabaseClient.from('labour').insert([workerPayload]).select();
@@ -1016,7 +1223,8 @@
                 role: data[0].role,
                 rate: data[0].daily_rate,
                 ot_rate: data[0].ot_rate_per_hour,
-                pin: data[0].pin
+                pin: data[0].pin,
+                site_id: assignedSite
               });
             }
             notify("Worker Supabase me save ho gaya!");
@@ -1086,6 +1294,34 @@
       }
     }
 
+    function sendWorkerWhatsAppSlip(workerId) {
+      const worker = appState.workers.find(w => String(w.id) === String(workerId));
+      if (!worker) return;
+
+      const p = appState.projects.find(x => String(x.id) === String(appState.activeSiteId)) || appState.projects[0];
+      const dt = appState.selectedDate;
+      const att = appState.attendance[`${worker.id}_${dt}`] || { status: 'P', ot: 0 };
+
+      const msg = encodeURIComponent(
+        `*VIJAY CONSTRUCTION - DAILY HAZIRI SLIP*\n` +
+        `-----------------------------------------\n` +
+        `👷 Worker: *${worker.name}* (${worker.role})\n` +
+        `📍 Site: *${p.name}*\n` +
+        `📅 Date: ${dt}\n` +
+        `✅ Haziri: *${att.status === 'P' ? 'Present (Full)' : att.status === 'HD' ? 'Half Day' : 'Absent'}*\n` +
+        `⏰ Overtime: ${att.ot || 0} Ghante\n` +
+        `💰 Daily Dihaadi: ₹${worker.rate}\n` +
+        `🔑 Portal Login PIN: *${worker.pin || '1234'}*\n` +
+        `-----------------------------------------\n` +
+        `VIJAY Construction Central Control Hub`
+      );
+
+      window.open(`https://wa.me/91${worker.phone}?text=${msg}`, '_blank');
+    }
+
+    // -------------------------------------------------------------------------
+    // 🏗️ SITES, MB & CASHBOOK
+    // -------------------------------------------------------------------------
     function renderProjects() {
       const container = document.getElementById('projects-list-container');
       if (!container) return;
@@ -1147,7 +1383,7 @@
 
       const items = (appState.measurements || []).filter(m => String(m.site_id || m.siteId) === String(appState.activeSiteId));
       if (items.length === 0) {
-        container.innerHTML = `<div class="glass-card p-6 rounded-3xl text-center text-xs text-slate-500 italic">Koi MB Entry maujood nahi hai.</div>`;
+        container.innerHTML = `<div class="glass-card p-6 rounded-3xl text-center text-xs text-slate-500 italic">Koi MB Entry nahi hai.</div>`;
         return;
       }
 
@@ -1256,6 +1492,9 @@
       }
     }
 
+    // -------------------------------------------------------------------------
+    // 📸 GEO CAMERA PROOF
+    // -------------------------------------------------------------------------
     let liveCameraStream = null;
     async function openCameraViewfinder() {
       const modal = document.getElementById('camera-modal');
@@ -1322,7 +1561,7 @@
     function exportLabourCSV() {
       let csv = "Worker Name,Role,Phone,Rate,Daily Status,OT Hours\n";
       const dt = appState.selectedDate;
-      const workers = appState.workers || [];
+      const workers = (appState.workers || []).filter(w => !w.site_id || w.site_id === 'ALL' || String(w.site_id) === String(appState.activeSiteId));
       workers.forEach(w => {
         const att = appState.attendance[`${w.id}_${dt}`] || { status: 'A', ot: 0 };
         csv += `"${w.name}","${w.role}","${w.phone}",${w.rate},"${att.status}",${att.ot}\n`;
