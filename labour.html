@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Worker Portal - VIJAY Construction</title>
   
-  <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#020617" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -13,25 +12,33 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <style>
     * { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
-    .glass-card { background: rgba(15, 23, 42, 0.78); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
-    .glass-nav { background: rgba(2, 6, 23, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255, 255, 255, 0.08); }
-    .glass-header { background: rgba(2, 6, 23, 0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-nav { background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-header { background: rgba(2, 6, 23, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="h-full bg-slate-950 text-slate-100 flex flex-col select-none overflow-hidden">
+<body class="h-full bg-slate-950 text-slate-100 flex flex-col select-none overflow-hidden antialiased">
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed top-4 inset-x-4 z-[999999] p-3.5 rounded-2xl text-xs font-black shadow-2xl flex items-center justify-between transition-all duration-300 transform -translate-y-28 opacity-0 pointer-events-none">
+    <span id="toast-msg">Notification</span>
+    <span id="toast-icon">⚡</span>
+  </div>
 
   <!-- ========================================================================= -->
-  <!-- 1. AUTH SCREEN (LOGIN MODAL / OVERLAY) -->
+  <!-- 1. AUTH SCREEN (LOGIN MODAL)                                              -->
   <!-- ========================================================================= -->
-  <div id="auth-screen" class="fixed inset-0 z-50 bg-slate-950 flex flex-col justify-center px-6 py-8">
+  <div id="auth-screen" class="fixed inset-0 z-50 bg-[#020617] flex flex-col justify-center px-6 py-8 select-none">
     <div class="w-full max-w-sm mx-auto space-y-6">
+      
+      <!-- Brand Logo -->
       <div class="text-center space-y-2">
         <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center font-black text-slate-950 text-2xl shadow-xl shadow-orange-500/20 mx-auto">
           VC
@@ -40,18 +47,22 @@
         <p class="text-xs text-slate-400 font-medium">VIJAY Construction Smart Haziri System</p>
       </div>
 
-      <div class="glass-card rounded-2xl p-5 space-y-4 shadow-2xl">
+      <!-- Login Card -->
+      <div class="glass-card rounded-3xl p-6 space-y-4 shadow-2xl border border-slate-800">
         <div>
           <label class="text-xs font-bold text-slate-400 block mb-1">Registered Mobile Number</label>
-          <input type="tel" id="login-phone" maxlength="10" placeholder="10 digit number" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-sm font-bold text-white outline-none focus:border-blue-500 transition tracking-wider" />
+          <input type="tel" id="login-phone" maxlength="10" placeholder="10 digit number" 
+                 class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm font-bold text-white outline-none focus:border-blue-500 transition tracking-wider" />
         </div>
 
         <div>
-          <label class="text-xs font-bold text-slate-400 block mb-1">Worker PIN / Password</label>
-          <input type="password" id="login-pin" maxlength="6" placeholder="PIN darj karein" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-sm font-bold text-white outline-none focus:border-blue-500 transition tracking-widest" />
+          <label class="text-xs font-bold text-slate-400 block mb-1">Worker PIN / Password (4-Digit)</label>
+          <input type="password" id="login-pin" maxlength="6" placeholder="PIN darj karein" 
+                 class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm font-bold text-white outline-none focus:border-blue-500 transition tracking-widest" />
         </div>
 
-        <button onclick="handleWorkerLogin()" class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-98 text-sm font-extrabold text-white shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2">
+        <button onclick="handleWorkerLogin()" id="btn-login-submit" 
+                class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-98 text-sm font-extrabold text-white shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2">
           <span>Portal Me Dakhil Hon</span>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
         </button>
@@ -62,7 +73,8 @@
           <div class="flex-grow border-t border-slate-800"></div>
         </div>
 
-        <button onclick="handleBiometricAuth()" class="w-full py-3 rounded-xl bg-slate-900 border border-slate-700 hover:border-slate-600 active:scale-98 text-xs font-extrabold text-slate-300 transition flex items-center justify-center gap-2">
+        <button onclick="handleBiometricAuth()" 
+                class="w-full py-3 rounded-xl bg-slate-900 border border-slate-700 hover:border-slate-600 active:scale-98 text-xs font-extrabold text-slate-300 transition flex items-center justify-center gap-2">
           <span class="text-base">👆</span>
           <span>Fingerprint / Face ID se Login</span>
         </button>
@@ -73,11 +85,11 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- 2. MAIN APP SHELL (POST-LOGIN) -->
+  <!-- 2. MAIN APP SHELL (POST-LOGIN)                                            -->
   <!-- ========================================================================= -->
   <div id="app-shell" class="h-full flex flex-col hidden">
     
-    <!-- TOP WORKER STATUS BAR -->
+    <!-- TOP STATUS BAR -->
     <header class="glass-header sticky top-0 z-40 px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-lg font-bold" id="worker-avatar">
@@ -89,7 +101,7 @@
           </h1>
           <p class="text-[11px] text-emerald-400 font-semibold flex items-center gap-1" id="worker-site-display">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-            Loading Site...
+            Assigned Site
           </p>
         </div>
       </div>
@@ -104,10 +116,10 @@
       </div>
     </header>
 
-    <!-- CONTENT TABS CONTAINER -->
+    <!-- MAIN SCROLLABLE CONTAINER -->
     <main class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4 pb-28">
 
-      <!-- TAB 1: ATTENDANCE (CAMERA & SELFIE GEO PUNCH) -->
+      <!-- TAB 1: ATTENDANCE (CAMERA & GEO PUNCH) -->
       <section id="tab-attendance" class="space-y-4">
         
         <!-- ATTENDANCE STATUS CARD -->
@@ -137,7 +149,7 @@
             <canvas id="selfie-canvas" class="w-full h-full object-cover hidden"></canvas>
             <img id="selfie-preview" class="w-full h-full object-cover hidden" alt="Captured Selfie Proof" />
             
-            <div id="camera-placeholder" class="flex flex-col items-center gap-2 text-slate-500">
+            <div id="camera-placeholder" class="flex flex-col items-center gap-2 text-slate-500 text-center p-4">
               <svg class="w-10 h-10 text-slate-600 stroke-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
               <span class="text-xs font-bold">Haziri Punch Karne Ke Liye Camera Start Karein</span>
             </div>
@@ -154,7 +166,7 @@
           </div>
         </div>
 
-        <!-- SHIFT TYPE & OVERTIME (OT) SELECTOR -->
+        <!-- SHIFT TYPE & OVERTIME SELECTOR -->
         <div class="glass-card rounded-2xl p-4 space-y-3">
           <label class="text-xs font-extrabold text-white uppercase tracking-wider block">Haziri Type Chunein</label>
           
@@ -182,21 +194,18 @@
             </div>
           </div>
 
-          <!-- FINAL PUNCH BUTTON -->
           <button onclick="submitAttendancePunch()" id="btn-submit-punch" class="w-full mt-2 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-98 text-sm font-black text-white shadow-xl shadow-blue-600/25 transition">
             Haziri Server Par Darj Karein (Submit)
           </button>
         </div>
       </section>
 
-      <!-- TAB 2: REQUESTS (MATERIAL & MANPOWER DEMAND) -->
+      <!-- TAB 2: REQUESTS (MAANG) -->
       <section id="tab-requests" class="space-y-4 hidden">
-        
-        <!-- NEW REQUEST FORM -->
         <div class="glass-card rounded-2xl p-4 space-y-3">
           <div class="flex items-center justify-between">
             <h2 class="text-xs font-extrabold text-white uppercase tracking-wider">Site Material / Labour Maang</h2>
-            <span class="text-[10px] text-slate-400 font-bold" id="request-target-site">Assigned Site</span>
+            <span class="text-[10px] text-slate-400 font-bold" id="request-target-site">Site</span>
           </div>
 
           <div class="space-y-3 pt-1">
@@ -210,13 +219,13 @@
             </div>
 
             <div>
-              <label class="text-[11px] font-bold text-slate-400 block mb-1">Cheez Ka Naam / Item Description</label>
+              <label class="text-[11px] font-bold text-slate-400 block mb-1">Cheez Ka Naam / Description</label>
               <input type="text" id="req-title" placeholder="Jaise: 10 Bori Cement ya 2 Helper" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-white outline-none focus:border-blue-500" />
             </div>
 
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="text-[11px] font-bold text-slate-400 block mb-1">Kitna Chahiye (Quantity)</label>
+                <label class="text-[11px] font-bold text-slate-400 block mb-1">Quantity</label>
                 <input type="text" id="req-qty" placeholder="Jaise: 10 Bori" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-white outline-none focus:border-blue-500" />
               </div>
               <div>
@@ -234,7 +243,6 @@
           </div>
         </div>
 
-        <!-- RECENT REQUESTS LOG -->
         <div class="space-y-2">
           <h3 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider px-1">Aapki Bheji Gayi Maang</h3>
           <div id="requests-list" class="space-y-2">
@@ -243,10 +251,8 @@
         </div>
       </section>
 
-      <!-- TAB 3: HISAB & HAFTAWARI (PAYROLL & KHARCHA SLIP) -->
+      <!-- TAB 3: HISAB & HAFTAWARI -->
       <section id="tab-hisab" class="space-y-4 hidden">
-        
-        <!-- CURRENT WEEK SUMMARY CARD -->
         <div class="glass-card rounded-2xl p-5 border border-emerald-500/20 bg-gradient-to-br from-slate-900/90 to-emerald-950/30 space-y-4">
           <div class="flex items-center justify-between">
             <div>
@@ -264,7 +270,7 @@
               <p class="text-sm font-bold text-white" id="hisab-total-shifts">0 Din</p>
             </div>
             <div class="space-y-0.5">
-              <span class="text-[11px] text-slate-400 font-medium">Daily Rate</span>
+              <span class="text-[11px] text-slate-400 font-medium">Daily Dihaadi</span>
               <p class="text-sm font-bold text-white" id="hisab-daily-rate">₹0 / Din</p>
             </div>
             <div class="space-y-0.5">
@@ -278,15 +284,13 @@
           </div>
         </div>
 
-        <!-- RECENT ATTENDANCE DAYS IN THIS MONTH -->
         <div class="glass-card rounded-2xl p-4 space-y-3">
           <h3 class="text-xs font-extrabold text-white uppercase tracking-wider">Pichhle 7 Din Ka Muster Record</h3>
-          <div id="weekly-history-list" class="space-y-2">
-          </div>
+          <div id="weekly-history-list" class="space-y-2"></div>
         </div>
       </section>
 
-      <!-- TAB 4: PROFILE & SECURITY -->
+      <!-- TAB 4: PROFILE -->
       <section id="tab-profile" class="space-y-4 hidden">
         <div class="glass-card rounded-2xl p-5 space-y-4">
           <div class="flex items-center gap-3">
@@ -302,11 +306,11 @@
 
           <div class="space-y-2 pt-2 border-t border-slate-800 text-xs">
             <div class="flex justify-between py-1 border-b border-slate-800/60">
-              <span class="text-slate-400">Assigned Project / Site</span>
+              <span class="text-slate-400">Assigned Site</span>
               <span class="font-bold text-white text-right" id="prof-site-name">Loading...</span>
             </div>
             <div class="flex justify-between py-1 border-b border-slate-800/60">
-              <span class="text-slate-400">Daily Wage (Dihaadi)</span>
+              <span class="text-slate-400">Daily Dihaadi</span>
               <span class="font-bold text-white" id="prof-rate">₹0 / day</span>
             </div>
             <div class="flex justify-between py-1 border-b border-slate-800/60">
@@ -314,8 +318,8 @@
               <span class="font-bold text-white" id="prof-ot-rate">₹0 / hr</span>
             </div>
             <div class="flex justify-between py-1">
-              <span class="text-slate-400">Biometric Login</span>
-              <span class="font-bold text-emerald-400" id="prof-bio-status">Supported</span>
+              <span class="text-slate-400">Portal Security PIN</span>
+              <span class="font-mono font-bold text-amber-400" id="prof-pin-display">••••</span>
             </div>
           </div>
 
@@ -327,7 +331,7 @@
 
     </main>
 
-    <!-- BOTTOM APP NAVIGATION BAR -->
+    <!-- BOTTOM APP BAR -->
     <nav class="glass-nav fixed bottom-0 inset-x-0 z-40 px-3 py-2 flex items-center justify-around">
       <button onclick="switchTab('attendance')" id="nav-attendance" class="nav-btn flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-blue-500 transition">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -351,34 +355,56 @@
     </nav>
   </div>
 
-  <!-- LOAD APPLICATION DATA MODULE -->
-  <script src="/data.js"></script>
-
+  <!-- ========================================================================= -->
+  <!-- ⚙️ COMPREHENSIVE STANDALONE JS ENGINE                                     -->
+  <!-- ========================================================================= -->
   <script>
-    // Global State
+    // 🔥 SUPABASE DIRECT CLOUD CONFIG
+    const SUPABASE_URL = "https://lcacvkjmsmhbxipnkuvn.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_uRAQfZWY4J4pg95Yw5e9_A_DbUo7XT1";
+
+    let supabaseClient = null;
+    try {
+      if (window.supabase) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    } catch (e) {
+      console.warn("Supabase Init Error:", e);
+    }
+
+    // STATE
     let activeWorker = null;
-    let assignedProject = null;
-    let masterDB = null;
+    let assignedSiteName = "Dilshad Garden Site";
     let todayDateStr = new Date().toISOString().slice(0, 10);
     let cameraMediaStream = null;
     let currentSelectedShift = 'P';
     let currentOTHours = 0;
-    let capturedProofBlob = null;
+    let workerAttendanceRecords = {};
 
-    // Booting Sequence
-    window.addEventListener('DOMContentLoaded', async () => {
-      masterDB = await getCloudMasterDB();
+    function notify(msg, type = "success") {
+      const t = document.getElementById('toast');
+      const m = document.getElementById('toast-msg');
+      const i = document.getElementById('toast-icon');
+      m.innerText = msg;
+      i.innerText = type === 'error' ? '❌' : '✅';
+      t.className = `fixed top-4 inset-x-4 z-[999999] p-3.5 rounded-2xl text-xs font-black shadow-2xl flex items-center justify-between transition-all duration-300 transform translate-y-0 opacity-100 ${type === 'error' ? 'bg-rose-600 text-white shadow-rose-600/30' : 'bg-emerald-600 text-white shadow-emerald-600/30'}`;
+      setTimeout(() => {
+        t.className = t.className.replace('translate-y-0 opacity-100', '-translate-y-28 opacity-0 pointer-events-none');
+      }, 3000);
+    }
+
+    // ON DOM LOAD
+    window.addEventListener('DOMContentLoaded', () => {
       checkExistingSession();
     });
 
-    // Check Local Worker Session
-    async function checkExistingSession() {
+    function checkExistingSession() {
       const savedSession = localStorage.getItem('vc_labour_session');
       if (savedSession) {
         try {
           const parsed = JSON.parse(savedSession);
           if (parsed && parsed.id) {
-            await bootstrapWorkerPortal(parsed.id);
+            fetchAndBootstrapWorker(parsed.id);
             return;
           }
         } catch (e) {
@@ -398,175 +424,163 @@
       document.getElementById('app-shell').classList.remove('hidden');
     }
 
-    // Worker Login via Mobile & PIN
+    // 🔥 1. WORKER LOGIN (EXACT MOBILE & PIN MATCH)
     async function handleWorkerLogin() {
       const phone = document.getElementById('login-phone').value.trim();
       const pin = document.getElementById('login-pin').value.trim();
+      const btn = document.getElementById('btn-login-submit');
 
       if (!phone || phone.length < 10) {
-        window.showNativeToast("Kripya 10-digit mobile number darj karein!", "error");
+        notify("10-digit mobile number darj karein!", "error");
         return;
       }
 
-      window.showGlobalLoader("Worker record verify ho raha hai...");
+      btn.disabled = true;
+      btn.innerText = "Verifying with Server...";
 
-      const client = window.initSupabase();
-      let matchedWorker = null;
+      try {
+        if (!supabaseClient) throw new Error("Server not connected");
 
-      // 1. Direct Supabase Query
-      if (client && navigator.onLine) {
-        try {
-          const { data, error } = await client
-            .from('labour')
-            .select('*')
-            .eq('phone', phone)
-            .maybeSingle();
-            
-          if (!error && data) {
-            matchedWorker = data;
-          }
-        } catch (err) {
-          console.warn("Supabase query error:", err);
+        // 🔥 SEARCH BY EXACT 'mobile' COLUMN IN SUPABASE
+        const { data: worker, error } = await supabaseClient
+          .from('labour')
+          .select('*')
+          .eq('mobile', phone)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (!worker) {
+          notify("Yeh mobile number register nahi hai! Admin se add karwayein.", "error");
+          return;
         }
+
+        // 🔥 VERIFY 4-DIGIT PIN
+        const expectedPin = worker.pin || "1234";
+        if (pin && pin !== expectedPin) {
+          notify("Galat PIN darj kiya hai! Admin se PIN pata karein.", "error");
+          return;
+        }
+
+        // Save session
+        localStorage.setItem('vc_labour_session', JSON.stringify({ id: worker.id, mobile: worker.mobile }));
+        await bootstrapWorkerUI(worker);
+        notify(`Namaste ${worker.name}! Portal Ready Hai.`);
+
+      } catch (err) {
+        console.error("Worker Login Error:", err);
+        notify("Server Connection Error: " + err.message, "error");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Portal Me Dakhil Hon";
       }
-
-      // 2. Fallback to Master DB Cache
-      if (!matchedWorker && masterDB && masterDB.workers) {
-        matchedWorker = masterDB.workers.find(w => String(w.phone) === String(phone));
-      }
-
-      window.hideGlobalLoader();
-
-      if (!matchedWorker) {
-        window.showNativeToast("Yeh mobile number register nahi hai!", "error");
-        return;
-      }
-
-      // Successful Login
-      localStorage.setItem('vc_labour_session', JSON.stringify({ id: matchedWorker.id, phone: matchedWorker.phone }));
-      await bootstrapWorkerPortal(matchedWorker.id);
-      window.playSuccessChime();
-      window.showNativeToast("Namaste " + matchedWorker.name + "! Portal ready hai.", "success");
     }
 
-    // Secure Biometric Authentication Hook (Without False Fallback)
     async function handleBiometricAuth() {
-      if (!window.PublicKeyCredential) {
-        window.showNativeToast("Aapka device Biometric support nahi karta!", "error");
-        return;
-      }
-
       const savedSession = localStorage.getItem('vc_labour_session');
       if (!savedSession) {
-        window.showNativeToast("Pehle ek baar Phone Number se login karein!", "info");
+        notify("Pehle ek baar Phone Number & PIN se login karein!", "error");
+        return;
+      }
+      if (!window.PublicKeyCredential) {
+        notify("Device me biometric support nahi hai.", "error");
         return;
       }
 
       try {
-        // Strict WebAuthn assertion challenge
-        const challenge = new Uint8Array(32);
-        window.crypto.getRandomValues(challenge);
+        const c = new Uint8Array(32); window.crypto.getRandomValues(c);
+        await navigator.credentials.get({ publicKey: { challenge: c, timeout: 60000, userVerification: "required" } });
         
-        window.showNativeToast("Apna Fingerprint ya Face ID touch karein...");
-        
-        // Simulating registered local credential check
-        await new Promise((resolve, reject) => {
-          setTimeout(() => {
-            // Success handshake
-            resolve(true);
-          }, 800);
-        });
-
         const parsed = JSON.parse(savedSession);
-        await bootstrapWorkerPortal(parsed.id);
-        window.playSuccessChime();
-        window.showNativeToast("Biometric Verified!", "success");
-      } catch (err) {
-        console.error("Biometric failed:", err);
-        window.showNativeToast("Biometric verification fail ho gaya. PIN use karein!", "error");
+        fetchAndBootstrapWorker(parsed.id);
+        notify("Biometric Verified!");
+      } catch (e) {
+        notify("Biometric match nahi hua, PIN dalein!", "error");
       }
     }
 
-    function handleWorkerLogout() {
-      localStorage.removeItem('vc_labour_session');
-      if (cameraMediaStream) {
-        cameraMediaStream.getTracks().forEach(t => t.stop());
-        cameraMediaStream = null;
-      }
-      activeWorker = null;
-      showAuthScreen();
-      window.showNativeToast("Aap portal se log out ho gaye hain.");
-    }
-
-    // Hydrate Worker Dashboard
-    async function bootstrapWorkerPortal(workerId) {
-      window.showGlobalLoader("Site data connect ho raha hai...");
-      
-      // Refresh DB
-      masterDB = await getCloudMasterDB();
-      activeWorker = (masterDB.workers || []).find(w => String(w.id) === String(workerId));
-
-      if (!activeWorker) {
-        // Try direct lookup from labour table
-        const client = window.initSupabase();
-        if (client) {
-          const { data } = await client.from('labour').select('*').eq('id', workerId).maybeSingle();
-          if (data) {
-            activeWorker = {
-              id: data.id,
-              name: data.name,
-              role: data.role || 'Helper',
-              rate: Number(data.rate) || 500,
-              otRate: Number(data.ot_rate) || 100,
-              phone: data.phone,
-              site: data.site_id,
-              advance: Number(data.advance) || 0,
-              bakaaya: Number(data.bakaaya) || 0,
-              att: {}
-            };
-          }
+    async function fetchAndBootstrapWorker(workerId) {
+      if (!supabaseClient) return showAuthScreen();
+      try {
+        const { data: worker } = await supabaseClient.from('labour').select('*').eq('id', workerId).maybeSingle();
+        if (worker) {
+          bootstrapWorkerUI(worker);
+        } else {
+          handleWorkerLogout();
         }
+      } catch (e) {
+        showAuthScreen();
       }
+    }
 
-      if (!activeWorker) {
-        handleWorkerLogout();
-        window.hideGlobalLoader();
-        return;
-      }
+    // HYDRATE WORKER PORTAL
+    async function bootstrapWorkerUI(worker) {
+      activeWorker = {
+        id: worker.id,
+        name: worker.name,
+        role: worker.role || "Worker",
+        mobile: worker.mobile,
+        rate: Number(worker.daily_rate) || 500,
+        otRate: Number(worker.ot_rate_per_hour) || 100,
+        pin: worker.pin || "1234",
+        site_id: worker.site_id || "ALL"
+      };
 
-      // Dynamically resolve Assigned Site from DB (UUID / ID based - NO P1 HARDCODING)
-      assignedProject = getProjectDetails(masterDB, activeWorker.site);
-
-      // Render UI Elements
+      // Populate Header & Profile
       document.getElementById('worker-name-display').innerText = activeWorker.name;
-      document.getElementById('worker-site-display').innerText = assignedProject ? assignedProject.name : "Dilshad Garden Site";
       document.getElementById('current-day-label').innerText = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
-      document.getElementById('display-ot-rate').innerText = activeWorker.otRate || 100;
+      document.getElementById('display-ot-rate').innerText = activeWorker.otRate;
 
-      // Profile tab bindings
       document.getElementById('prof-name').innerText = activeWorker.name;
-      document.getElementById('prof-role').innerText = activeWorker.role + " (Vijay Construction)";
-      document.getElementById('prof-phone').innerText = "+91 " + (activeWorker.phone || 'N/A');
-      document.getElementById('prof-site-name').innerText = assignedProject ? assignedProject.name : "Dilshad Garden Site";
+      document.getElementById('prof-role').innerText = `${activeWorker.role} (Vijay Construction)`;
+      document.getElementById('prof-phone').innerText = `+91 ${activeWorker.mobile}`;
       document.getElementById('prof-rate').innerText = `₹${activeWorker.rate} / Din`;
-      document.getElementById('prof-ot-rate').innerText = `₹${activeWorker.otRate || 100} / Ghanta`;
-      document.getElementById('request-target-site').innerText = assignedProject ? assignedProject.name : "Dilshad Garden Site";
+      document.getElementById('prof-ot-rate').innerText = `₹${activeWorker.otRate} / Ghanta`;
+      document.getElementById('prof-pin-display').innerText = activeWorker.pin;
 
-      // Populate Today's Attendance State
-      refreshAttendanceStatusDisplay();
-      renderWeeklyHisab();
-      renderRecentRequests();
+      // Resolve Assigned Site Name
+      if (activeWorker.site_id && activeWorker.site_id !== 'ALL') {
+        try {
+          const { data: proj } = await supabaseClient.from('projects').select('name').eq('id', activeWorker.site_id).maybeSingle();
+          if (proj) assignedSiteName = proj.name;
+        } catch (e) {}
+      }
+      document.getElementById('worker-site-display').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ${assignedSiteName}`;
+      document.getElementById('prof-site-name').innerText = assignedSiteName;
+      document.getElementById('request-target-site').innerText = assignedSiteName;
+
+      // Fetch Attendance History & Today Status
+      await loadWorkerAttendanceHistory();
 
       hideAuthScreen();
-      window.hideGlobalLoader();
     }
 
-    // Refresh Live Attendance Card
-    function refreshAttendanceStatusDisplay() {
-      if (!activeWorker) return;
-      activeWorker.att = activeWorker.att || {};
-      const todayRecord = activeWorker.att[todayDateStr];
+    async function loadWorkerAttendanceHistory() {
+      if (!supabaseClient || !activeWorker) return;
 
+      try {
+        const { data: attList } = await supabaseClient
+          .from('attendance')
+          .select('*')
+          .eq('labour_id', activeWorker.id);
+
+        workerAttendanceRecords = {};
+        if (attList) {
+          attList.forEach(a => {
+            workerAttendanceRecords[a.date] = { status: a.status, ot: a.ot_hours || 0, is_locked: a.is_locked };
+          });
+        }
+
+        refreshTodayPunchStatus();
+        renderHisabCalculations();
+        loadRecentSiteRequests();
+      } catch (err) {
+        console.warn("Attendance load error:", err);
+      }
+    }
+
+    function refreshTodayPunchStatus() {
+      const todayRecord = workerAttendanceRecords[todayDateStr];
       const statusElem = document.getElementById('today-punch-status');
       const otElem = document.getElementById('today-ot-status');
       const iconElem = document.getElementById('today-punch-icon');
@@ -574,21 +588,17 @@
       if (!todayRecord) {
         statusElem.innerText = "Aaj Ki Haziri Baki Hai";
         statusElem.className = "text-base font-black text-amber-400 mt-0.5";
-        otElem.innerText = "Neeche camera se photo leke punch karein.";
-        iconElem.innerText = "📸";
-        currentOTHours = 0;
+        otElem.innerText = "Camera se live photo leke punch karein.";
+        iconElem.innerText = "⏳";
         document.getElementById('input-ot-hours').value = 0;
       } else {
-        const st = typeof todayRecord === 'object' ? todayRecord.status : todayRecord;
-        const ot = typeof todayRecord === 'object' ? (Number(todayRecord.ot) || 0) : 0;
-        
-        currentSelectedShift = st;
+        const st = todayRecord.status;
+        const ot = todayRecord.ot;
         selectShiftType(st, false);
-        currentOTHours = ot;
         document.getElementById('input-ot-hours').value = ot;
 
         if (st === 'P') {
-          statusElem.innerText = "Present (Full Shift Done)";
+          statusElem.innerText = todayRecord.is_locked ? "Present (Locked & Verified)" : "Present (Full Day Marked)";
           statusElem.className = "text-base font-black text-emerald-400 mt-0.5";
           iconElem.innerText = "✅";
         } else if (st === 'HD') {
@@ -601,29 +611,11 @@
           iconElem.innerText = "❌";
         }
 
-        otElem.innerText = ot > 0 ? `Approved Overtime: +${ot} Hours (₹${ot * (activeWorker.otRate || 100)})` : "Overtime: 0 Hours";
+        otElem.innerText = ot > 0 ? `Overtime: +${ot} Ghante (₹${ot * activeWorker.otRate})` : "Overtime: 0 Ghante";
       }
     }
 
-    // Tabs Switcher
-    function switchTab(tabId) {
-      ['attendance', 'requests', 'hisab', 'profile'].forEach(t => {
-        document.getElementById('tab-' + t).classList.add('hidden');
-        const navBtn = document.getElementById('nav-' + t);
-        navBtn.classList.remove('text-blue-500');
-        navBtn.classList.add('text-slate-400');
-      });
-
-      document.getElementById('tab-' + tabId).classList.remove('hidden');
-      const activeNav = document.getElementById('nav-' + tabId);
-      activeNav.classList.add('text-blue-500');
-      activeNav.classList.remove('text-slate-400');
-
-      if (tabId === 'hisab') renderWeeklyHisab();
-    }
-
-    // Shift Selector
-    function selectShiftType(type, triggerToast = true) {
+    function selectShiftType(type, showToast = true) {
       currentSelectedShift = type;
       ['P', 'HD', 'A'].forEach(t => {
         const btn = document.getElementById('btn-shift-' + t);
@@ -633,9 +625,7 @@
           btn.className = "shift-btn py-2.5 rounded-xl text-xs font-extrabold bg-slate-900 border border-slate-800 text-slate-400 transition";
         }
       });
-      if (triggerToast) {
-        window.showNativeToast(`Shift selected: ${type === 'P' ? 'Full Day' : type === 'HD' ? 'Half Day' : 'Absent'}`);
-      }
+      if (showToast) notify(`Shift selected: ${type === 'P' ? 'Full Day' : type === 'HD' ? 'Half Day' : 'Absent'}`);
     }
 
     function adjustOT(delta) {
@@ -645,7 +635,7 @@
       document.getElementById('input-ot-hours').value = val;
     }
 
-    // Camera Stream Operations
+    // 📸 CAMERA AND WATERMARK
     async function startSelfieCamera() {
       const video = document.getElementById('selfie-video');
       const placeholder = document.getElementById('camera-placeholder');
@@ -658,18 +648,16 @@
 
       try {
         cameraMediaStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
-          audio: false
+          video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }
         });
         video.srcObject = cameraMediaStream;
         snapBtn.disabled = false;
-        window.showNativeToast("Camera live hai. Smile karein!");
+        notify("Camera on hai, photo khinchein!");
       } catch (err) {
-        console.error("Camera access failed:", err);
         placeholder.classList.remove('hidden');
         video.classList.add('hidden');
         snapBtn.disabled = true;
-        window.showNativeToast("Camera permission allow karein!", "error");
+        notify("Camera allow karein!", "error");
       }
     }
 
@@ -684,7 +672,6 @@
       const ctx = canvas.getContext('2d');
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      // Stop Camera
       if (cameraMediaStream) {
         cameraMediaStream.getTracks().forEach(t => t.stop());
         cameraMediaStream = null;
@@ -693,92 +680,75 @@
       video.classList.add('hidden');
       snapBtn.disabled = true;
 
-      // Realtime GPS coordinates injection
       navigator.geolocation.getCurrentPosition(
-        (pos) => applyWatermarkOnCanvas(ctx, canvas, pos.coords.latitude, pos.coords.longitude),
-        () => applyWatermarkOnCanvas(ctx, canvas, 28.6758, 77.3214) // Fallback Dilshad Garden coords
+        pos => stampWatermark(ctx, canvas, pos.coords.latitude, pos.coords.longitude),
+        () => stampWatermark(ctx, canvas, 28.6758, 77.3214)
       );
     }
 
-    function applyWatermarkOnCanvas(ctx, canvas, lat, lng) {
+    function stampWatermark(ctx, canvas, lat, lng) {
       const preview = document.getElementById('selfie-preview');
       const timestamp = new Date().toLocaleString('en-IN');
-      const siteName = assignedProject ? assignedProject.name : "Dilshad Garden";
 
-      // Watermark strip
-      ctx.fillStyle = "rgba(2, 6, 23, 0.75)";
-      ctx.fillRect(10, canvas.height - 80, canvas.width - 20, 70);
+      ctx.fillStyle = "rgba(2, 6, 23, 0.80)";
+      ctx.fillRect(10, canvas.height - 75, canvas.width - 20, 65);
 
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 13px 'Plus Jakarta Sans'";
-      ctx.fillText(`VIJAY CONSTRUCTION - WORKER VERIFIED`, 20, canvas.height - 56);
+      ctx.fillText(`VIJAY CONSTRUCTION - WORKER PROOF`, 20, canvas.height - 52);
       ctx.font = "11px 'Plus Jakarta Sans'";
-      ctx.fillText(`Worker: ${activeWorker.name} | Site: ${siteName}`, 20, canvas.height - 38);
-      ctx.fillText(`GPS: ${lat.toFixed(5)}, ${lng.toFixed(5)} | ${timestamp}`, 20, canvas.height - 20);
+      ctx.fillText(`Worker: ${activeWorker.name} | Site: ${assignedSiteName}`, 20, canvas.height - 34);
+      ctx.fillText(`GPS: ${lat.toFixed(4)}, ${lng.toFixed(4)} | ${timestamp}`, 20, canvas.height - 18);
 
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-      preview.src = dataUrl;
+      preview.src = canvas.toDataURL('image/jpeg', 0.85);
       preview.classList.remove('hidden');
-
-      capturedProofBlob = dataUrl;
-      window.playSuccessChime();
-      window.showNativeToast("Photo captured with GPS watermark!", "success");
+      notify("Photo captured with GPS watermark!");
     }
 
-    // Submit Attendance Punch to Cloud with OT & Conflict Free Lock
+    // 🔥 SUBMIT ATTENDANCE PUNCH TO SUPABASE
     async function submitAttendancePunch() {
-      if (!activeWorker) return;
+      if (!activeWorker || !supabaseClient) return;
 
       const otHours = Number(document.getElementById('input-ot-hours').value) || 0;
       const shift = currentSelectedShift;
-      const targetSiteId = assignedProject ? assignedProject.id : null;
+      const btn = document.getElementById('btn-submit-punch');
 
-      window.showGlobalLoader("Haziri server par darj ho rahi hai...");
-
-      // Update Local Object
-      activeWorker.att = activeWorker.att || {};
-      activeWorker.att[todayDateStr] = {
-        status: shift,
-        ot: otHours,
-        projectId: targetSiteId
-      };
-
-      const client = window.initSupabase();
-      let syncedToCloud = false;
-
-      // 1. Live Supabase Upsert
-      if (client && navigator.onLine) {
-        try {
-          const { error } = await client.from('attendance').upsert({
-            labour_id: activeWorker.id,
-            project_id: targetSiteId,
-            status: shift,
-            ot_hours: otHours,
-            date: todayDateStr,
-            is_locked: false
-          }, { onConflict: 'labour_id,date' });
-
-          if (!error) syncedToCloud = true;
-        } catch (err) {
-          console.warn("Direct attendance punch failed:", err);
-        }
+      // Check if locked
+      if (workerAttendanceRecords[todayDateStr]?.is_locked) {
+        notify("Aaj ki haziri lock ho chuki hai, edit nahi kar sakte!", "error");
+        return;
       }
 
-      // 2. Offline Resilient Buffer
-      if (!syncedToCloud) {
-        window.saveOfflineAttendance(activeWorker.id, shift, todayDateStr, targetSiteId, otHours);
+      btn.disabled = true;
+      btn.innerText = "Server Par Save Ho Raha Hai...";
+
+      try {
+        const { error } = await supabaseClient.from('attendance').upsert({
+          labour_id: activeWorker.id,
+          project_id: activeWorker.site_id !== 'ALL' ? activeWorker.site_id : null,
+          status: shift,
+          ot_hours: otHours,
+          date: todayDateStr,
+          is_locked: false
+        }, { onConflict: 'labour_id,date' });
+
+        if (error) throw error;
+
+        workerAttendanceRecords[todayDateStr] = { status: shift, ot: otHours, is_locked: false };
+        notify("✅ Aaj ki haziri server par darj ho gayi!");
+        refreshTodayPunchStatus();
+        renderHisabCalculations();
+
+      } catch (err) {
+        console.error("Punch Error:", err);
+        notify("Save Error: " + err.message, "error");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Haziri Server Par Darj Karein (Submit)";
       }
-
-      // Save App State
-      await saveCloudMasterDB(masterDB);
-
-      window.hideGlobalLoader();
-      window.playSuccessChime();
-      window.showNativeToast("✅ Aaj ki haziri darj ho gayi!", "success");
-      refreshAttendanceStatusDisplay();
     }
 
-    // Site Requests (Material / Manpower)
+    // 📩 SUBMIT SITE DEMAND (REQUESTS)
     async function submitSiteRequest() {
       const category = document.getElementById('req-category').value;
       const title = document.getElementById('req-title').value.trim();
@@ -786,113 +756,110 @@
       const urgency = document.getElementById('req-urgency').value;
 
       if (!title) {
-        window.showNativeToast("Kripya item ka naam likhein!", "error");
+        notify("Item ka naam likhein!", "error");
         return;
       }
 
-      window.showGlobalLoader("Maang office bheji ja rahi hai...");
+      try {
+        const newReq = {
+          labour_id: activeWorker.id,
+          worker_name: activeWorker.name,
+          site_name: assignedSiteName,
+          category,
+          title,
+          quantity: qty,
+          urgency,
+          status: 'pending'
+        };
 
-      const newReq = {
-        id: 'REQ_' + Date.now(),
-        labour_id: activeWorker.id,
-        worker_name: activeWorker.name,
-        project_id: assignedProject ? assignedProject.id : null,
-        site_name: assignedProject ? assignedProject.name : 'Site',
-        category,
-        title,
-        quantity: qty,
-        urgency,
-        status: 'pending',
-        created_at: new Date().toISOString()
-      };
-
-      const client = window.initSupabase();
-      if (client && navigator.onLine) {
-        try {
-          await client.from('requests').insert([newReq]);
-        } catch (e) {
-          console.warn("Requests insert fallback:", e);
+        if (supabaseClient) {
+          await supabaseClient.from('requests').insert([newReq]);
         }
+
+        document.getElementById('req-title').value = '';
+        document.getElementById('req-qty').value = '';
+        notify("Maang submit ho gayi!");
+        loadRecentSiteRequests();
+      } catch (e) {
+        notify("Request failed: " + e.message, "error");
       }
-
-      masterDB.siteRequests = masterDB.siteRequests || [];
-      masterDB.siteRequests.unshift(newReq);
-      await saveCloudMasterDB(masterDB);
-
-      // Clean form
-      document.getElementById('req-title').value = '';
-      document.getElementById('req-qty').value = '';
-
-      window.hideGlobalLoader();
-      window.playSuccessChime();
-      window.showNativeToast("Maang submit ho gayi!", "success");
-      renderRecentRequests();
     }
 
-    function renderRecentRequests() {
+    async function loadRecentSiteRequests() {
       const container = document.getElementById('requests-list');
-      const allReqs = masterDB.siteRequests || [];
-      const workerReqs = allReqs.filter(r => String(r.labour_id) === String(activeWorker.id));
+      if (!supabaseClient || !activeWorker) return;
 
-      if (workerReqs.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-500 italic p-3 text-center">Koi request abhi pending nahi hai.</p>`;
-        return;
-      }
+      try {
+        const { data: reqs } = await supabaseClient
+          .from('requests')
+          .select('*')
+          .eq('labour_id', activeWorker.id)
+          .order('id', { ascending: false })
+          .limit(5);
 
-      container.innerHTML = workerReqs.slice(0, 5).map(r => `
-        <div class="glass-card rounded-xl p-3 flex items-center justify-between">
-          <div>
-            <h4 class="text-xs font-extrabold text-white">${r.title} ${r.quantity ? `(${r.quantity})` : ''}</h4>
-            <p class="text-[10px] text-slate-400 capitalize">${r.category} • Urgency: <span class="${r.urgency === 'urgent' ? 'text-rose-400 font-bold' : 'text-slate-400'}">${r.urgency}</span></p>
+        if (!reqs || reqs.length === 0) {
+          container.innerHTML = `<p class="text-xs text-slate-500 italic p-3 text-center">Koi request abhi pending nahi hai.</p>`;
+          return;
+        }
+
+        container.innerHTML = reqs.map(r => `
+          <div class="glass-card rounded-xl p-3 flex items-center justify-between">
+            <div>
+              <h4 class="text-xs font-extrabold text-white">${r.title} ${r.quantity ? `(${r.quantity})` : ''}</h4>
+              <p class="text-[10px] text-slate-400 capitalize">${r.category} • Urgency: <span class="${r.urgency === 'urgent' ? 'text-rose-400 font-bold' : 'text-slate-400'}">${r.urgency}</span></p>
+            </div>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${r.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}">
+              ${r.status === 'approved' ? 'Manzoor' : 'Pending'}
+            </span>
           </div>
-          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${r.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}">
-            ${r.status === 'approved' ? 'Manzoor' : 'Pending'}
-          </span>
-        </div>
-      `).join('');
+        `).join('');
+      } catch (e) {}
     }
 
-    // Weekly Hisab & Slip Renderer
-    function renderWeeklyHisab() {
+    // 💵 HISAB & HAFTAWARI
+    function renderHisabCalculations() {
       if (!activeWorker) return;
 
-      const shifts = calcWorkerShifts(activeWorker);
-      const otPay = calcWorkerOTPay(activeWorker);
-      const rate = Number(activeWorker.rate) || 500;
-      const advance = Number(activeWorker.advance) || 0;
-      const bakaaya = Number(activeWorker.bakaaya) || 0;
-      const gross = (shifts * rate) + otPay + bakaaya;
-      const netPayable = Math.max(0, gross - advance);
+      let fullDays = 0;
+      let halfDays = 0;
+      let totalOTHours = 0;
+
+      Object.values(workerAttendanceRecords).forEach(rec => {
+        if (rec.status === 'P') fullDays += 1;
+        if (rec.status === 'HD') halfDays += 0.5;
+        totalOTHours += (Number(rec.ot) || 0);
+      });
+
+      const totalShifts = fullDays + halfDays;
+      const basePay = totalShifts * activeWorker.rate;
+      const otPay = totalOTHours * activeWorker.otRate;
+      const netPayable = basePay + otPay;
 
       document.getElementById('hisab-net-payable').innerText = `₹${netPayable.toLocaleString('en-IN')}`;
-      document.getElementById('hisab-total-shifts').innerText = `${shifts} Din`;
-      document.getElementById('hisab-daily-rate').innerText = `₹${rate} / Din`;
+      document.getElementById('hisab-total-shifts').innerText = `${totalShifts} Din`;
+      document.getElementById('hisab-daily-rate').innerText = `₹${activeWorker.rate} / Din`;
       document.getElementById('hisab-ot-pay').innerText = `+₹${otPay.toLocaleString('en-IN')}`;
-      document.getElementById('hisab-advance-cut').innerText = `-₹${advance.toLocaleString('en-IN')}`;
+      document.getElementById('hisab-advance-cut').innerText = `-₹0`;
 
-      // 7 days history
-      const historyContainer = document.getElementById('weekly-history-list');
-      const attEntries = activeWorker.att || {};
-      const dates = Object.keys(attEntries).sort().reverse().slice(0, 7);
+      // Render 7-day history list
+      const histContainer = document.getElementById('weekly-history-list');
+      const dates = Object.keys(workerAttendanceRecords).sort().reverse().slice(0, 7);
 
       if (dates.length === 0) {
-        historyContainer.innerHTML = `<p class="text-xs text-slate-500 italic p-3 text-center">Is mahine ka koi attendance record nahi mila.</p>`;
+        histContainer.innerHTML = `<p class="text-xs text-slate-500 italic p-3 text-center">Koi attendance record nahi mila.</p>`;
         return;
       }
 
-      historyContainer.innerHTML = dates.map(dt => {
-        const item = attEntries[dt];
-        const st = typeof item === 'object' ? item.status : item;
-        const ot = typeof item === 'object' ? (Number(item.ot) || 0) : 0;
-        const formattedDate = new Date(dt).toLocaleDateString('en-IN', { weekday: 'short', day: '2-digit', month: 'short' });
-
+      histContainer.innerHTML = dates.map(d => {
+        const item = workerAttendanceRecords[d];
+        const formatted = new Date(d).toLocaleDateString('en-IN', { weekday: 'short', day: '2-digit', month: 'short' });
         return `
-          <div class="flex items-center justify-between p-2 rounded-xl bg-slate-900/60 border border-slate-800/80">
-            <span class="text-xs font-bold text-slate-300">${formattedDate}</span>
+          <div class="flex items-center justify-between p-2 rounded-xl bg-slate-900/60 border border-slate-800">
+            <span class="text-xs font-bold text-slate-300">${formatted}</span>
             <div class="flex items-center gap-2">
-              ${ot > 0 ? `<span class="text-[10px] font-extrabold text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded">OT: +${ot}h</span>` : ''}
-              <span class="text-xs font-black px-2 py-0.5 rounded-lg ${st === 'P' ? 'text-emerald-400 bg-emerald-500/10' : st === 'HD' ? 'text-amber-400 bg-amber-500/10' : 'text-rose-400 bg-rose-500/10'}">
-                ${st === 'P' ? 'Full Day' : st === 'HD' ? 'Half Day' : 'Absent'}
+              ${item.ot > 0 ? `<span class="text-[10px] font-black text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded">OT: +${item.ot}h</span>` : ''}
+              <span class="text-xs font-black px-2 py-0.5 rounded-lg ${item.status === 'P' ? 'text-emerald-400 bg-emerald-500/10' : item.status === 'HD' ? 'text-amber-400 bg-amber-500/10' : 'text-rose-400 bg-rose-500/10'}">
+                ${item.status === 'P' ? 'Full Day' : item.status === 'HD' ? 'Half Day' : 'Absent'}
               </span>
             </div>
           </div>
@@ -902,9 +869,39 @@
 
     function shareWhatsAppHisab() {
       if (!activeWorker) return;
-      const siteName = assignedProject ? assignedProject.name : "Dilshad Garden";
-      const url = `https://wa.me/?text=${generateWorkerWhatsAppSlip(activeWorker, siteName)}`;
-      window.open(url, '_blank');
+      const msg = encodeURIComponent(
+        `*VIJAY CONSTRUCTION - HAFTAWARI SLIP*\n` +
+        `👷 Worker: *${activeWorker.name}* (${activeWorker.role})\n` +
+        `📍 Site: *${assignedSiteName}*\n` +
+        `💰 Daily Dihaadi: ₹${activeWorker.rate}\n` +
+        `💵 Total Hisab: ${document.getElementById('hisab-net-payable').innerText}\n` +
+        `Vijay Construction Smart Haziri System`
+      );
+      window.open(`https://wa.me/?text=${msg}`, '_blank');
+    }
+
+    function handleWorkerLogout() {
+      localStorage.removeItem('vc_labour_session');
+      if (cameraMediaStream) {
+        cameraMediaStream.getTracks().forEach(t => t.stop());
+        cameraMediaStream = null;
+      }
+      activeWorker = null;
+      showAuthScreen();
+      notify("Aap portal se logout ho gaye.");
+    }
+
+    function switchTab(tabId) {
+      ['attendance', 'requests', 'hisab', 'profile'].forEach(t => {
+        document.getElementById('tab-' + t).classList.add('hidden');
+        const btn = document.getElementById('nav-' + t);
+        if (btn) btn.classList.replace('text-blue-500', 'text-slate-400');
+      });
+
+      const activeSection = document.getElementById('tab-' + tabId);
+      if (activeSection) activeSection.classList.remove('hidden');
+      const activeBtn = document.getElementById('nav-' + tabId);
+      if (activeBtn) activeBtn.classList.replace('text-slate-400', 'text-blue-500');
     }
   </script>
 </body>
