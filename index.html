@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>VIJAY Construction - Master Control Hub</title>
+  <title>VIJAY Construction - Master Hub</title>
   
-  <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#020617" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   
+  <!-- Modern Tailwind CSS Engine -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,97 +18,90 @@
   
   <style>
     * { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
-    .glass-card { background: rgba(15, 23, 42, 0.78); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
-    .glass-header { background: rgba(2, 6, 23, 0.90); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
-    .glass-nav { background: rgba(2, 6, 23, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-card { background: rgba(15, 23, 42, 0.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.07); }
+    .glass-header { background: rgba(2, 6, 23, 0.94); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-dock { background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255, 255, 255, 0.08); }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="h-full bg-slate-950 text-slate-100 flex flex-col select-none overflow-hidden">
+<body class="h-full bg-slate-950 text-slate-100 flex flex-col select-none overflow-hidden antialiased">
 
   <!-- ========================================================================= -->
-  <!-- 🔐 1. ENTERPRISE AUTHENTICATION GATE (PIN + FINGERPRINT + SUPABASE)       -->
+  <!-- ⚡ TOAST NOTIFICATION SYSTEM                                              -->
   <!-- ========================================================================= -->
-  <div id="admin-auth-modal" class="fixed inset-0 z-[99999] bg-slate-950/95 backdrop-blur-xl flex items-center justify-center p-4">
-    <div class="glass-card w-full max-w-sm rounded-3xl p-6 border border-slate-800 shadow-2xl space-y-5 text-center">
-      
-      <!-- Brand VC Logo -->
+  <div id="toast" class="fixed top-4 inset-x-4 z-[999999] p-3.5 rounded-2xl text-xs font-black shadow-2xl flex items-center justify-between transition-all duration-300 transform -translate-y-28 opacity-0 pointer-events-none">
+    <span id="toast-msg">Notification</span>
+    <span id="toast-icon">⚡</span>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 🔐 1. ENTERPRISE AUTHENTICATION GATE (PIN + FINGERPRINT + MASTER PASS)    -->
+  <!-- ========================================================================= -->
+  <div id="admin-auth-modal" class="fixed inset-0 z-[99999] bg-slate-950/95 backdrop-blur-2xl flex items-center justify-center p-4">
+    <div class="glass-card w-full max-w-sm rounded-3xl p-6 border border-slate-800 shadow-2xl text-center space-y-5">
       <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-orange-500/20 mx-auto">
         VC
       </div>
       <div>
-        <h2 class="text-lg font-black text-white tracking-tight">Master Admin Login</h2>
-        <p class="text-xs text-slate-400 font-medium">VIJAY Construction Central Control Hub</p>
+        <h2 class="text-xl font-black text-white tracking-tight">Master Admin Hub</h2>
+        <p class="text-xs text-slate-400 font-medium mt-0.5">VIJAY Construction Central Gateway</p>
       </div>
 
-      <!-- Quick Switch Tabs -->
-      <div class="flex bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+      <div class="flex bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs font-bold">
         <button type="button" id="tab-quick-login" onclick="switchAuthTab('quick')" class="flex-1 py-2 rounded-lg bg-blue-600 text-white transition-all shadow">⚡ Quick PIN</button>
         <button type="button" id="tab-full-login" onclick="switchAuthTab('full')" class="flex-1 py-2 rounded-lg text-slate-400 hover:text-white transition-all">🔑 Master ID</button>
       </div>
 
-      <!-- VIEW 1: QUICK PIN & BIOMETRIC UNLOCK -->
+      <!-- Quick PIN & Biometric Screen -->
       <div id="auth-view-quick" class="space-y-4">
         <div>
-          <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block mb-2 text-left">4-Digit Security PIN</label>
+          <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2 text-left">4-Digit Security PIN</label>
           <input type="password" id="admin-security-pin" maxlength="4" placeholder="••••" inputmode="numeric"
                  class="w-full text-center text-3xl tracking-[0.8em] py-3 bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-2xl text-white outline-none font-mono transition" />
         </div>
 
-        <button type="button" id="btn-pin-submit" onclick="handlePinLogin()" 
-                class="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-95 text-xs font-black text-white shadow-xl shadow-blue-600/30 transition flex items-center justify-center gap-2">
-          <span>PIN Se Unlock Karein</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        <button type="button" onclick="handlePinLogin()" 
+                class="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-95 text-xs font-black text-white shadow-xl shadow-blue-600/30 transition">
+          PIN Se Unlock Karein →
         </button>
 
         <div class="relative flex py-1 items-center">
           <div class="flex-grow border-t border-slate-800"></div>
-          <span class="flex-shrink mx-3 text-[10px] text-slate-500 uppercase tracking-widest font-bold">Ya Fir</span>
+          <span class="flex-shrink mx-3 text-[10px] text-slate-500 uppercase tracking-widest font-black">Ya Fir</span>
           <div class="flex-grow border-t border-slate-800"></div>
         </div>
 
-        <button type="button" id="btn-biometric-login" onclick="handleBiometricAuth()" 
-                class="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-750 hover:border-slate-600 active:scale-95 text-xs font-extrabold text-slate-200 transition flex items-center justify-center gap-2.5">
-          <span class="text-base">👆</span>
+        <button type="button" onclick="handleBiometricAuth()" 
+                class="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-600 active:scale-95 text-xs font-extrabold text-slate-200 transition flex items-center justify-center gap-2">
+          <span>👆</span>
           <span>Fingerprint / Face ID se Login</span>
         </button>
       </div>
 
-      <!-- VIEW 2: FULL EMAIL + PASSWORD + PIN SETUP -->
+      <!-- Email + Pass Setup Screen -->
       <form id="admin-login-form" onsubmit="handleFullAdminLogin(event)" class="space-y-3.5 hidden text-left">
         <div>
-          <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Admin Email ID</label>
-          <input type="email" id="admin-auth-email" required placeholder="admin@vijayconstruction.com" class="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-xl px-3.5 py-2.5 text-xs font-bold text-white outline-none transition" />
+          <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-1">Admin Email ID</label>
+          <input type="email" id="admin-auth-email" required placeholder="admin@vijayconstruction.com" class="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-xl px-3.5 py-2.5 text-xs font-bold text-white outline-none" />
         </div>
-
         <div>
-          <label class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Master Password</label>
-          <input type="password" id="admin-auth-password" required placeholder="••••••••••••" class="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-xl px-3.5 py-2.5 text-xs font-bold text-white outline-none transition" />
+          <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-1">Master Password</label>
+          <input type="password" id="admin-auth-password" required placeholder="••••••••••••" class="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-xl px-3.5 py-2.5 text-xs font-bold text-white outline-none" />
         </div>
-
         <div>
-          <label class="text-[11px] font-extrabold text-amber-400 uppercase tracking-wider block mb-1">Set 4-Digit Quick PIN (Next Login Ke Liye)</label>
-          <input type="password" id="admin-set-pin" maxlength="4" placeholder="Jaise: 2026" inputmode="numeric" class="w-full bg-slate-900 border border-amber-500/40 focus:border-amber-500 rounded-xl px-3.5 py-2.5 text-xs font-bold text-white outline-none transition" />
+          <label class="text-[11px] font-black text-amber-400 uppercase tracking-wider block mb-1">Set Quick 4-Digit PIN</label>
+          <input type="password" id="admin-set-pin" maxlength="4" placeholder="Jaise: 2026" inputmode="numeric" class="w-full bg-slate-900 border border-amber-500/50 rounded-xl px-3.5 py-2.5 text-xs font-bold text-white outline-none" />
         </div>
-
-        <button type="submit" id="btn-admin-submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-95 text-xs font-black text-white shadow-xl shadow-blue-600/30 transition flex items-center justify-center gap-2">
-          <span>Verify & Save Device PIN</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        <button type="submit" id="btn-admin-submit" class="w-full py-3.5 rounded-xl bg-blue-600 text-xs font-black text-white shadow-xl shadow-blue-600/30">
+          Verify & Save Device PIN
         </button>
       </form>
-      
-      <div class="text-center pt-1">
-        <span class="text-[10px] text-slate-500 font-semibold flex items-center justify-center gap-1">
-          <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-          Encrypted Supabase JWT & Hardware Keystore
-        </span>
-      </div>
     </div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- 📱 2. TOP APP BAR (SITE SWITCHER & ACTIONS)                               -->
+  <!-- 📱 2. TOP APP BAR (SITE DROPDOWN & REALTIME SYNC)                         -->
   <!-- ========================================================================= -->
   <header class="glass-header sticky top-0 z-40 px-4 py-3 flex items-center justify-between">
     <div class="flex items-center gap-3">
@@ -117,131 +110,127 @@
       </div>
       <div>
         <div class="flex items-center gap-2">
-          <select id="top-site-selector" onchange="handleGlobalSiteChange(this.value)" class="bg-slate-900 border border-slate-700 text-xs font-black text-white rounded-lg px-2.5 py-1 outline-none focus:border-blue-500 max-w-[190px] truncate">
+          <select id="top-site-selector" onchange="handleGlobalSiteChange(this.value)" class="bg-slate-900 border border-slate-700 text-xs font-black text-white rounded-lg px-2.5 py-1 outline-none focus:border-blue-500 max-w-[175px] truncate">
           </select>
-          <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">LIVE</span>
+          <span id="live-sync-badge" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-black bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            LIVE
+          </span>
         </div>
-        <p class="text-[10px] text-slate-400 font-medium mt-0.5" id="top-client-name">Sharma Ji • Dilshad Garden</p>
+        <p class="text-[10px] text-slate-400 font-bold mt-0.5" id="top-client-name">Sharma Ji • Dilshad Garden</p>
       </div>
     </div>
     
-    <div class="flex items-center gap-2">
-      <button onclick="window.syncOfflineData()" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white active:scale-95 transition" title="Force Sync">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+    <div class="flex items-center gap-1.5">
+      <button onclick="syncAllData(true)" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white active:scale-95 transition" title="Manual Sync">
+        🔄
       </button>
       <button onclick="handleAdminLogout()" class="p-2.5 rounded-xl bg-rose-950/40 border border-rose-800/40 text-rose-400 hover:text-rose-300 active:scale-95 transition" title="Logout">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        🚪
       </button>
     </div>
   </header>
 
   <!-- ========================================================================= -->
-  <!-- 📊 3. MAIN DASHBOARD CONTENT (MULTI-MODULE SWITCHER)                      -->
+  <!-- 📊 3. MAIN DASHBOARD CONTENT (SNAPPY TAB ENGINE)                          -->
   <!-- ========================================================================= -->
   <main class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4 pb-28">
 
-    <!-- TAB 1: OVERVIEW & KPI MARGIN HUB -->
+    <!-- --------------------------------------------------------------------- -->
+    <!-- TAB 1: OVERVIEW / KPI SUMMARY                                         -->
+    <!-- --------------------------------------------------------------------- -->
     <section id="tab-overview" class="space-y-4">
       
-      <!-- FINANCIAL MARGIN CARD -->
-      <div class="glass-card rounded-2xl p-4 border border-blue-500/20 bg-gradient-to-br from-slate-900/90 via-slate-900/60 to-blue-950/30 space-y-3">
+      <!-- Financial Profit Margin Card -->
+      <div class="glass-card rounded-3xl p-5 border border-blue-500/20 bg-gradient-to-br from-slate-900 via-slate-900/90 to-blue-950/40 space-y-4 shadow-xl">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-[10px] font-black tracking-wider uppercase text-slate-400">Site Profit & Loss (Margin)</p>
-            <h2 class="text-2xl font-black text-white mt-0.5" id="ov-net-profit">₹0</h2>
+            <h2 class="text-3xl font-black text-emerald-400 mt-0.5" id="ov-net-profit">₹0</h2>
           </div>
           <div class="text-right">
-            <span class="text-[10px] font-black px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20" id="ov-margin-badge">
+            <span class="text-[10px] font-black px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" id="ov-margin-badge">
               0% Margin
             </span>
             <p class="text-[10px] text-slate-400 font-bold mt-1.5" id="ov-recovery-due">Due: ₹0</p>
           </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-800 text-center">
-          <div class="bg-slate-900/80 p-2 rounded-xl border border-slate-800/80">
-            <span class="text-[9px] font-extrabold text-slate-400 uppercase block">Contract</span>
+        <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-800/80 text-center">
+          <div class="bg-slate-950/60 p-2.5 rounded-2xl border border-slate-800">
+            <span class="text-[9px] font-black text-slate-400 uppercase block">Contract</span>
             <span class="text-xs font-black text-white" id="ov-contract-val">₹0</span>
           </div>
-          <div class="bg-slate-900/80 p-2 rounded-xl border border-slate-800/80">
-            <span class="text-[9px] font-extrabold text-slate-400 uppercase block">Inward</span>
+          <div class="bg-slate-950/60 p-2.5 rounded-2xl border border-slate-800">
+            <span class="text-[9px] font-black text-slate-400 uppercase block">Received</span>
             <span class="text-xs font-black text-emerald-400" id="ov-inward-val">₹0</span>
           </div>
-          <div class="bg-slate-900/80 p-2 rounded-xl border border-slate-800/80">
-            <span class="text-[9px] font-extrabold text-slate-400 uppercase block">Cost</span>
+          <div class="bg-slate-950/60 p-2.5 rounded-2xl border border-slate-800">
+            <span class="text-[9px] font-black text-slate-400 uppercase block">Site Cost</span>
             <span class="text-xs font-black text-rose-400" id="ov-cost-val">₹0</span>
           </div>
         </div>
       </div>
 
-      <!-- CAMERA & NOTIFICATION LAUNCH STRIP -->
+      <!-- Ground Actions: Camera & Client Notice -->
       <div class="grid grid-cols-2 gap-3">
-        <div onclick="openCameraViewfinder()" class="glass-card rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:border-slate-600 active:scale-98 transition">
+        <div onclick="openCameraViewfinder()" class="glass-card rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:border-slate-600 active:scale-98 transition shadow-lg">
           <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg font-black">
             📸
           </div>
           <div>
             <h4 class="text-xs font-black text-white">Geo Camera</h4>
-            <p class="text-[10px] text-slate-400">GPS Photo Proof</p>
+            <p class="text-[10px] text-slate-400">GPS Site Proof</p>
           </div>
         </div>
 
-        <div onclick="sendWhatsAppPaymentIntimation()" class="glass-card rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:border-slate-600 active:scale-98 transition">
+        <div onclick="sendClientPaymentNotice()" class="glass-card rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:border-slate-600 active:scale-98 transition shadow-lg">
           <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg font-black">
             💬
           </div>
           <div>
             <h4 class="text-xs font-black text-white">WA Notice</h4>
-            <p class="text-[10px] text-slate-400">Client Reminder</p>
+            <p class="text-[10px] text-slate-400">Payment Reminder</p>
           </div>
         </div>
       </div>
 
-      <!-- SHORTCUT ACTION MODULES -->
+      <!-- Quick Navigate Hubs -->
       <div class="grid grid-cols-2 gap-3">
-        <div onclick="switchAppTab('labour')" class="glass-card rounded-2xl p-4 flex flex-col gap-1.5 cursor-pointer hover:border-slate-600 active:scale-98 transition">
-          <span class="text-xl">👷</span>
-          <span class="text-xs font-black text-white">Labour Muster</span>
-          <span class="text-[10px] text-slate-400" id="ov-worker-summary">0 Workers registered</span>
+        <div onclick="switchAppTab('labour')" class="glass-card rounded-2xl p-4 flex flex-col gap-1 cursor-pointer hover:border-slate-600 active:scale-98 transition">
+          <span class="text-2xl">👷</span>
+          <h4 class="text-xs font-black text-white mt-1">Labour Muster</h4>
+          <p class="text-[10px] text-slate-400" id="ov-worker-count">0 Active Workers</p>
         </div>
 
-        <div onclick="switchAppTab('thekedar')" class="glass-card rounded-2xl p-4 flex flex-col gap-1.5 cursor-pointer hover:border-slate-600 active:scale-98 transition">
-          <span class="text-xl">📐</span>
-          <span class="text-xs font-black text-white">Thekedar MB</span>
-          <span class="text-[10px] text-slate-400" id="ov-thek-summary">Measurement Book</span>
+        <div onclick="switchAppTab('thekedar')" class="glass-card rounded-2xl p-4 flex flex-col gap-1 cursor-pointer hover:border-slate-600 active:scale-98 transition">
+          <span class="text-2xl">📐</span>
+          <h4 class="text-xs font-black text-white mt-1">Thekedar MB</h4>
+          <p class="text-[10px] text-slate-400">Measurement Book</p>
         </div>
 
-        <div onclick="switchAppTab('suppliers')" class="glass-card rounded-2xl p-4 flex flex-col gap-1.5 cursor-pointer hover:border-slate-600 active:scale-98 transition">
-          <span class="text-xl">📦</span>
-          <span class="text-xs font-black text-white">Supplier Khata</span>
-          <span class="text-[10px] text-slate-400" id="ov-sup-summary">Bills & Payments</span>
+        <div onclick="switchAppTab('suppliers')" class="glass-card rounded-2xl p-4 flex flex-col gap-1 cursor-pointer hover:border-slate-600 active:scale-98 transition">
+          <span class="text-2xl">📦</span>
+          <h4 class="text-xs font-black text-white mt-1">Supplier Khata</h4>
+          <p class="text-[10px] text-slate-400">Material Invoices</p>
         </div>
 
-        <div onclick="switchAppTab('ledger')" class="glass-card rounded-2xl p-4 flex flex-col gap-1.5 cursor-pointer hover:border-slate-600 active:scale-98 transition">
-          <span class="text-xl">💵</span>
-          <span class="text-xs font-black text-white">Cash Ledger</span>
-          <span class="text-[10px] text-slate-400" id="ov-ledger-summary">Direct Site Expenses</span>
-        </div>
-      </div>
-
-      <!-- WORKER SITE DEMANDS / REQUESTS PREVIEW -->
-      <div class="glass-card rounded-2xl p-4 space-y-3">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xs font-black text-white uppercase tracking-wider">Site Demands (Worker Maang)</h3>
-          <button onclick="switchAppTab('requests')" class="text-[10px] font-bold text-blue-400">Sabhi Dekhein →</button>
-        </div>
-        <div id="ov-requests-container" class="space-y-2">
-          <p class="text-xs text-slate-500 italic text-center py-2">Koi pending request nahi hai.</p>
+        <div onclick="switchAppTab('ledger')" class="glass-card rounded-2xl p-4 flex flex-col gap-1 cursor-pointer hover:border-slate-600 active:scale-98 transition">
+          <span class="text-2xl">💵</span>
+          <h4 class="text-xs font-black text-white mt-1">Cash Ledger</h4>
+          <p class="text-[10px] text-slate-400">Petty Cashbook</p>
         </div>
       </div>
 
     </section>
 
-    <!-- TAB 2: PROJECTS / SITES MANAGER -->
+    <!-- --------------------------------------------------------------------- -->
+    <!-- TAB 2: SITES / PROJECTS MANAGER                                       -->
+    <!-- --------------------------------------------------------------------- -->
     <section id="tab-projects" class="space-y-4 hidden">
       <div class="flex items-center justify-between">
-        <h3 class="text-xs font-black text-white uppercase tracking-wider">Construction Sites</h3>
-        <button onclick="openNewProjectModal()" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-black text-white shadow-lg shadow-blue-600/30 active:scale-95 transition">
+        <h3 class="text-xs font-black text-white uppercase tracking-wider">Site Projects</h3>
+        <button onclick="openModal('modal-project')" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-black text-white shadow-lg shadow-blue-600/30 active:scale-95 transition">
           + Nayi Site Add Karein
         </button>
       </div>
@@ -249,137 +238,124 @@
       <div id="projects-list-container" class="space-y-3"></div>
     </section>
 
-    <!-- TAB 3: LABOUR & MUSTER HUB (ATTENDANCE + OVERTIME + ADVANCES) -->
-    <section id="tab-labour" class="space-y-4 hidden">
-      <div class="glass-card rounded-2xl p-4 space-y-3">
+    <!-- --------------------------------------------------------------------- -->
+    <!-- TAB 3: LABOUR MUSTER (FULL CRUD + SEARCH + OT STEPPER)                 -->
+    <!-- --------------------------------------------------------------------- -->
+    <section id="tab-labour" class="space-y-3 hidden">
+      
+      <!-- Control Hub Header -->
+      <div class="glass-card rounded-3xl p-4 space-y-3">
         <div class="flex items-center justify-between">
           <div>
             <h3 class="text-xs font-black text-white uppercase tracking-wider">Daily Labour Muster</h3>
-            <p class="text-[10px] text-slate-400">Attendance, Overtime & Haftawari Wage</p>
+            <p class="text-[10px] text-slate-400">Haziri, Overtime & Kharcha Control</p>
           </div>
-          <button onclick="openAddWorkerModal()" class="px-3 py-1.5 rounded-xl bg-emerald-600 text-xs font-black text-white shadow-lg shadow-emerald-600/30 active:scale-95 transition">
+          <button onclick="openAddWorkerModal()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-black text-white shadow-lg shadow-emerald-600/30 active:scale-95 transition">
             + Naya Worker
           </button>
         </div>
 
+        <!-- Date Picker & Quick Sabhi Present -->
         <div class="flex items-center gap-2 pt-1">
-          <input type="date" id="admin-muster-date" onchange="renderAdminLabourRoster()" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white outline-none" />
-          <button onclick="markAllWorkersPresent()" class="px-3 py-2 rounded-xl bg-blue-600/20 border border-blue-500/30 text-blue-400 text-xs font-extrabold active:scale-95 transition">
+          <input type="date" id="admin-muster-date" onchange="renderLabourRoster()" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-black text-white outline-none" />
+          <button onclick="markAllWorkersPresent()" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/30 text-blue-400 text-xs font-black hover:bg-blue-600 hover:text-white transition active:scale-95">
             Sabhi P Karein
           </button>
         </div>
+
+        <!-- Instamart Style Search & Filter Bar -->
+        <div class="flex items-center gap-2 pt-1">
+          <input type="text" id="worker-search-input" oninput="renderLabourRoster()" placeholder="Search worker naam ya mobile..." 
+                 class="flex-1 bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none" />
+          <select id="worker-role-filter" onchange="renderLabourRoster()" class="bg-slate-950/80 border border-slate-800 rounded-xl px-2 py-1.5 text-xs font-bold text-slate-300 outline-none">
+            <option value="ALL">Sabhi Roles</option>
+            <option value="Mistri">Mistri</option>
+            <option value="Helper">Helper</option>
+            <option value="Electrician">Electrician</option>
+            <option value="Plumber">Plumber</option>
+          </select>
+        </div>
       </div>
 
+      <!-- Workers List Container -->
       <div id="admin-workers-container" class="space-y-3"></div>
     </section>
 
-    <!-- TAB 4: THEKEDAR & MEASUREMENT BOOK (MB) -->
+    <!-- --------------------------------------------------------------------- -->
+    <!-- TAB 4: THEKEDAR MEASUREMENT BOOK (MB)                                 -->
+    <!-- --------------------------------------------------------------------- -->
     <section id="tab-thekedar" class="space-y-4 hidden">
-      <div class="glass-card rounded-2xl p-4 space-y-3">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="text-xs font-black text-white uppercase tracking-wider">Contractor (Thekedar) Hub</h3>
-            <p class="text-[10px] text-slate-400">Measurement Book (MB) & Contractor Khata</p>
-          </div>
-          <button onclick="openAddThekedarModal()" class="px-3 py-1.5 rounded-xl bg-blue-600 text-xs font-black text-white shadow-lg shadow-blue-600/30 active:scale-95 transition">
-            + Thekedar
-          </button>
+      <div class="glass-card rounded-2xl p-4 flex items-center justify-between">
+        <div>
+          <h3 class="text-xs font-black text-white uppercase tracking-wider">Thekedar Measurement Hub</h3>
+          <p class="text-[10px] text-slate-400">MB Entries & Rate Calculation</p>
         </div>
+        <button onclick="openModal('modal-mb')" class="px-3 py-1.5 rounded-xl bg-blue-600 text-xs font-black text-white shadow-lg shadow-blue-600/30 active:scale-95">
+          + MB Entry
+        </button>
       </div>
 
       <div id="thekedar-list-container" class="space-y-3"></div>
     </section>
 
-    <!-- TAB 5: SUPPLIER KHATA & BILLS -->
+    <!-- --------------------------------------------------------------------- -->
+    <!-- TAB 5: SUPPLIER KHATA                                                 -->
+    <!-- --------------------------------------------------------------------- -->
     <section id="tab-suppliers" class="space-y-4 hidden">
-      <div class="glass-card rounded-2xl p-4 space-y-3">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="text-xs font-black text-white uppercase tracking-wider">Suppliers Khata</h3>
-            <p class="text-[10px] text-slate-400">Material Bills & Payment Ledger</p>
-          </div>
-          <button onclick="openAddSupplierModal()" class="px-3 py-1.5 rounded-xl bg-blue-600 text-xs font-black text-white shadow-lg shadow-blue-600/30 active:scale-95 transition">
-            + Supplier
-          </button>
+      <div class="glass-card rounded-2xl p-4 flex items-center justify-between">
+        <div>
+          <h3 class="text-xs font-black text-white uppercase tracking-wider">Suppliers Khata</h3>
+          <p class="text-[10px] text-slate-400">Material Bills & Dues Tracker</p>
         </div>
+        <button onclick="openModal('modal-supplier')" class="px-3 py-1.5 rounded-xl bg-blue-600 text-xs font-black text-white shadow-lg shadow-blue-600/30 active:scale-95">
+          + Naya Supplier
+        </button>
       </div>
 
       <div id="suppliers-list-container" class="space-y-3"></div>
     </section>
 
-    <!-- TAB 6: CASHBOOK & SITE LEDGER -->
+    <!-- --------------------------------------------------------------------- -->
+    <!-- TAB 6: CASHBOOK & PETTY CASH LEDGER                                   -->
+    <!-- --------------------------------------------------------------------- -->
     <section id="tab-ledger" class="space-y-4 hidden">
-      <div class="glass-card rounded-2xl p-4 space-y-3">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="text-xs font-black text-white uppercase tracking-wider">Site Cash Ledger</h3>
-            <p class="text-[10px] text-slate-400">Daily Inflow & Petty Cash Outflow</p>
-          </div>
-          <button onclick="openAddLedgerModal()" class="px-3 py-1.5 rounded-xl bg-emerald-600 text-xs font-black text-white shadow-lg shadow-emerald-600/30 active:scale-95 transition">
-            + Entry Karein
-          </button>
+      <div class="glass-card rounded-2xl p-4 flex items-center justify-between">
+        <div>
+          <h3 class="text-xs font-black text-white uppercase tracking-wider">Site Cash Ledger</h3>
+          <p class="text-[10px] text-slate-400">Direct Petty Expenses (Chai, Tempo, Tool)</p>
         </div>
+        <button onclick="openModal('modal-ledger')" class="px-3 py-1.5 rounded-xl bg-emerald-600 text-xs font-black text-white shadow-lg shadow-emerald-600/30 active:scale-95">
+          + Entry Karein
+        </button>
       </div>
 
       <div id="ledger-list-container" class="space-y-2"></div>
     </section>
 
-    <!-- TAB 7: WORKER DEMANDS / REQUESTS INBOX -->
-    <section id="tab-requests" class="space-y-4 hidden">
-      <div class="glass-card rounded-2xl p-4">
-        <h3 class="text-xs font-black text-white uppercase tracking-wider">Worker Requests Inbox</h3>
-        <p class="text-[10px] text-slate-400">Site se aayi hui Material aur Manpower maang</p>
-      </div>
-
-      <div id="requests-inbox-container" class="space-y-3"></div>
-    </section>
-
-    <!-- TAB 8: CSV & EXCEL EXPORTS -->
+    <!-- --------------------------------------------------------------------- -->
+    <!-- TAB 7: REPORTS & CSV DOWNLOADS                                        -->
+    <!-- --------------------------------------------------------------------- -->
     <section id="tab-reports" class="space-y-4 hidden">
-      <div class="glass-card rounded-2xl p-4 space-y-3">
-        <h3 class="text-xs font-black text-white uppercase tracking-wider">One-Click Excel / CSV Reports</h3>
-        <p class="text-[10px] text-slate-400">Instant offline compatible CSV sheets download karein</p>
+      <div class="glass-card rounded-2xl p-4">
+        <h3 class="text-xs font-black text-white uppercase tracking-wider">One-Click Excel Reports</h3>
+        <p class="text-[10px] text-slate-400">Instant CSV Sheets Download Karein</p>
       </div>
 
-      <div class="grid grid-cols-1 gap-2.5">
-        <button onclick="exportLabourReportCSV(appDB)" class="glass-card p-4 rounded-2xl flex items-center justify-between hover:border-slate-600 active:scale-98 transition">
+      <div class="space-y-2.5">
+        <button onclick="exportLabourCSV()" class="w-full glass-card p-4 rounded-2xl flex items-center justify-between hover:border-slate-600 active:scale-98 transition">
           <div class="text-left">
-            <h4 class="text-xs font-black text-white">👷 Labour Muster Report</h4>
-            <p class="text-[10px] text-slate-400">Daily shifts, OT pay, Advance, Net due</p>
+            <h4 class="text-xs font-black text-white">👷 Labour Muster Sheet</h4>
+            <p class="text-[10px] text-slate-400">Total shifts, OT amount, Advance cut, Net payable</p>
           </div>
-          <span class="text-xs font-bold text-blue-400">Download ↓</span>
+          <span class="text-xs font-black text-blue-400">Download ↓</span>
         </button>
 
-        <button onclick="exportThekedarMBReportCSV(appDB)" class="glass-card p-4 rounded-2xl flex items-center justify-between hover:border-slate-600 active:scale-98 transition">
+        <button onclick="exportLedgerCSV()" class="w-full glass-card p-4 rounded-2xl flex items-center justify-between hover:border-slate-600 active:scale-98 transition">
           <div class="text-left">
-            <h4 class="text-xs font-black text-white">📐 Thekedar MB Book Report</h4>
-            <p class="text-[10px] text-slate-400">Length, Width, Measured Sq.Ft area & amounts</p>
+            <h4 class="text-xs font-black text-white">💵 Site Cashbook Sheet</h4>
+            <p class="text-[10px] text-slate-400">Date-wise itemized expenses</p>
           </div>
-          <span class="text-xs font-bold text-emerald-400">Download ↓</span>
-        </button>
-
-        <button onclick="exportSupplierReportCSV(appDB)" class="glass-card p-4 rounded-2xl flex items-center justify-between hover:border-slate-600 active:scale-98 transition">
-          <div class="text-left">
-            <h4 class="text-xs font-black text-white">📦 Supplier Khata Report</h4>
-            <p class="text-[10px] text-slate-400">Purchases, Payments & Outstanding dues</p>
-          </div>
-          <span class="text-xs font-bold text-amber-400">Download ↓</span>
-        </button>
-
-        <button onclick="exportClientBillingReportCSV(appDB)" class="glass-card p-4 rounded-2xl flex items-center justify-between hover:border-slate-600 active:scale-98 transition">
-          <div class="text-left">
-            <h4 class="text-xs font-black text-white">🧾 Client Billing & Recovery</h4>
-            <p class="text-[10px] text-slate-400">Contract value, received & pending recovery</p>
-          </div>
-          <span class="text-xs font-bold text-purple-400">Download ↓</span>
-        </button>
-
-        <button onclick="exportProjectMarginsCSV(appDB)" class="glass-card p-4 rounded-2xl flex items-center justify-between hover:border-slate-600 active:scale-98 transition">
-          <div class="text-left">
-            <h4 class="text-xs font-black text-white">📊 Project P&L Margins Report</h4>
-            <p class="text-[10px] text-slate-400">Site-wise net profit & loss margins</p>
-          </div>
-          <span class="text-xs font-bold text-rose-400">Download ↓</span>
+          <span class="text-xs font-black text-emerald-400">Download ↓</span>
         </button>
       </div>
     </section>
@@ -387,601 +363,589 @@
   </main>
 
   <!-- ========================================================================= -->
-  <!-- 🧭 4. BOTTOM APP NAVIGATION DOCK                                          -->
+  <!-- 🧭 4. BOTTOM APP NAVIGATION DOCK (INSTAGRAM STYLE SMOOTH TABS)            -->
   <!-- ========================================================================= -->
-  <nav class="glass-nav fixed bottom-0 inset-x-0 z-40 px-2 py-2 flex items-center justify-around">
-    <button onclick="switchAppTab('overview')" id="nav-btn-overview" class="nav-item flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-blue-500 transition">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-      <span class="text-[9px] font-extrabold">Home</span>
+  <nav class="glass-dock fixed bottom-0 inset-x-0 z-40 px-2 py-2 flex items-center justify-around">
+    <button onclick="switchAppTab('overview')" id="nav-btn-overview" class="nav-item flex flex-col items-center gap-1 py-1 px-3 rounded-2xl text-blue-500 transition">
+      <span class="text-lg">🏠</span>
+      <span class="text-[9px] font-black">Home</span>
     </button>
 
-    <button onclick="switchAppTab('projects')" id="nav-btn-projects" class="nav-item flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-slate-400 transition">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-      <span class="text-[9px] font-extrabold">Sites</span>
+    <button onclick="switchAppTab('projects')" id="nav-btn-projects" class="nav-item flex flex-col items-center gap-1 py-1 px-3 rounded-2xl text-slate-400 transition">
+      <span class="text-lg">🏗️</span>
+      <span class="text-[9px] font-black">Sites</span>
     </button>
 
-    <button onclick="switchAppTab('labour')" id="nav-btn-labour" class="nav-item flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-slate-400 transition">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-      <span class="text-[9px] font-extrabold">Labour</span>
+    <button onclick="switchAppTab('labour')" id="nav-btn-labour" class="nav-item flex flex-col items-center gap-1 py-1 px-3 rounded-2xl text-slate-400 transition">
+      <span class="text-lg">👷</span>
+      <span class="text-[9px] font-black">Labour</span>
     </button>
 
-    <button onclick="switchAppTab('thekedar')" id="nav-btn-thekedar" class="nav-item flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-slate-400 transition">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-      <span class="text-[9px] font-extrabold">MB Book</span>
+    <button onclick="switchAppTab('thekedar')" id="nav-btn-thekedar" class="nav-item flex flex-col items-center gap-1 py-1 px-3 rounded-2xl text-slate-400 transition">
+      <span class="text-lg">📐</span>
+      <span class="text-[9px] font-black">MB Book</span>
     </button>
 
-    <button onclick="switchAppTab('reports')" id="nav-btn-reports" class="nav-item flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-slate-400 transition">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-      <span class="text-[9px] font-extrabold">Reports</span>
+    <button onclick="switchAppTab('reports')" id="nav-btn-reports" class="nav-item flex flex-col items-center gap-1 py-1 px-3 rounded-2xl text-slate-400 transition">
+      <span class="text-lg">📊</span>
+      <span class="text-[9px] font-black">Reports</span>
     </button>
   </nav>
 
   <!-- ========================================================================= -->
-  <!-- 📸 5. WATERMARKED SITE CAMERA VIEWFINDER MODAL                            -->
+  <!-- 📸 5. WATERMARKED SITE CAMERA MODAL                                       -->
   <!-- ========================================================================= -->
   <div id="camera-modal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md hidden flex-col">
     <div class="p-4 flex items-center justify-between border-b border-slate-800">
-      <h3 class="text-sm font-black text-white">Live Site Photo Proof</h3>
-      <button onclick="closeCameraViewfinder()" class="p-2 text-slate-400 hover:text-white">✕</button>
+      <h3 class="text-sm font-black text-white">Live Site GPS Photo Proof</h3>
+      <button onclick="closeCameraViewfinder()" class="p-2 text-slate-400 hover:text-white text-lg">✕</button>
     </div>
     <div class="flex-1 flex flex-col items-center justify-center p-4 relative">
-      <video id="camera-video" autoplay playsinline class="w-full max-w-sm rounded-2xl bg-black aspect-[3/4] object-cover shadow-2xl border border-slate-800"></video>
+      <video id="camera-video" autoplay playsinline class="w-full max-w-sm rounded-3xl bg-black aspect-[3/4] object-cover shadow-2xl border border-slate-800"></video>
       <canvas id="camera-canvas" class="hidden"></canvas>
     </div>
-    <div class="p-6 flex items-center justify-center gap-4 bg-slate-900/60 border-t border-slate-800">
-      <button onclick="takeWatermarkedSiteProof()" class="w-16 h-16 rounded-full border-4 border-white bg-red-600 active:scale-90 transition shadow-xl flex items-center justify-center">
+    <div class="p-6 flex items-center justify-center bg-slate-900/60 border-t border-slate-800">
+      <button onclick="captureSiteProof()" class="w-16 h-16 rounded-full border-4 border-white bg-red-600 active:scale-90 transition shadow-2xl flex items-center justify-center">
         <div class="w-6 h-6 rounded-full bg-white"></div>
       </button>
     </div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- 📝 6. MODALS: NEW PROJECT, WORKER, MB ENTRY, SUPPLIER, LEDGER            -->
+  <!-- 📝 6. MODALS: WORKER (ADD/EDIT), ADVANCE CUT, SITE, MB, LEDGER            -->
   <!-- ========================================================================= -->
 
-  <!-- NEW PROJECT MODAL -->
-  <div id="modal-project" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
-    <div class="glass-card w-full max-w-md rounded-2xl p-5 border border-slate-700 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="text-sm font-black text-white">Nayi Construction Site Register Karein</h3>
-        <button onclick="closeModal('modal-project')" class="text-slate-400">✕</button>
-      </div>
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="font-extrabold text-slate-400 block mb-1">Site / Project Ka Naam</label>
-          <input type="text" id="p-name" placeholder="Jaise: Flat 402 Dilshad Garden" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="font-extrabold text-slate-400 block mb-1">Client Ka Naam</label>
-            <input type="text" id="p-client" placeholder="Gupta Ji" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
-          </div>
-          <div>
-            <label class="font-extrabold text-slate-400 block mb-1">Client Phone</label>
-            <input type="tel" id="p-phone" placeholder="9811XXXXXX" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="font-extrabold text-slate-400 block mb-1">Total Contract (₹)</label>
-            <input type="number" id="p-total" placeholder="500000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
-          </div>
-          <div>
-            <label class="font-extrabold text-slate-400 block mb-1">Received So Far (₹)</label>
-            <input type="number" id="p-received" placeholder="100000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
-          </div>
-        </div>
-      </div>
-      <div class="flex justify-end gap-2 pt-2">
-        <button onclick="closeModal('modal-project')" class="px-4 py-2 rounded-xl bg-slate-800 text-xs font-bold text-slate-300">Cancel</button>
-        <button onclick="saveProjectFromModal()" class="px-4 py-2 rounded-xl bg-blue-600 text-xs font-black text-white shadow-lg shadow-blue-600/30">Save Site</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ADD WORKER MODAL -->
+  <!-- WORKER MODAL (ADD / EDIT) -->
   <div id="modal-worker" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
-    <div class="glass-card w-full max-w-md rounded-2xl p-5 border border-slate-700 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="text-sm font-black text-white">Naya Worker / Mistri Register Karein</h3>
-        <button onclick="closeModal('modal-worker')" class="text-slate-400">✕</button>
+    <div class="glass-card w-full max-w-md rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+        <h3 id="modal-worker-title" class="text-sm font-black text-white">Naya Worker Register Karein</h3>
+        <button onclick="closeModal('modal-worker')" class="text-slate-400 text-lg">✕</button>
       </div>
+
+      <input type="hidden" id="w-edit-id" value="" />
+
       <div class="space-y-3 text-xs">
         <div>
-          <label class="font-extrabold text-slate-400 block mb-1">Worker Ka Naam</label>
-          <input type="text" id="w-name" placeholder="Raju Mistri" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
+          <label class="font-black text-slate-400 block mb-1">Worker Ka Naam</label>
+          <input type="text" id="w-name" placeholder="Prem Mistri" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-bold outline-none focus:border-blue-500" />
         </div>
+
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="font-extrabold text-slate-400 block mb-1">Role / Kaam</label>
-            <select id="w-role" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none">
+            <label class="font-black text-slate-400 block mb-1">Role / Kaam</label>
+            <select id="w-role" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-2.5 text-white font-bold outline-none">
               <option value="Mistri">Mistri (मिस्त्री)</option>
-              <option value="Helper">Helper (हेल्पर / लेबर)</option>
+              <option value="Helper">Helper (हेल्पर)</option>
               <option value="Electrician">Electrician</option>
               <option value="Plumber">Plumber</option>
               <option value="Painter">Painter</option>
             </select>
           </div>
           <div>
-            <label class="font-extrabold text-slate-400 block mb-1">Mobile No</label>
-            <input type="tel" id="w-phone" placeholder="9811XXXXXX" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
+            <label class="font-black text-slate-400 block mb-1">Mobile No (10-Digit)</label>
+            <input type="tel" id="w-phone" maxlength="10" placeholder="8130352691" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-bold outline-none focus:border-blue-500" />
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-2">
+
+        <div class="grid grid-cols-3 gap-2">
           <div>
-            <label class="font-extrabold text-slate-400 block mb-1">Daily Dihaadi (₹)</label>
-            <input type="number" id="w-rate" placeholder="500" value="500" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
+            <label class="font-black text-slate-400 block mb-1">Dihaadi (₹)</label>
+            <input type="number" id="w-rate" placeholder="1000" value="1000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-2 text-white font-bold outline-none" />
           </div>
           <div>
-            <label class="font-extrabold text-slate-400 block mb-1">OT Rate / Ghanta (₹)</label>
-            <input type="number" id="w-ot-rate" placeholder="100" value="100" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
+            <label class="font-black text-slate-400 block mb-1">OT Rate / H (₹)</label>
+            <input type="number" id="w-ot-rate" placeholder="100" value="100" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-2 text-white font-bold outline-none" />
+          </div>
+          <div>
+            <!-- Worker Login PIN -->
+            <label class="font-black text-amber-400 block mb-1">App PIN (4-D)</label>
+            <input type="password" id="w-login-pin" maxlength="4" placeholder="1234" inputmode="numeric" value="1234" class="w-full bg-slate-900 border border-amber-500/50 rounded-xl px-2.5 py-2 text-amber-300 font-mono font-black text-center outline-none" />
           </div>
         </div>
       </div>
+
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal('modal-worker')" class="px-4 py-2 rounded-xl bg-slate-800 text-xs font-bold text-slate-300">Cancel</button>
-        <button onclick="saveWorkerFromModal()" class="px-4 py-2 rounded-xl bg-emerald-600 text-xs font-black text-white shadow-lg shadow-emerald-600/30">Save Worker</button>
+        <button onclick="saveWorker()" id="btn-save-worker" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-black text-white shadow-lg shadow-emerald-600/30">Save Worker</button>
       </div>
     </div>
   </div>
 
-  <!-- WORKER ADVANCE (KHARCHA) MODAL -->
+  <!-- WORKER ADVANCE (KHARCHA CUT) MODAL -->
   <div id="modal-advance" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
-    <div class="glass-card w-full max-w-sm rounded-2xl p-5 border border-slate-700 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+    <div class="glass-card w-full max-w-sm rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
         <h3 class="text-sm font-black text-white">Kharcha (Advance) Entry</h3>
-        <button onclick="closeModal('modal-advance')" class="text-slate-400">✕</button>
+        <button onclick="closeModal('modal-advance')" class="text-slate-400 text-lg">✕</button>
       </div>
       <div class="space-y-3 text-xs">
         <input type="hidden" id="adv-worker-id" />
         <p class="font-bold text-slate-300">Worker: <span id="adv-worker-name" class="text-white font-black"></span></p>
         <div>
-          <label class="font-extrabold text-slate-400 block mb-1">Advance Amount Diya (₹)</label>
-          <input type="number" id="adv-amount" placeholder="Jaise: 500" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-black text-sm outline-none" />
+          <label class="font-black text-slate-400 block mb-1">Advance Amount Diya (₹)</label>
+          <input type="number" id="adv-amount" placeholder="Jaise: 500" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-black text-sm outline-none focus:border-rose-500" />
         </div>
       </div>
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal('modal-advance')" class="px-4 py-2 rounded-xl bg-slate-800 text-xs font-bold text-slate-300">Cancel</button>
-        <button onclick="saveAdvanceCut()" class="px-4 py-2 rounded-xl bg-rose-600 text-xs font-black text-white shadow-lg shadow-rose-600/30">Advance Kaatein</button>
+        <button onclick="saveAdvanceCut()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs font-black text-white shadow-lg shadow-rose-600/30">Advance Kaatein</button>
       </div>
     </div>
   </div>
 
-  <!-- ADD MEASUREMENT BOOK (MB) ENTRY MODAL -->
-  <div id="modal-mb" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
-    <div class="glass-card w-full max-w-md rounded-2xl p-5 border border-slate-700 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="text-sm font-black text-white">Nayi MB (Measurement) Entry Darj Karein</h3>
-        <button onclick="closeModal('modal-mb')" class="text-slate-400">✕</button>
+  <!-- NEW PROJECT / SITE MODAL -->
+  <div id="modal-project" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="glass-card w-full max-w-md rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+        <h3 class="text-sm font-black text-white">Nayi Construction Site Register Karein</h3>
+        <button onclick="closeModal('modal-project')" class="text-slate-400 text-lg">✕</button>
       </div>
       <div class="space-y-3 text-xs">
         <div>
-          <label class="font-extrabold text-slate-400 block mb-1">Thekedar Chunein</label>
-          <select id="mb-thekedar-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none"></select>
+          <label class="font-black text-slate-400 block mb-1">Site / Project Ka Naam</label>
+          <input type="text" id="p-name" placeholder="Flat 402, Dilshad Garden" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-black text-slate-400 block mb-1">Client Ka Naam</label>
+            <input type="text" id="p-client" placeholder="Gupta Ji" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
+          </div>
+          <div>
+            <label class="font-black text-slate-400 block mb-1">Client Phone</label>
+            <input type="tel" id="p-phone" placeholder="9811XXXXXX" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-black text-slate-400 block mb-1">Total Contract (₹)</label>
+            <input type="number" id="p-total" placeholder="500000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
+          </div>
+          <div>
+            <label class="font-black text-slate-400 block mb-1">Received (₹)</label>
+            <input type="number" id="p-received" placeholder="100000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal('modal-project')" class="px-4 py-2 rounded-xl bg-slate-800 text-xs font-bold text-slate-300">Cancel</button>
+        <button onclick="saveNewProject()" class="px-4 py-2 rounded-xl bg-blue-600 text-xs font-black text-white shadow-lg shadow-blue-600/30">Save Site</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- THEKEDAR MB ENTRY MODAL -->
+  <div id="modal-mb" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="glass-card w-full max-w-md rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+        <h3 class="text-sm font-black text-white">Nayi MB (Measurement) Entry</h3>
+        <button onclick="closeModal('modal-mb')" class="text-slate-400 text-lg">✕</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="font-black text-slate-400 block mb-1">Thekedar Ka Naam</label>
+          <input type="text" id="mb-contractor" placeholder="Aslam Painter / Thekedar" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
         </div>
         <div>
-          <label class="font-extrabold text-slate-400 block mb-1">Kaam Ki Jagah (Location / Item)</label>
-          <input type="text" id="mb-location" placeholder="Drawing Room Plaster / Tile" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
+          <label class="font-black text-slate-400 block mb-1">Kaam Ki Jagah (Location / Item)</label>
+          <input type="text" id="mb-item" placeholder="Drawing Room Plaster / Tile" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
         </div>
         <div class="grid grid-cols-3 gap-2">
           <div>
-            <label class="font-extrabold text-slate-400 block mb-1">Length (L)</label>
-            <input type="number" step="0.1" id="mb-length" placeholder="10" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-2 text-white font-bold outline-none" />
+            <label class="font-black text-slate-400 block mb-1">Length (L)</label>
+            <input type="number" step="0.1" id="mb-l" placeholder="10" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2 py-2 text-white font-bold outline-none" />
           </div>
           <div>
-            <label class="font-extrabold text-slate-400 block mb-1">Width (W)</label>
-            <input type="number" step="0.1" id="mb-width" placeholder="12" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-2 text-white font-bold outline-none" />
+            <label class="font-black text-slate-400 block mb-1">Width (W)</label>
+            <input type="number" step="0.1" id="mb-w" placeholder="12" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2 py-2 text-white font-bold outline-none" />
           </div>
           <div>
-            <label class="font-extrabold text-slate-400 block mb-1">Rate / Unit (₹)</label>
-            <input type="number" id="mb-rate" placeholder="25" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-2 text-white font-bold outline-none" />
+            <label class="font-black text-slate-400 block mb-1">Rate/Sq.Ft (₹)</label>
+            <input type="number" id="mb-rate" placeholder="25" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2 py-2 text-white font-bold outline-none" />
           </div>
         </div>
       </div>
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal('modal-mb')" class="px-4 py-2 rounded-xl bg-slate-800 text-xs font-bold text-slate-300">Cancel</button>
-        <button onclick="saveMBEntryFromModal()" class="px-4 py-2 rounded-xl bg-emerald-600 text-xs font-black text-white shadow-lg shadow-emerald-600/30">MB Calculate & Save</button>
+        <button onclick="saveMBEntry()" class="px-4 py-2 rounded-xl bg-emerald-600 text-xs font-black text-white shadow-lg shadow-emerald-600/30">Calculate & Save</button>
       </div>
     </div>
   </div>
 
-  <!-- ADD CASHBOOK / LEDGER ENTRY MODAL -->
+  <!-- CASHBOOK LEDGER MODAL -->
   <div id="modal-ledger" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
-    <div class="glass-card w-full max-w-sm rounded-2xl p-5 border border-slate-700 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="text-sm font-black text-white">Direct Site Kharcha Entry</h3>
-        <button onclick="closeModal('modal-ledger')" class="text-slate-400">✕</button>
+    <div class="glass-card w-full max-w-sm rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+        <h3 class="text-sm font-black text-white">Direct Site Kharcha (Cashbook)</h3>
+        <button onclick="closeModal('modal-ledger')" class="text-slate-400 text-lg">✕</button>
       </div>
       <div class="space-y-3 text-xs">
         <div>
-          <label class="font-extrabold text-slate-400 block mb-1">Amount (₹)</label>
+          <label class="font-black text-slate-400 block mb-1">Amount (₹)</label>
           <input type="number" id="led-amount" placeholder="2500" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-black text-sm outline-none" />
         </div>
         <div>
-          <label class="font-extrabold text-slate-400 block mb-1">Category</label>
-          <select id="led-category" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none">
+          <label class="font-black text-slate-400 block mb-1">Category</label>
+          <select id="led-cat" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none">
             <option value="Material">Material (Reti, Cement, Cable)</option>
-            <option value="Chai-Nashta">Chai / Nashta / Miscl</option>
+            <option value="Chai-Nashta">Chai / Nashta</option>
             <option value="Fuel">Fuel / Tempo Bhada</option>
-            <option value="Tool">Hardware / Tool Khareed</option>
+            <option value="Tools">Tools & Hardware</option>
           </select>
         </div>
         <div>
-          <label class="font-extrabold text-slate-400 block mb-1">Description / Kisko Diya</label>
-          <input type="text" id="led-desc" placeholder="Tempo bhada diya 2 gadi ka" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
+          <label class="font-black text-slate-400 block mb-1">Description / Kisko Diya</label>
+          <input type="text" id="led-desc" placeholder="Tempo bhada 2 gadi ka" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold outline-none" />
         </div>
       </div>
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal('modal-ledger')" class="px-4 py-2 rounded-xl bg-slate-800 text-xs font-bold text-slate-300">Cancel</button>
-        <button onclick="saveLedgerEntryFromModal()" class="px-4 py-2 rounded-xl bg-emerald-600 text-xs font-black text-white shadow-lg shadow-emerald-600/30">Save Kharcha</button>
+        <button onclick="saveLedgerEntry()" class="px-4 py-2 rounded-xl bg-emerald-600 text-xs font-black text-white shadow-lg shadow-emerald-600/30">Save Kharcha</button>
       </div>
     </div>
   </div>
 
-  <!-- APPLICATION CORE DATA SCRIPT -->
-  <script src="/data.js"></script>
-
   <!-- ========================================================================= -->
-  <!-- ⚙️ 7. INTEGRATED DASHBOARD & AUTH ENGINE                                   -->
+  <!-- ⚙️ 7. ULTRA HIGH PERFORMANCE ENGINE (VANILLA JS + SUPABASE SYNC)          -->
   <!-- ========================================================================= -->
   <script>
-    let appDB = null;
-    let currentSelectedSiteId = null;
-    let liveCameraStream = null;
+    // 🌐 INLINE SUPABASE CONFIG
+    const SUPABASE_URL = "https://aeqeqslyfxfmsuacujov.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlcWVxc2x5ZnhmbXN1YWN1am92Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIzMTA2MzcsImV4cCI6MjA1Nzg4NjYzN30.8V4XwHwV3l_fX68gO7wQO0mS0M1JvQyC4R9QpG2q7vI";
+    
+    let supabaseClient = null;
+    try {
+      if (window.supabase) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    } catch (e) {
+      console.warn("Supabase Init Error:", e);
+    }
+
+    // 📦 RESILIENT STATE ENGINE
+    let appState = {
+      projects: [],
+      workers: [],
+      attendance: {},
+      measurements: [],
+      ledger: [],
+      activeSiteId: null,
+      selectedDate: new Date().toISOString().slice(0, 10)
+    };
+
+    // ⚡ INSTAMART TOAST NOTIFIER
+    function notify(msg, type = "success") {
+      const t = document.getElementById('toast');
+      const m = document.getElementById('toast-msg');
+      const i = document.getElementById('toast-icon');
+      m.innerText = msg;
+      i.innerText = type === 'error' ? '❌' : '✅';
+      t.className = `fixed top-4 inset-x-4 z-[999999] p-3.5 rounded-2xl text-xs font-black shadow-2xl flex items-center justify-between transition-all duration-300 transform translate-y-0 opacity-100 ${type === 'error' ? 'bg-rose-600 text-white shadow-rose-600/30' : 'bg-emerald-600 text-white shadow-emerald-600/30'}`;
+      setTimeout(() => {
+        t.className = t.className.replace('translate-y-0 opacity-100', '-translate-y-28 opacity-0 pointer-events-none');
+      }, 3000);
+    }
 
     // -------------------------------------------------------------------------
-    // 🔐 A. MULTI-FACTOR MASTER AUTHENTICATION (PIN + FINGERPRINT + SUPABASE)
+    // 🔐 AUTH SYSTEM
     // -------------------------------------------------------------------------
     function switchAuthTab(type) {
-      const quickView = document.getElementById('auth-view-quick');
-      const fullView = document.getElementById('admin-login-form');
-      const tabQuick = document.getElementById('tab-quick-login');
-      const tabFull = document.getElementById('tab-full-login');
-
-      if (type === 'quick') {
-        quickView.classList.remove('hidden');
-        fullView.classList.add('hidden');
-        tabQuick.className = "flex-1 py-2 rounded-lg bg-blue-600 text-white transition-all shadow";
-        tabFull.className = "flex-1 py-2 rounded-lg text-slate-400 hover:text-white transition-all";
-      } else {
-        quickView.classList.add('hidden');
-        fullView.classList.remove('hidden');
-        tabFull.className = "flex-1 py-2 rounded-lg bg-blue-600 text-white transition-all shadow";
-        tabQuick.className = "flex-1 py-2 rounded-lg text-slate-400 hover:text-white transition-all";
-      }
+      document.getElementById('auth-view-quick').classList.toggle('hidden', type !== 'quick');
+      document.getElementById('admin-login-form').classList.toggle('hidden', type !== 'full');
+      document.getElementById('tab-quick-login').className = type === 'quick' ? 'flex-1 py-2 rounded-lg bg-blue-600 text-white transition-all shadow' : 'flex-1 py-2 rounded-lg text-slate-400';
+      document.getElementById('tab-full-login').className = type === 'full' ? 'flex-1 py-2 rounded-lg bg-blue-600 text-white transition-all shadow' : 'flex-1 py-2 rounded-lg text-slate-400';
     }
 
-    async function verifyAdminAuth() {
-      const client = window.initSupabase();
-      const savedPin = localStorage.getItem('vc_master_pin');
-
-      // Default Tab selection
-      if (savedPin) {
-        switchAuthTab('quick');
-      } else {
-        switchAuthTab('full');
-      }
-
-      if (!client) {
-        showAuthModal();
-        return;
-      }
-
-      // Check live authenticated Supabase session
-      const { data: { session } } = await client.auth.getSession();
-      if (session && session.user) {
-        hideAuthModal();
-        initAdminDashboard();
-      } else {
-        showAuthModal();
-      }
-
-      client.auth.onAuthStateChange((event, session) => {
-        if (event === 'SIGNED_OUT' || !session) {
-          showAuthModal();
-        } else if (event === 'SIGNED_IN') {
-          hideAuthModal();
-          initAdminDashboard();
-        }
-      });
-    }
-
-    // ⚡ 1. QUICK 4-DIGIT PIN AUTHENTICATION
     function handlePinLogin() {
       const enteredPin = document.getElementById('admin-security-pin').value.trim();
       const savedPin = localStorage.getItem('vc_master_pin');
 
       if (!savedPin) {
-        window.showNativeToast("Pehle 'Master ID' tab se PIN register karein!", "error");
+        notify("Pehle 'Master ID' tab se PIN register karein!", "error");
         switchAuthTab('full');
         return;
       }
-
-      if (enteredPin.length !== 4) {
-        window.showNativeToast("4-digit Master PIN enter karein!", "error");
-        return;
-      }
-
       if (btoa(enteredPin) === savedPin) {
-        window.playSuccessChime();
-        window.showNativeToast("PIN Verified! Welcome Vijay Sir.", "success");
-        unlockMasterDashboard();
+        document.getElementById('admin-auth-modal').classList.add('hidden');
+        notify("Welcome Vijay Sir!");
+        initDashboard();
       } else {
-        window.showNativeToast("Galat PIN! Access Denied.", "error");
+        notify("Galat PIN! Access Denied.", "error");
         document.getElementById('admin-security-pin').value = '';
       }
     }
 
-    // 👆 2. HARDWARE BIOMETRIC (FINGERPRINT / FACE ID)
-    async function handleBiometricAuth() {
-      const savedPin = localStorage.getItem('vc_master_pin');
-      if (!savedPin) {
-        window.showNativeToast("Pehle 'Master ID' tab se PIN register karein!", "error");
-        switchAuthTab('full');
-        return;
-      }
-
-      if (!window.PublicKeyCredential) {
-        window.showNativeToast("Is browser/phone me Biometric support nahi mila.", "error");
-        return;
-      }
-
-      try {
-        const challenge = new Uint8Array(32);
-        window.crypto.getRandomValues(challenge);
-
-        const credential = await navigator.credentials.get({
-          publicKey: {
-            challenge: challenge,
-            timeout: 60000,
-            userVerification: "required"
-          }
-        });
-
-        if (credential) {
-          window.playSuccessChime();
-          window.showNativeToast("Biometric Verified! Welcome Sir.", "success");
-          unlockMasterDashboard();
-        }
-      } catch (err) {
-        console.warn("Biometric cancelled/failed:", err);
-        window.showNativeToast("Biometric cancel hua ya PIN enter karein.", "error");
-      }
-    }
-
-    // 🔑 3. FULL EMAIL + PASSWORD + PIN SETUP HANDLER
     async function handleFullAdminLogin(e) {
-      if (e) e.preventDefault();
+      e.preventDefault();
       const email = document.getElementById('admin-auth-email').value.trim().toLowerCase();
       const password = document.getElementById('admin-auth-password').value.trim();
       const setPin = document.getElementById('admin-set-pin').value.trim();
-      const submitBtn = document.getElementById('btn-admin-submit');
+      const btn = document.getElementById('btn-admin-submit');
 
-      if (!email || !password) {
-        window.showNativeToast("Kripya Email aur Password darj karein!", "error");
-        return;
-      }
+      btn.disabled = true;
+      btn.innerText = "Authenticating...";
 
-      submitBtn.disabled = true;
-      submitBtn.innerText = "Verifying Credentials...";
-
-      const client = window.initSupabase();
       try {
-        // Clear stale session
-        await client.auth.signOut();
-
-        const { data, error } = await client.auth.signInWithPassword({ email, password });
-        if (error) {
-          console.error("Supabase Login Error:", error);
-          if (error.status === 429 || error.message.toLowerCase().includes("rate limit")) {
-            window.showNativeToast("Too many attempts! 5 min baad koshish karein.", "error");
-          } else {
-            window.showNativeToast(`Login Denied: ${error.message}`, "error");
-          }
-          return;
+        if (supabaseClient) {
+          const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (error) throw error;
         }
 
-        // Save 4-Digit Quick PIN safely
         if (setPin.length === 4) {
           localStorage.setItem('vc_master_pin', btoa(setPin));
           localStorage.setItem('vc_master_email', email);
-          window.showNativeToast("Master PIN device me lock ho gaya!", "success");
         }
 
-        window.playSuccessChime();
-        window.showNativeToast("Login Kamyab! Welcome Vijay Sir.", "success");
-        unlockMasterDashboard();
+        document.getElementById('admin-auth-modal').classList.add('hidden');
+        notify("Login Kamyab! Master Hub Ready.");
+        initDashboard();
       } catch (err) {
-        window.showNativeToast("Network error: " + err.message, "error");
+        notify("Login Error: " + err.message, "error");
       } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerText = "Verify & Save Device PIN";
+        btn.disabled = false;
+        btn.innerText = "Verify & Save Device PIN";
       }
     }
 
-    function unlockMasterDashboard() {
-      hideAuthModal();
-      initAdminDashboard();
+    async function handleBiometricAuth() {
+      const savedPin = localStorage.getItem('vc_master_pin');
+      if (!savedPin) {
+        notify("Pehle PIN set karein!", "error");
+        switchAuthTab('full');
+        return;
+      }
+      if (!window.PublicKeyCredential) {
+        notify("Biometric support nahi mila.", "error");
+        return;
+      }
+      try {
+        const c = new Uint8Array(32); window.crypto.getRandomValues(c);
+        await navigator.credentials.get({ publicKey: { challenge: c, timeout: 60000, userVerification: "required" } });
+        document.getElementById('admin-auth-modal').classList.add('hidden');
+        notify("Fingerprint Match! Welcome Sir.");
+        initDashboard();
+      } catch (e) {
+        notify("Biometric cancel ya fail hua.", "error");
+      }
     }
 
-    async function handleAdminLogout() {
-      const client = window.initSupabase();
-      if (client) await client.auth.signOut();
-      localStorage.removeItem('MASTER_DB_KEY');
-      window.showNativeToast("Admin session logout ho gaya.");
-      showAuthModal();
-    }
-
-    function showAuthModal() {
+    function handleAdminLogout() {
+      if (supabaseClient) supabaseClient.auth.signOut();
       document.getElementById('admin-auth-modal').classList.remove('hidden');
     }
 
-    function hideAuthModal() {
-      document.getElementById('admin-auth-modal').classList.add('hidden');
-    }
-
     // -------------------------------------------------------------------------
-    // 🚀 B. DASHBOARD BOOTSTRAP & NAVIGATION
+    // 🚀 INITIALIZATION & CACHE-FIRST OPTIMISTIC SYNC
     // -------------------------------------------------------------------------
-    async function initAdminDashboard() {
-      window.showGlobalLoader("Site Dashboard load ho raha hai...");
-      appDB = await getCloudMasterDB();
-
-      appDB.projects = appDB.projects || [];
-      if (appDB.projects.length === 0) {
-        appDB.projects.push({
-          id: 'P1',
-          name: 'Flat 309 (Dilshad Garden)',
-          client: 'Sharma Ji',
-          phone: '9811000009',
-          totalValue: 500000,
-          received: 180000,
-          progress: 65,
-          phase: 'Plaster & Electrical Piping'
-        });
+    function initDashboard() {
+      // 1. Instant Local Cache Render (0ms Lag)
+      const cached = localStorage.getItem('vc_app_state');
+      if (cached) {
+        try {
+          appState = JSON.parse(cached);
+        } catch (e) {}
       }
 
-      currentSelectedSiteId = appDB.projects[0].id;
-      document.getElementById('admin-muster-date').value = new Date().toISOString().slice(0, 10);
+      if (!appState.projects || appState.projects.length === 0) {
+        appState.projects = [
+          { id: 'site_1', name: 'Flat 309 (Dilshad Garden)', client: 'Sharma Ji', phone: '9811000009', total_value: 500000, received: 180000 }
+        ];
+      }
 
-      renderTopSiteDropdown();
-      refreshDashboardMetrics();
-      renderAllModules();
-      window.hideGlobalLoader();
+      if (!appState.activeSiteId) {
+        appState.activeSiteId = appState.projects[0].id;
+      }
+
+      document.getElementById('admin-muster-date').value = appState.selectedDate;
+
+      renderAll();
+
+      // 2. Background Asynchronous Sync (No blocking spinner!)
+      syncAllData(false);
     }
 
-    function renderTopSiteDropdown() {
-      const select = document.getElementById('top-site-selector');
-      select.innerHTML = '';
-      appDB.projects.forEach(p => {
-        const opt = document.createElement('option');
-        opt.value = p.id;
-        opt.innerText = p.name;
-        if (p.id === currentSelectedSiteId) opt.selected = true;
-        select.appendChild(opt);
-      });
-      updateTopSiteLabel();
-    }
+    async function syncAllData(isManual = false) {
+      const badge = document.getElementById('live-sync-badge');
+      if (badge) badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-spin"></span> SYNCING`;
 
-    function handleGlobalSiteChange(siteId) {
-      currentSelectedSiteId = siteId;
-      updateTopSiteLabel();
-      refreshDashboardMetrics();
-      renderAllModules();
-    }
+      try {
+        if (supabaseClient && navigator.onLine) {
+          // Parallel Non-Blocking Fetch
+          const [resProj, resLab, resAtt, resMB, resLed] = await Promise.allSettled([
+            supabaseClient.from('projects').select('*'),
+            supabaseClient.from('labour').select('*'),
+            supabaseClient.from('attendance').select('*'),
+            supabaseClient.from('measurements').select('*'),
+            supabaseClient.from('ledger').select('*')
+          ]);
 
-    function updateTopSiteLabel() {
-      const p = getProjectDetails(appDB, currentSelectedSiteId);
-      document.getElementById('top-client-name').innerText = `${p.client} • ${p.name}`;
-    }
+          if (resProj.status === 'fulfilled' && resProj.value.data && resProj.value.data.length > 0) {
+            appState.projects = resProj.value.data;
+          }
+          if (resLab.status === 'fulfilled' && resLab.value.data) {
+            appState.workers = resLab.value.data;
+          }
+          if (resAtt.status === 'fulfilled' && resAtt.value.data) {
+            appState.attendance = {};
+            resAtt.value.data.forEach(a => {
+              const k = `${a.labour_id}_${a.date}`;
+              appState.attendance[k] = { status: a.status, ot: a.ot_hours || 0 };
+            });
+          }
+          if (resMB.status === 'fulfilled' && resMB.value.data) {
+            appState.measurements = resMB.value.data;
+          }
+          if (resLed.status === 'fulfilled' && resLed.value.data) {
+            appState.ledger = resLed.value.data;
+          }
 
-    function switchAppTab(tabId) {
-      const tabs = ['overview', 'projects', 'labour', 'thekedar', 'suppliers', 'ledger', 'requests', 'reports'];
-      tabs.forEach(t => {
-        const el = document.getElementById('tab-' + t);
-        if (el) el.classList.add('hidden');
-        const navBtn = document.getElementById('nav-btn-' + t);
-        if (navBtn) {
-          navBtn.classList.remove('text-blue-500');
-          navBtn.classList.add('text-slate-400');
+          localStorage.setItem('vc_app_state', JSON.stringify(appState));
+          if (isManual) notify("Cloud se data refresh ho gaya!");
         }
-      });
-
-      const target = document.getElementById('tab-' + tabId);
-      if (target) target.classList.remove('hidden');
-      const activeBtn = document.getElementById('nav-btn-' + tabId);
-      if (activeBtn) {
-        activeBtn.classList.add('text-blue-500');
-        activeBtn.classList.remove('text-slate-400');
+      } catch (err) {
+        console.warn("Sync error:", err);
+      } finally {
+        if (badge) badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> LIVE`;
+        renderAll();
       }
-
-      renderAllModules();
     }
 
     // -------------------------------------------------------------------------
-    // 📈 C. METRICS & OVERVIEW RENDERER
+    // 🎨 UI RENDERERS
     // -------------------------------------------------------------------------
-    function refreshDashboardMetrics() {
-      if (!appDB) return;
-      const margin = calcProjectMargin(appDB, currentSelectedSiteId);
+    function renderAll() {
+      renderTopBar();
+      renderOverview();
+      renderLabourRoster();
+      renderProjects();
+      renderThekedarMB();
+      renderLedger();
+    }
 
-      const profitEl = document.getElementById('ov-net-profit');
-      profitEl.innerText = `₹${margin.netProfit.toLocaleString('en-IN')}`;
-      profitEl.className = margin.isLoss ? 'text-2xl font-black text-rose-500 mt-0.5' : 'text-2xl font-black text-emerald-400 mt-0.5';
+    function renderTopBar() {
+      const p = appState.projects.find(x => String(x.id) === String(appState.activeSiteId)) || appState.projects[0];
+      if (p) {
+        document.getElementById('top-client-name').innerText = `${p.client || 'Client'} • ${p.name}`;
+      }
+
+      const sel = document.getElementById('top-site-selector');
+      sel.innerHTML = appState.projects.map(x => `
+        <option value="${x.id}" ${String(x.id) === String(appState.activeSiteId) ? 'selected' : ''}>${x.name}</option>
+      `).join('');
+    }
+
+    function handleGlobalSiteChange(sId) {
+      appState.activeSiteId = sId;
+      renderAll();
+    }
+
+    function renderOverview() {
+      const p = appState.projects.find(x => String(x.id) === String(appState.activeSiteId)) || appState.projects[0];
+      const totalVal = Number(p.total_value || p.totalValue) || 0;
+      const received = Number(p.received) || 0;
+
+      // Calculate Expenses
+      const siteExpenses = (appState.ledger || [])
+        .filter(l => String(l.project_id || l.site) === String(appState.activeSiteId))
+        .reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+
+      const netProfit = received - siteExpenses;
+      const marginPct = totalVal > 0 ? Math.round((netProfit / totalVal) * 100) : 0;
+
+      const profEl = document.getElementById('ov-net-profit');
+      profEl.innerText = `₹${netProfit.toLocaleString('en-IN')}`;
+      profEl.className = netProfit >= 0 ? "text-3xl font-black text-emerald-400 mt-0.5" : "text-3xl font-black text-rose-500 mt-0.5";
 
       const badge = document.getElementById('ov-margin-badge');
-      badge.innerText = `${margin.profitMarginPct}% Margin`;
-      badge.className = margin.isLoss ? 'text-[10px] font-black px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'text-[10px] font-black px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+      badge.innerText = `${marginPct}% Margin`;
+      badge.className = netProfit >= 0 ? "text-[10px] font-black px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "text-[10px] font-black px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20";
 
-      document.getElementById('ov-recovery-due').innerText = `Recovery Due: ₹${margin.dueFromClient.toLocaleString('en-IN')}`;
-      document.getElementById('ov-contract-val').innerText = `₹${margin.contractValue.toLocaleString('en-IN')}`;
-      document.getElementById('ov-inward-val').innerText = `₹${margin.inwardReceived.toLocaleString('en-IN')}`;
-      document.getElementById('ov-cost-val').innerText = `₹${margin.totalCost.toLocaleString('en-IN')}`;
+      document.getElementById('ov-contract-val').innerText = `₹${totalVal.toLocaleString('en-IN')}`;
+      document.getElementById('ov-inward-val').innerText = `₹${received.toLocaleString('en-IN')}`;
+      document.getElementById('ov-cost-val').innerText = `₹${siteExpenses.toLocaleString('en-IN')}`;
+      document.getElementById('ov-recovery-due').innerText = `Due: ₹${(totalVal - received).toLocaleString('en-IN')}`;
 
-      const siteWorkers = (appDB.workers || []).filter(w => !w.site || String(w.site) === String(currentSelectedSiteId));
-      document.getElementById('ov-worker-summary').innerText = `${siteWorkers.length} Workers Active`;
-    }
-
-    function renderAllModules() {
-      renderOverviewRequests();
-      renderProjectsList();
-      renderAdminLabourRoster();
-      renderThekedarList();
-      renderSuppliersList();
-      renderLedgerList();
-      renderRequestsInbox();
+      const activeWorkers = (appState.workers || []).filter(w => !w.site_id || String(w.site_id) === String(appState.activeSiteId));
+      document.getElementById('ov-worker-count').innerText = `${activeWorkers.length} Active Workers`;
     }
 
     // -------------------------------------------------------------------------
-    // 👷 D. LABOUR MUSTER & ATTENDANCE WITH OVERTIME (NO DATA LOSS)
+    // 👷 LABOUR MUSTER (FULL CRUD + WORKER PIN SETUP + OT STEPPER)
     // -------------------------------------------------------------------------
-    function renderAdminLabourRoster() {
+    function renderLabourRoster() {
       const container = document.getElementById('admin-workers-container');
       if (!container) return;
       container.innerHTML = '';
 
       const dt = document.getElementById('admin-muster-date').value;
-      const workers = (appDB.workers || []).filter(w => !w.site || String(w.site) === String(currentSelectedSiteId));
+      appState.selectedDate = dt;
+
+      const searchQuery = (document.getElementById('worker-search-input')?.value || '').toLowerCase();
+      const roleFilter = document.getElementById('worker-role-filter')?.value || 'ALL';
+
+      let workers = (appState.workers || []).filter(w => !w.site_id || String(w.site_id) === String(appState.activeSiteId));
+
+      // Filter by role
+      if (roleFilter !== 'ALL') {
+        workers = workers.filter(w => w.role === roleFilter);
+      }
+      // Filter by search
+      if (searchQuery) {
+        workers = workers.filter(w => (w.name || '').toLowerCase().includes(searchQuery) || (w.phone || '').includes(searchQuery));
+      }
 
       if (workers.length === 0) {
         container.innerHTML = `
-          <div class="glass-card p-6 rounded-2xl text-center">
-            <p class="text-xs font-bold text-slate-400">Is site par abhi koi worker assigned nahi hai.</p>
-            <button onclick="openAddWorkerModal()" class="mt-2 text-xs text-blue-400 font-extrabold">+ Naya Worker Add Karein</button>
+          <div class="glass-card p-6 rounded-3xl text-center space-y-2">
+            <p class="text-xs font-bold text-slate-400">Is filter ya site par koi worker nahi mila.</p>
+            <button onclick="openAddWorkerModal()" class="px-4 py-2 rounded-xl bg-blue-600 text-xs font-black text-white">+ Naya Worker Add Karein</button>
           </div>
         `;
         return;
       }
 
       workers.forEach(w => {
-        w.att = w.att || {};
-        const dayRecord = w.att[dt] || { status: 'A', ot: 0 };
-        const st = typeof dayRecord === 'object' ? dayRecord.status : dayRecord;
-        const ot = typeof dayRecord === 'object' ? (Number(dayRecord.ot) || 0) : 0;
-        const due = calcWorkerDue(w);
+        const attKey = `${w.id}_${dt}`;
+        const att = appState.attendance[attKey] || { status: 'A', ot: 0 };
+        const st = att.status;
+        const ot = Number(att.ot) || 0;
 
         const card = document.createElement('div');
-        card.className = "glass-card rounded-2xl p-4 space-y-3";
+        card.className = "glass-card rounded-3xl p-4 space-y-3 shadow-lg border border-slate-800";
         card.innerHTML = `
           <div class="flex items-center justify-between">
             <div>
-              <h4 class="text-xs font-black text-white">${w.name} (${w.role})</h4>
-              <p class="text-[11px] text-slate-400">Rate: ₹${w.rate}/D • Advance: ₹${w.advance || 0} • Due: <span class="text-emerald-400 font-extrabold">₹${due.toLocaleString('en-IN')}</span></p>
+              <div class="flex items-center gap-2">
+                <h4 class="text-xs font-black text-white">${w.name}</h4>
+                <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">${w.role}</span>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1 flex items-center gap-2">
+                <span>📞 ${w.phone}</span>
+                <span>•</span>
+                <span>Dihaadi: ₹${w.rate}/D</span>
+                <span>•</span>
+                <span class="text-amber-400 font-mono font-black">PIN: ${w.pin || '1234'}</span>
+              </p>
             </div>
+            
             <div class="flex items-center gap-1.5">
               <button onclick="openAdvanceModal('${w.id}', '${w.name}')" class="px-2 py-1 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-black" title="Kharcha Cut">Kharcha</button>
-              <button onclick="sendWhatsAppHaftawari('${w.id}')" class="p-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs" title="WhatsApp Slip">💬</button>
+              <button onclick="editWorker('${w.id}')" class="p-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs hover:text-white" title="Edit">✏️</button>
+              <button onclick="deleteWorker('${w.id}')" class="p-1.5 rounded-lg bg-rose-950/40 text-rose-400 text-xs" title="Delete">🗑️</button>
             </div>
           </div>
 
-          <div class="grid grid-cols-4 gap-2 pt-1">
-            <button onclick="setWorkerAttendance('${w.id}', 'P')" class="py-2 rounded-xl text-xs font-black transition ${st === 'P' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30' : 'bg-slate-900 border border-slate-800 text-slate-400'}">P (Full)</button>
-            <button onclick="setWorkerAttendance('${w.id}', 'HD')" class="py-2 rounded-xl text-xs font-black transition ${st === 'HD' ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/30' : 'bg-slate-900 border border-slate-800 text-slate-400'}">HD (Half)</button>
-            <button onclick="setWorkerAttendance('${w.id}', 'A')" class="py-2 rounded-xl text-xs font-black transition ${st === 'A' ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30' : 'bg-slate-900 border border-slate-800 text-slate-400'}">A (Absent)</button>
+          <!-- Attendance Action Strip (Full, Half, Absent, Overtime Stepper) -->
+          <div class="grid grid-cols-4 gap-2 pt-1 border-t border-slate-800/80">
+            <button onclick="setWorkerAtt('${w.id}', 'P')" class="py-2.5 rounded-xl text-xs font-black transition active:scale-95 ${st === 'P' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30' : 'bg-slate-900 border border-slate-800 text-slate-400'}">P (Full)</button>
+            <button onclick="setWorkerAtt('${w.id}', 'HD')" class="py-2.5 rounded-xl text-xs font-black transition active:scale-95 ${st === 'HD' ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/30' : 'bg-slate-900 border border-slate-800 text-slate-400'}">HD (Half)</button>
+            <button onclick="setWorkerAtt('${w.id}', 'A')" class="py-2.5 rounded-xl text-xs font-black transition active:scale-95 ${st === 'A' ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30' : 'bg-slate-900 border border-slate-800 text-slate-400'}">A (Absent)</button>
             
-            <div class="flex items-center bg-slate-900 border border-slate-800 rounded-xl px-2 py-1">
-              <span class="text-[9px] text-slate-500 font-bold mr-1">OT:</span>
-              <input type="number" min="0" max="12" value="${ot}" onchange="setWorkerOT('${w.id}', this.value)" class="w-full bg-transparent text-xs font-black text-center text-white outline-none" />
+            <!-- OT Stepper -->
+            <div class="flex items-center bg-slate-900 border border-slate-800 rounded-xl px-1.5 py-1 justify-between">
+              <button onclick="stepOT('${w.id}', -1)" class="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-800 text-slate-400 text-xs font-black">-</button>
+              <span class="text-[11px] font-black text-amber-400">${ot}h</span>
+              <button onclick="stepOT('${w.id}', 1)" class="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-800 text-slate-400 text-xs font-black">+</button>
             </div>
           </div>
         `;
@@ -989,631 +953,184 @@
       });
     }
 
-    async function setWorkerAttendance(workerId, status) {
-      const dt = document.getElementById('admin-muster-date').value;
-      const worker = (appDB.workers || []).find(w => String(w.id) === String(workerId));
-      if (!worker) return;
+    async function setWorkerAtt(workerId, status) {
+      const dt = appState.selectedDate;
+      const attKey = `${workerId}_${dt}`;
+      const currentOT = appState.attendance[attKey]?.ot || 0;
 
-      worker.att = worker.att || {};
-      const currentOT = typeof worker.att[dt] === 'object' ? (Number(worker.att[dt].ot) || 0) : 0;
-      
-      worker.att[dt] = { status, ot: currentOT, projectId: currentSelectedSiteId };
-      renderAdminLabourRoster();
+      // 1. Optimistic Update (Immediate Feedback)
+      appState.attendance[attKey] = { status, ot: currentOT };
+      renderLabourRoster();
+      localStorage.setItem('vc_app_state', JSON.stringify(appState));
 
-      const client = window.initSupabase();
-      let synced = false;
-
-      if (client && navigator.onLine) {
+      // 2. Background Cloud Sync
+      if (supabaseClient && navigator.onLine) {
         try {
-          const { error } = await client.from('attendance').upsert({
+          await supabaseClient.from('attendance').upsert({
             labour_id: workerId,
-            project_id: currentSelectedSiteId,
+            project_id: appState.activeSiteId,
             status,
             ot_hours: currentOT,
-            date: dt,
-            is_locked: false
+            date: dt
           }, { onConflict: 'labour_id,date' });
-          if (!error) synced = true;
         } catch (e) {
-          synced = false;
+          console.warn("Attendance cloud sync failed:", e);
         }
       }
-
-      if (!synced) {
-        window.saveOfflineAttendance(workerId, status, dt, currentSelectedSiteId, currentOT);
-      }
-
-      await saveCloudMasterDB(appDB);
-      window.playSuccessChime();
     }
 
-    async function setWorkerOT(workerId, otHours) {
-      const dt = document.getElementById('admin-muster-date').value;
-      const worker = (appDB.workers || []).find(w => String(w.id) === String(workerId));
-      if (!worker) return;
+    async function stepOT(workerId, delta) {
+      const dt = appState.selectedDate;
+      const attKey = `${workerId}_${dt}`;
+      const currentSt = appState.attendance[attKey]?.status || 'P';
+      const currentOT = Math.max(0, (appState.attendance[attKey]?.ot || 0) + delta);
 
-      worker.att = worker.att || {};
-      const currentStatus = typeof worker.att[dt] === 'object' ? worker.att[dt].status : 'P';
-      const otNum = Number(otHours) || 0;
+      appState.attendance[attKey] = { status: currentSt, ot: currentOT };
+      renderLabourRoster();
+      localStorage.setItem('vc_app_state', JSON.stringify(appState));
 
-      worker.att[dt] = { status: currentStatus, ot: otNum, projectId: currentSelectedSiteId };
-
-      const client = window.initSupabase();
-      if (client && navigator.onLine) {
+      if (supabaseClient && navigator.onLine) {
         try {
-          await client.from('attendance').upsert({
+          await supabaseClient.from('attendance').upsert({
             labour_id: workerId,
-            project_id: currentSelectedSiteId,
-            status: currentStatus,
-            ot_hours: otNum,
-            date: dt,
-            is_locked: false
+            project_id: appState.activeSiteId,
+            status: currentSt,
+            ot_hours: currentOT,
+            date: dt
           }, { onConflict: 'labour_id,date' });
         } catch (e) {}
       }
-
-      await saveCloudMasterDB(appDB);
-      renderAdminLabourRoster();
     }
 
     async function markAllWorkersPresent() {
-      const dt = document.getElementById('admin-muster-date').value;
-      const workers = (appDB.workers || []).filter(w => !w.site || String(w.site) === String(currentSelectedSiteId));
-      
+      const dt = appState.selectedDate;
+      const workers = (appState.workers || []).filter(w => !w.site_id || String(w.site_id) === String(appState.activeSiteId));
+
+      const payload = [];
       workers.forEach(w => {
-        w.att = w.att || {};
-        const currentOT = typeof w.att[dt] === 'object' ? (Number(w.att[dt].ot) || 0) : 0;
-        w.att[dt] = { status: 'P', ot: currentOT, projectId: currentSelectedSiteId };
-      });
-
-      renderAdminLabourRoster();
-
-      const client = window.initSupabase();
-      if (client && navigator.onLine) {
-        const payload = workers.map(w => ({
+        const attKey = `${w.id}_${dt}`;
+        const ot = appState.attendance[attKey]?.ot || 0;
+        appState.attendance[attKey] = { status: 'P', ot };
+        payload.push({
           labour_id: w.id,
-          project_id: currentSelectedSiteId,
+          project_id: appState.activeSiteId,
           status: 'P',
-          ot_hours: typeof w.att[dt] === 'object' ? (Number(w.att[dt].ot) || 0) : 0,
-          date: dt,
-          is_locked: false
-        }));
-        try {
-          await client.from('attendance').upsert(payload, { onConflict: 'labour_id,date' });
-        } catch (e) {}
-      }
-
-      await saveCloudMasterDB(appDB);
-      window.showNativeToast("Sabhi workers ki Present mark ho gayi!", "success");
-    }
-
-    function sendWhatsAppHaftawari(workerId) {
-      const worker = (appDB.workers || []).find(w => String(w.id) === String(workerId));
-      if (!worker) return;
-      const site = getProjectDetails(appDB, currentSelectedSiteId);
-      const url = `https://wa.me/91${worker.phone || ''}?text=${generateWorkerWhatsAppSlip(worker, site.name)}`;
-      window.open(url, '_blank');
-    }
-
-    // -------------------------------------------------------------------------
-    // 📐 E. THEKEDAR MEASUREMENT BOOK (MB) ENGINE
-    // -------------------------------------------------------------------------
-    function renderThekedarList() {
-      const container = document.getElementById('thekedar-list-container');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const thekedars = (appDB.thekedars || []).filter(t => !t.site || String(t.site) === String(currentSelectedSiteId));
-      if (thekedars.length === 0) {
-        container.innerHTML = `<div class="glass-card p-6 rounded-2xl text-center"><p class="text-xs font-bold text-slate-400">Koi Thekedar register nahi hai.</p></div>`;
-        return;
-      }
-
-      thekedars.forEach(t => {
-        const stats = calcThekedarMBStats(appDB, t.id);
-        const card = document.createElement('div');
-        card.className = "glass-card rounded-2xl p-4 space-y-3";
-        card.innerHTML = `
-          <div class="flex items-center justify-between">
-            <div>
-              <h4 class="text-xs font-black text-white">${t.name} (${t.work})</h4>
-              <p class="text-[10px] text-slate-400">Total MB: ${stats.totalArea} Sq.Ft • Paid: ₹${stats.totalPaid} • Due: <span class="text-emerald-400 font-extrabold">₹${stats.netDue.toLocaleString('en-IN')}</span></p>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <button onclick="openMBModalForThekedar('${t.id}')" class="px-2.5 py-1 rounded-xl bg-blue-600 text-xs font-black text-white shadow-lg shadow-blue-600/30">+ MB Entry</button>
-              <button onclick="sendThekedarMBBill('${t.id}')" class="p-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs">💬</button>
-            </div>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function openMBModalForThekedar(thekedarId) {
-      const sel = document.getElementById('mb-thekedar-select');
-      sel.innerHTML = '';
-      appDB.thekedars.forEach(t => {
-        const opt = document.createElement('option');
-        opt.value = t.id;
-        opt.innerText = `${t.name} (${t.work})`;
-        if (t.id === thekedarId) opt.selected = true;
-        sel.appendChild(opt);
-      });
-      openModal('modal-mb');
-    }
-
-    async function saveMBEntryFromModal() {
-      const thekedarId = document.getElementById('mb-thekedar-select').value;
-      const location = document.getElementById('mb-location').value.trim();
-      const length = Number(document.getElementById('mb-length').value) || 0;
-      const width = Number(document.getElementById('mb-width').value) || 0;
-      const rate = Number(document.getElementById('mb-rate').value) || 0;
-
-      if (!location || length <= 0 || width <= 0 || rate <= 0) {
-        window.showNativeToast("Kripya sahi Length, Width aur Rate darj karein!", "error");
-        return;
-      }
-
-      const totalArea = Math.round((length * width) * 100) / 100;
-      const amount = Math.round(totalArea * rate);
-
-      const newEntry = {
-        id: 'MB_' + Date.now(),
-        thekedarId,
-        siteId: currentSelectedSiteId,
-        location,
-        length,
-        width,
-        unit: 'Sq.Ft',
-        totalArea,
-        rate,
-        amount,
-        date: new Date().toISOString().slice(0, 10)
-      };
-
-      appDB.measurements = appDB.measurements || [];
-      appDB.measurements.push(newEntry);
-
-      const client = window.initSupabase();
-      if (client && navigator.onLine) {
-        try {
-          await client.from('measurements').insert([{
-            thekedar_id: thekedarId,
-            site_id: currentSelectedSiteId,
-            location,
-            length,
-            width,
-            total_area: totalArea,
-            rate,
-            amount,
-            date: newEntry.date
-          }]);
-        } catch (e) {}
-      }
-
-      await saveCloudMasterDB(appDB);
-      window.playSuccessChime();
-      window.showNativeToast("MB Entry Calculate Hokar Save Ho Gayi!", "success");
-      closeModal('modal-mb');
-      renderThekedarList();
-    }
-
-    function sendThekedarMBBill(thekedarId) {
-      const t = (appDB.thekedars || []).find(x => x.id === thekedarId);
-      if (!t) return;
-      const url = `https://wa.me/?text=${generateThekedarMBWhatsAppSlip(t, appDB)}`;
-      window.open(url, '_blank');
-    }
-
-    // -------------------------------------------------------------------------
-    // 📦 F. SUPPLIERS KHATA ENGINE
-    // -------------------------------------------------------------------------
-    function renderSuppliersList() {
-      const container = document.getElementById('suppliers-list-container');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const sups = appDB.suppliers || [];
-      if (sups.length === 0) {
-        container.innerHTML = `<div class="glass-card p-6 rounded-2xl text-center"><p class="text-xs font-bold text-slate-400">Koi Supplier added nahi hai.</p></div>`;
-        return;
-      }
-
-      sups.forEach(s => {
-        const supObj = typeof s === 'object' ? s : { id: s, name: s, phone: '', category: 'General' };
-        const fin = calcSupplierBalance(appDB, supObj.id);
-
-        const card = document.createElement('div');
-        card.className = "glass-card rounded-2xl p-4 flex items-center justify-between";
-        card.innerHTML = `
-          <div>
-            <h4 class="text-xs font-black text-white">${supObj.name} (${supObj.category})</h4>
-            <p class="text-[10px] text-slate-400">Bills: ₹${fin.totalPurchased} • Paid: ₹${fin.totalPaid} • Due: <span class="text-rose-400 font-extrabold">₹${fin.balanceDue.toLocaleString('en-IN')}</span></p>
-          </div>
-          <button onclick="sendSupplierWhatsAppSlip('${supObj.id}')" class="p-2 rounded-xl bg-slate-900 border border-slate-700 text-xs">💬</button>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function sendSupplierWhatsAppSlip(supId) {
-      const sup = (appDB.suppliers || []).find(s => (typeof s === 'object' ? s.id : s) === supId);
-      if (!sup) return;
-      const supObj = typeof sup === 'object' ? sup : { id: sup, name: sup, phone: '' };
-      const url = `https://wa.me/91${supObj.phone || ''}?text=${generateSupplierWhatsAppSlip(supObj, appDB)}`;
-      window.open(url, '_blank');
-    }
-
-    // -------------------------------------------------------------------------
-    // 💵 G. CASH LEDGER (DIRECT SITE EXPENSE)
-    // -------------------------------------------------------------------------
-    function renderLedgerList() {
-      const container = document.getElementById('ledger-list-container');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const items = (appDB.ledger || []).filter(l => String(l.site) === String(currentSelectedSiteId));
-      if (items.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-500 italic text-center py-3">Is site ka koi cash kharcha entry nahi mila.</p>`;
-        return;
-      }
-
-      items.slice(0, 15).forEach(l => {
-        const row = document.createElement('div');
-        row.className = "glass-card rounded-xl p-3 flex items-center justify-between";
-        row.innerHTML = `
-          <div>
-            <h5 class="text-xs font-black text-white">${l.category}: ${l.note || ''}</h5>
-            <p class="text-[10px] text-slate-400">${new Date(l.date).toLocaleDateString('en-IN')}</p>
-          </div>
-          <span class="text-xs font-black ${l.type === 'expense' ? 'text-rose-400' : 'text-emerald-400'}">
-            ${l.type === 'expense' ? '-' : '+'}₹${Number(l.amount).toLocaleString('en-IN')}
-          </span>
-        `;
-        container.appendChild(row);
-      });
-    }
-
-    async function saveLedgerEntryFromModal() {
-      const amount = Number(document.getElementById('led-amount').value) || 0;
-      const category = document.getElementById('led-category').value;
-      const desc = document.getElementById('led-desc').value.trim();
-
-      if (amount <= 0) {
-        window.showNativeToast("Kripya sahi Amount darj karein!", "error");
-        return;
-      }
-
-      const newLedger = {
-        id: 'LED_' + Date.now(),
-        site: currentSelectedSiteId,
-        type: 'expense',
-        amount,
-        category,
-        note: desc,
-        date: new Date().toISOString()
-      };
-
-      appDB.ledger = appDB.ledger || [];
-      appDB.ledger.unshift(newLedger);
-
-      const client = window.initSupabase();
-      if (client && navigator.onLine) {
-        try {
-          await client.from('ledger').insert([{
-            project_id: currentSelectedSiteId,
-            type: 'expense',
-            amount,
-            category,
-            note: desc
-          }]);
-        } catch (e) {}
-      }
-
-      await saveCloudMasterDB(appDB);
-      window.playSuccessChime();
-      window.showNativeToast("Kharcha Cashbook me Save Ho Gaya!", "success");
-      closeModal('modal-ledger');
-      refreshDashboardMetrics();
-      renderLedgerList();
-    }
-
-    // -------------------------------------------------------------------------
-    // 📩 H. WORKER REQUESTS INBOX (APPROVE / REJECT)
-    // -------------------------------------------------------------------------
-    function renderRequestsInbox() {
-      const container = document.getElementById('requests-inbox-container');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const reqs = appDB.siteRequests || [];
-      if (reqs.length === 0) {
-        container.innerHTML = `<div class="glass-card p-6 rounded-2xl text-center"><p class="text-xs font-bold text-slate-400">Koi worker request pending nahi hai.</p></div>`;
-        return;
-      }
-
-      reqs.forEach(r => {
-        const card = document.createElement('div');
-        card.className = "glass-card rounded-2xl p-4 space-y-3";
-        card.innerHTML = `
-          <div class="flex items-center justify-between">
-            <div>
-              <span class="text-[9px] font-black uppercase tracking-wider text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full">${r.category}</span>
-              <h4 class="text-sm font-black text-white mt-1">${r.title} ${r.quantity ? `(${r.quantity})` : ''}</h4>
-              <p class="text-[10px] text-slate-400 mt-0.5">By: ${r.worker_name || 'Worker'} • Site: ${r.site_name || 'Site'}</p>
-            </div>
-            <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-lg ${r.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}">
-              ${r.status.toUpperCase()}
-            </span>
-          </div>
-
-          ${r.status === 'pending' ? `
-            <div class="flex items-center gap-2 pt-1 border-t border-slate-800">
-              <button onclick="handleUpdateRequestStatus('${r.id}', 'approved')" class="flex-1 py-2 rounded-xl bg-emerald-600 text-xs font-black text-white">Approve (Manzoor)</button>
-              <button onclick="handleUpdateRequestStatus('${r.id}', 'rejected')" class="flex-1 py-2 rounded-xl bg-rose-600/20 border border-rose-600/30 text-rose-400 text-xs font-black">Reject</button>
-            </div>
-          ` : ''}
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function renderOverviewRequests() {
-      const container = document.getElementById('ov-requests-container');
-      if (!container) return;
-      const reqs = (appDB.siteRequests || []).slice(0, 3);
-      if (reqs.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-500 italic text-center py-2">Koi pending request nahi hai.</p>`;
-        return;
-      }
-      container.innerHTML = reqs.map(r => `
-        <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between">
-          <div>
-            <p class="text-xs font-bold text-white">${r.title} ${r.quantity ? `(${r.quantity})` : ''}</p>
-            <p class="text-[10px] text-slate-400">${r.worker_name || 'Worker'}</p>
-          </div>
-          <span class="text-[9px] font-black px-2 py-0.5 rounded ${r.status === 'approved' ? 'text-emerald-400 bg-emerald-500/10' : 'text-amber-400 bg-amber-500/10'}">${r.status}</span>
-        </div>
-      `).join('');
-    }
-
-    async function handleUpdateRequestStatus(reqId, newStatus) {
-      const r = (appDB.siteRequests || []).find(x => x.id === reqId);
-      if (!r) return;
-      r.status = newStatus;
-
-      const client = window.initSupabase();
-      if (client && navigator.onLine) {
-        try {
-          await client.from('requests').update({ status: newStatus }).eq('id', reqId);
-        } catch (e) {}
-      }
-
-      await saveCloudMasterDB(appDB);
-      window.showNativeToast(`Request ${newStatus}!`, "success");
-      renderRequestsInbox();
-      renderOverviewRequests();
-    }
-
-    // -------------------------------------------------------------------------
-    // 📸 I. WATERMARKED GEO-CAMERA PROOF
-    // -------------------------------------------------------------------------
-    async function openCameraViewfinder() {
-      const modal = document.getElementById('camera-modal');
-      const video = document.getElementById('camera-video');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-
-      try {
-        liveCameraStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+          ot_hours: ot,
+          date: dt
         });
-        video.srcObject = liveCameraStream;
-      } catch (err) {
-        window.showNativeToast("Camera permission allow karein!", "error");
-        closeCameraViewfinder();
-      }
-    }
-
-    function closeCameraViewfinder() {
-      const modal = document.getElementById('camera-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-      if (liveCameraStream) {
-        liveCameraStream.getTracks().forEach(t => t.stop());
-        liveCameraStream = null;
-      }
-    }
-
-    function takeWatermarkedSiteProof() {
-      const video = document.getElementById('camera-video');
-      const canvas = document.getElementById('camera-canvas');
-      canvas.width = video.videoWidth || 640;
-      canvas.height = video.videoHeight || 480;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      navigator.geolocation.getCurrentPosition(
-        pos => stampProofCanvas(ctx, canvas, pos.coords.latitude, pos.coords.longitude),
-        () => stampProofCanvas(ctx, canvas, 28.6758, 77.3214)
-      );
-    }
-
-    function stampProofCanvas(ctx, canvas, lat, lng) {
-      const site = getProjectDetails(appDB, currentSelectedSiteId);
-      const timestamp = new Date().toLocaleString('en-IN');
-
-      ctx.fillStyle = "rgba(2, 6, 23, 0.80)";
-      ctx.fillRect(10, canvas.height - 75, canvas.width - 20, 65);
-
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 13px 'Plus Jakarta Sans'";
-      ctx.fillText(`VIJAY CONSTRUCTION - SITE PROOF`, 20, canvas.height - 52);
-      ctx.font = "11px 'Plus Jakarta Sans'";
-      ctx.fillText(`Site: ${site.name} | GPS: ${lat.toFixed(5)}, ${lng.toFixed(5)}`, 20, canvas.height - 34);
-      ctx.fillText(`Timestamp: ${timestamp}`, 20, canvas.height - 18);
-
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-
-      appDB.siteProofs = appDB.siteProofs || [];
-      appDB.siteProofs.unshift({
-        id: 'PRF_' + Date.now(),
-        projectId: currentSelectedSiteId,
-        dataUrl,
-        timestamp,
-        lat,
-        lng
       });
 
-      saveCloudMasterDB(appDB);
-      window.playSuccessChime();
-      window.showNativeToast("Watermarked Site Proof Saved!", "success");
-      closeCameraViewfinder();
-    }
+      renderLabourRoster();
+      localStorage.setItem('vc_app_state', JSON.stringify(appState));
+      notify("Sabhi workers ki Present mark ho gayi!");
 
-    function sendWhatsAppPaymentIntimation() {
-      const site = getProjectDetails(appDB, currentSelectedSiteId);
-      const url = `https://wa.me/91${site.phone || ''}?text=${generateClientPaymentReminder(site, appDB)}`;
-      window.open(url, '_blank');
-    }
-
-    // -------------------------------------------------------------------------
-    // 🧱 J. PROJECTS LISTING & CREATION
-    // -------------------------------------------------------------------------
-    function renderProjectsList() {
-      const container = document.getElementById('projects-list-container');
-      if (!container) return;
-      container.innerHTML = '';
-
-      appDB.projects.forEach(p => {
-        const card = document.createElement('div');
-        card.className = `glass-card rounded-2xl p-4 space-y-2 border ${p.id === currentSelectedSiteId ? 'border-blue-500' : 'border-slate-800'}`;
-        card.innerHTML = `
-          <div class="flex items-center justify-between">
-            <h4 class="text-sm font-black text-white">${p.name}</h4>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">${p.phase || 'Ongoing'}</span>
-          </div>
-          <p class="text-xs text-slate-400">Client: ${p.client} (${p.phone || 'N/A'})</p>
-          <div class="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
-            <span class="font-extrabold text-white">Value: ₹${(p.totalValue || 0).toLocaleString('en-IN')}</span>
-            <button onclick="handleGlobalSiteChange('${p.id}')" class="px-3 py-1 rounded-xl bg-blue-600 text-white text-[11px] font-extrabold">Active Karein</button>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function openNewProjectModal() { openModal('modal-project'); }
-    async function saveProjectFromModal() {
-      const name = document.getElementById('p-name').value.trim();
-      const client = document.getElementById('p-client').value.trim();
-      const phone = document.getElementById('p-phone').value.trim();
-      const total = Number(document.getElementById('p-total').value) || 0;
-      const received = Number(document.getElementById('p-received').value) || 0;
-
-      if (!name || !client) {
-        window.showNativeToast("Kripya Site aur Client ka naam likhein!", "error");
-        return;
-      }
-
-      const newId = 'P' + (Date.now() % 10000);
-      const newProj = {
-        id: newId,
-        name,
-        client,
-        phone,
-        totalValue: total,
-        received,
-        progress: 10,
-        phase: 'Initial Work'
-      };
-
-      appDB.projects.push(newProj);
-      currentSelectedSiteId = newId;
-
-      const clientDB = window.initSupabase();
-      if (clientDB && navigator.onLine) {
+      if (supabaseClient && navigator.onLine) {
         try {
-          await clientDB.from('projects').insert([{
-            name,
-            client,
-            phone,
-            total_value: total,
-            received,
-            phase: 'Initial Work'
-          }]);
+          await supabaseClient.from('attendance').upsert(payload, { onConflict: 'labour_id,date' });
         } catch (e) {}
       }
-
-      await saveCloudMasterDB(appDB);
-      window.showNativeToast("Nayi Site add ho gayi!", "success");
-      closeModal('modal-project');
-      renderTopSiteDropdown();
-      refreshDashboardMetrics();
-      renderProjectsList();
     }
 
-    // Modal Helpers
-    function openModal(id) {
-      document.getElementById(id).classList.remove('hidden');
-      document.getElementById(id).classList.add('flex');
-    }
-    function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
-      document.getElementById(id).classList.remove('flex');
+    // -------------------------------------------------------------------------
+    // 📝 WORKER CRUD (ADD / EDIT / DELETE)
+    // -------------------------------------------------------------------------
+    function openAddWorkerModal() {
+      document.getElementById('modal-worker-title').innerText = "Naya Worker Register Karein";
+      document.getElementById('w-edit-id').value = "";
+      document.getElementById('w-name').value = "";
+      document.getElementById('w-phone').value = "";
+      document.getElementById('w-rate').value = "1000";
+      document.getElementById('w-ot-rate').value = "100";
+      document.getElementById('w-login-pin').value = "1234";
+      openModal('modal-worker');
     }
 
-    function openAddWorkerModal() { openModal('modal-worker'); }
-    async function saveWorkerFromModal() {
+    function editWorker(id) {
+      const w = appState.workers.find(x => String(x.id) === String(id));
+      if (!w) return;
+      document.getElementById('modal-worker-title').innerText = "Worker Details Update Karein";
+      document.getElementById('w-edit-id').value = w.id;
+      document.getElementById('w-name').value = w.name;
+      document.getElementById('w-phone').value = w.phone;
+      document.getElementById('w-role').value = w.role;
+      document.getElementById('w-rate').value = w.rate;
+      document.getElementById('w-ot-rate').value = w.ot_rate || 100;
+      document.getElementById('w-login-pin').value = w.pin || "1234";
+      openModal('modal-worker');
+    }
+
+    async function saveWorker() {
+      const editId = document.getElementById('w-edit-id').value;
       const name = document.getElementById('w-name').value.trim();
       const role = document.getElementById('w-role').value;
       const phone = document.getElementById('w-phone').value.trim();
-      const rate = Number(document.getElementById('w-rate').value) || 500;
-      const otRate = Number(document.getElementById('w-ot-rate').value) || 100;
+      const rate = Number(document.getElementById('w-rate').value) || 0;
+      const ot_rate = Number(document.getElementById('w-ot-rate').value) || 0;
+      const pin = document.getElementById('w-login-pin').value.trim() || "1234";
 
-      if (!name) {
-        window.showNativeToast("Kripya Worker ka naam likhein!", "error");
+      if (!name || phone.length < 10) {
+        notify("Worker naam aur 10-digit mobile darj karein!", "error");
         return;
       }
 
-      const newWorkerId = 'W' + (Date.now() % 100000);
-      const newWorker = {
-        id: newWorkerId,
+      const workerPayload = {
         name,
         role,
-        site: currentSelectedSiteId,
-        rate,
-        otRate,
         phone,
-        advance: 0,
-        bakaaya: 0,
-        att: {}
+        rate,
+        ot_rate,
+        pin,
+        site_id: appState.activeSiteId
       };
 
-      appDB.workers = appDB.workers || [];
-      appDB.workers.unshift(newWorker);
+      if (editId) {
+        // Edit Mode
+        const idx = appState.workers.findIndex(x => String(x.id) === String(editId));
+        if (idx !== -1) appState.workers[idx] = { ...appState.workers[idx], ...workerPayload };
+        notify("Worker details update ho gayi!");
 
-      const client = window.initSupabase();
-      if (client && navigator.onLine) {
-        try {
-          await client.from('labour').insert([{
-            id: newWorkerId,
-            name,
-            role,
-            rate,
-            ot_rate: otRate,
-            phone,
-            site_id: currentSelectedSiteId
-          }]);
-        } catch (e) {}
+        if (supabaseClient && navigator.onLine) {
+          supabaseClient.from('labour').update(workerPayload).eq('id', editId).then();
+        }
+      } else {
+        // Add Mode
+        const tempId = 'W' + (Date.now() % 1000000);
+        const newWorkerObj = { id: tempId, ...workerPayload };
+        appState.workers.unshift(newWorkerObj);
+        notify("Naya Worker kamyabi se add ho gaya!");
+
+        if (supabaseClient && navigator.onLine) {
+          try {
+            const { data } = await supabaseClient.from('labour').insert([workerPayload]).select();
+            if (data && data[0]) {
+              newWorkerObj.id = data[0].id;
+            }
+          } catch (e) {}
+        }
       }
 
-      await saveCloudMasterDB(appDB);
-      window.showNativeToast("Worker save ho gaya!", "success");
+      localStorage.setItem('vc_app_state', JSON.stringify(appState));
       closeModal('modal-worker');
-      renderAdminLabourRoster();
+      renderLabourRoster();
+      renderOverview();
     }
 
+    async function deleteWorker(id) {
+      if (!confirm("Kya aap sach me is worker ko hatana chahte hain?")) return;
+      appState.workers = appState.workers.filter(x => String(x.id) !== String(id));
+      renderLabourRoster();
+      renderOverview();
+      localStorage.setItem('vc_app_state', JSON.stringify(appState));
+      notify("Worker delete ho gaya!");
+
+      if (supabaseClient && navigator.onLine) {
+        supabaseClient.from('labour').delete().eq('id', id).then();
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // 💵 KHARCHA CUT (ADVANCE) & CASHBOOK
+    // -------------------------------------------------------------------------
     function openAdvanceModal(workerId, workerName) {
       document.getElementById('adv-worker-id').value = workerId;
       document.getElementById('adv-worker-name').innerText = workerName;
@@ -1623,42 +1140,335 @@
 
     async function saveAdvanceCut() {
       const workerId = document.getElementById('adv-worker-id').value;
+      const workerName = document.getElementById('adv-worker-name').innerText;
       const amount = Number(document.getElementById('adv-amount').value) || 0;
+
       if (amount <= 0) {
-        window.showNativeToast("Sahi Kharcha amount likhein!", "error");
+        notify("Sahi advance amount likhein!", "error");
         return;
       }
 
-      const worker = (appDB.workers || []).find(w => String(w.id) === String(workerId));
-      if (!worker) return;
-
-      worker.advance = (Number(worker.advance) || 0) + amount;
-
-      appDB.ledger = appDB.ledger || [];
-      appDB.ledger.unshift({
+      const ledgerEntry = {
         id: 'LED_' + Date.now(),
-        site: currentSelectedSiteId,
+        project_id: appState.activeSiteId,
         type: 'expense',
-        amount,
+        amount: amount,
         category: 'Labour Advance',
-        note: `Kharcha diya: ${worker.name}`,
+        note: `Advance cut: ${workerName}`,
         date: new Date().toISOString()
-      });
+      };
 
-      await saveCloudMasterDB(appDB);
-      window.playSuccessChime();
-      window.showNativeToast("Kharcha cut darj ho gaya!", "success");
+      appState.ledger.unshift(ledgerEntry);
+      localStorage.setItem('vc_app_state', JSON.stringify(appState));
+      notify(`₹${amount} advance cut darj ho gaya!`);
       closeModal('modal-advance');
-      renderAdminLabourRoster();
-      refreshDashboardMetrics();
+      renderOverview();
+      renderLedger();
+
+      if (supabaseClient && navigator.onLine) {
+        supabaseClient.from('ledger').insert([ledgerEntry]).then();
+      }
     }
 
-    function openAddThekedarModal() { window.showNativeToast("Use Supabase or MB book to manage Thekedar"); }
-    function openAddSupplierModal() { window.showNativeToast("Use Supabase to register Suppliers"); }
-    function openAddLedgerModal() { openModal('modal-ledger'); }
+    // -------------------------------------------------------------------------
+    // 🏗️ SITES HUB
+    // -------------------------------------------------------------------------
+    function renderProjects() {
+      const container = document.getElementById('projects-list-container');
+      if (!container) return;
+      container.innerHTML = '';
 
-    // Start verification on load
-    window.addEventListener('DOMContentLoaded', verifyAdminAuth);
+      appState.projects.forEach(p => {
+        const isCurrent = String(p.id) === String(appState.activeSiteId);
+        const card = document.createElement('div');
+        card.className = `glass-card rounded-3xl p-4 space-y-2 border transition ${isCurrent ? 'border-blue-500 bg-blue-950/20' : 'border-slate-800'}`;
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-black text-white">${p.name}</h4>
+            <span class="text-[10px] font-black px-2 py-0.5 rounded-full ${isCurrent ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-400'}">${isCurrent ? 'ACTIVE SITE' : 'SELECT'}</span>
+          </div>
+          <p class="text-[10px] text-slate-400">Client: ${p.client} • 📞 ${p.phone || 'N/A'}</p>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
+            <span class="font-black text-emerald-400">Contract: ₹${Number(p.total_value || p.totalValue || 0).toLocaleString('en-IN')}</span>
+            ${!isCurrent ? `<button onclick="handleGlobalSiteChange('${p.id}')" class="px-3 py-1 rounded-xl bg-blue-600 text-[10px] font-black text-white">Active Banayein</button>` : ''}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function saveNewProject() {
+      const name = document.getElementById('p-name').value.trim();
+      const client = document.getElementById('p-client').value.trim();
+      const phone = document.getElementById('p-phone').value.trim();
+      const total_value = Number(document.getElementById('p-total').value) || 0;
+      const received = Number(document.getElementById('p-received').value) || 0;
+
+      if (!name || !client) return notify("Site aur Client ka naam likhein!", "error");
+
+      const newProj = {
+        id: 'P_' + Date.now(),
+        name,
+        client,
+        phone,
+        total_value,
+        received
+      };
+
+      appState.projects.unshift(newProj);
+      appState.activeSiteId = newProj.id;
+      localStorage.setItem('vc_app_state', JSON.stringify(appState));
+      notify("Nayi Site add ho gayi!");
+      closeModal('modal-project');
+      renderAll();
+
+      if (supabaseClient && navigator.onLine) {
+        supabaseClient.from('projects').insert([newProj]).then();
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // 📐 THEKEDAR MB BOOK & CASHBOOK LEDGER
+    // -------------------------------------------------------------------------
+    function renderThekedarMB() {
+      const container = document.getElementById('thekedar-list-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const items = (appState.measurements || []).filter(m => String(m.site_id || m.siteId) === String(appState.activeSiteId));
+      if (items.length === 0) {
+        container.innerHTML = `<div class="glass-card p-6 rounded-3xl text-center text-xs text-slate-500 italic">Koi MB Entry maujood nahi hai.</div>`;
+        return;
+      }
+
+      items.forEach(m => {
+        const card = document.createElement('div');
+        card.className = "glass-card rounded-2xl p-3.5 flex items-center justify-between";
+        card.innerHTML = `
+          <div>
+            <h4 class="text-xs font-black text-white">${m.contractor || m.thekedarId || 'Thekedar'}: ${m.item || m.location}</h4>
+            <p class="text-[10px] text-slate-400 mt-0.5">Area: ${m.total_area || m.totalArea} Sq.Ft @ ₹${m.rate}/Sq.Ft</p>
+          </div>
+          <span class="text-xs font-black text-emerald-400">₹${Number(m.amount).toLocaleString('en-IN')}</span>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function saveMBEntry() {
+      const contractor = document.getElementById('mb-contractor').value.trim();
+      const item = document.getElementById('mb-item').value.trim();
+      const l = Number(document.getElementById('mb-l').value) || 0;
+      const w = Number(document.getElementById('mb-w').value) || 0;
+      const rate = Number(document.getElementById('mb-rate').value) || 0;
+
+      if (!contractor || !item || l <= 0 || w <= 0 || rate <= 0) {
+        notify("Sahi Length, Width aur Rate bhariye!", "error");
+        return;
+      }
+
+      const totalArea = Math.round(l * w * 10) / 10;
+      const amount = Math.round(totalArea * rate);
+
+      const entry = {
+        id: 'MB_' + Date.now(),
+        site_id: appState.activeSiteId,
+        contractor,
+        item,
+        total_area: totalArea,
+        rate,
+        amount,
+        date: new Date().toISOString().slice(0, 10)
+      };
+
+      appState.measurements.unshift(entry);
+      localStorage.setItem('vc_app_state', JSON.stringify(appState));
+      notify("MB calculate hokar save ho gayi!");
+      closeModal('modal-mb');
+      renderThekedarMB();
+
+      if (supabaseClient && navigator.onLine) {
+        supabaseClient.from('measurements').insert([entry]).then();
+      }
+    }
+
+    function renderLedger() {
+      const container = document.getElementById('ledger-list-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const items = (appState.ledger || []).filter(l => String(l.project_id || l.site) === String(appState.activeSiteId));
+      if (items.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-500 italic text-center py-4">Is site ka koi cash kharcha entry nahi hai.</p>`;
+        return;
+      }
+
+      items.slice(0, 20).forEach(l => {
+        const row = document.createElement('div');
+        row.className = "glass-card rounded-2xl p-3 flex items-center justify-between";
+        row.innerHTML = `
+          <div>
+            <h5 class="text-xs font-black text-white">${l.category}: ${l.note || ''}</h5>
+            <p class="text-[9px] text-slate-500">${new Date(l.date).toLocaleDateString('en-IN')}</p>
+          </div>
+          <span class="text-xs font-black text-rose-400">-₹${Number(l.amount).toLocaleString('en-IN')}</span>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    async function saveLedgerEntry() {
+      const amount = Number(document.getElementById('led-amount').value) || 0;
+      const category = document.getElementById('led-cat').value;
+      const desc = document.getElementById('led-desc').value.trim();
+
+      if (amount <= 0) return notify("Sahi amount darj karein!", "error");
+
+      const entry = {
+        id: 'LED_' + Date.now(),
+        project_id: appState.activeSiteId,
+        type: 'expense',
+        amount,
+        category,
+        note: desc,
+        date: new Date().toISOString()
+      };
+
+      appState.ledger.unshift(entry);
+      localStorage.setItem('vc_app_state', JSON.stringify(appState));
+      notify("Kharcha Cashbook me save ho gaya!");
+      closeModal('modal-ledger');
+      renderOverview();
+      renderLedger();
+
+      if (supabaseClient && navigator.onLine) {
+        supabaseClient.from('ledger').insert([entry]).then();
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // 📸 GEO CAMERA PROOF
+    // -------------------------------------------------------------------------
+    let liveCameraStream = null;
+    async function openCameraViewfinder() {
+      const modal = document.getElementById('camera-modal');
+      const video = document.getElementById('camera-video');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      try {
+        liveCameraStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 1280 } }
+        });
+        video.srcObject = liveCameraStream;
+      } catch (err) {
+        notify("Camera allow karein!", "error");
+        closeCameraViewfinder();
+      }
+    }
+
+    function closeCameraViewfinder() {
+      document.getElementById('camera-modal').classList.add('hidden');
+      document.getElementById('camera-modal').classList.remove('flex');
+      if (liveCameraStream) {
+        liveCameraStream.getTracks().forEach(t => t.stop());
+        liveCameraStream = null;
+      }
+    }
+
+    function captureSiteProof() {
+      const video = document.getElementById('camera-video');
+      const canvas = document.getElementById('camera-canvas');
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      navigator.geolocation.getCurrentPosition(
+        pos => stampProof(ctx, canvas, pos.coords.latitude, pos.coords.longitude),
+        () => stampProof(ctx, canvas, 28.6758, 77.3214)
+      );
+    }
+
+    function stampProof(ctx, canvas, lat, lng) {
+      const p = appState.projects.find(x => String(x.id) === String(appState.activeSiteId)) || appState.projects[0];
+      ctx.fillStyle = "rgba(2, 6, 23, 0.85)";
+      ctx.fillRect(10, canvas.height - 75, canvas.width - 20, 65);
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 13px 'Plus Jakarta Sans'";
+      ctx.fillText(`VIJAY CONSTRUCTION - SITE PROOF`, 20, canvas.height - 52);
+      ctx.font = "11px 'Plus Jakarta Sans'";
+      ctx.fillText(`Site: ${p.name} | GPS: ${lat.toFixed(4)}, ${lng.toFixed(4)}`, 20, canvas.height - 34);
+      ctx.fillText(`Date: ${new Date().toLocaleString('en-IN')}`, 20, canvas.height - 18);
+
+      notify("Site Photo GPS Proof Saved!");
+      closeCameraViewfinder();
+    }
+
+    function sendClientPaymentNotice() {
+      const p = appState.projects.find(x => String(x.id) === String(appState.activeSiteId)) || appState.projects[0];
+      const due = (p.total_value || p.totalValue || 0) - (p.received || 0);
+      const msg = encodeURIComponent(`Namaste ${p.client} Ji,\n\nVijay Construction ki taraf se aapki site (${p.name}) ka update.\nTotal Contract: ₹${p.total_value || p.totalValue}\nReceived: ₹${p.received}\nPending Due: ₹${due}\n\nKripya agla payment installment release karein taaki kaam uninterrupted chalta rahe.\nDhanyawad,\nVIJAY Construction`);
+      window.open(`https://wa.me/91${p.phone || ''}?text=${msg}`, '_blank');
+    }
+
+    // -------------------------------------------------------------------------
+    // 📊 EXCEL / CSV DOWNLOAD ENGINE
+    // -------------------------------------------------------------------------
+    function exportLabourCSV() {
+      let csv = "Worker Name,Role,Phone,Rate,Daily Status,OT Hours\n";
+      const dt = appState.selectedDate;
+      const workers = (appState.workers || []).filter(w => !w.site_id || String(w.site_id) === String(appState.activeSiteId));
+      workers.forEach(w => {
+        const att = appState.attendance[`${w.id}_${dt}`] || { status: 'A', ot: 0 };
+        csv += `"${w.name}","${w.role}","${w.phone}",${w.rate},"${att.status}",${att.ot}\n`;
+      });
+      downloadBlob(csv, `Labour_Muster_${dt}.csv`);
+    }
+
+    function exportLedgerCSV() {
+      let csv = "Date,Category,Description,Amount\n";
+      const items = (appState.ledger || []).filter(l => String(l.project_id || l.site) === String(appState.activeSiteId));
+      items.forEach(l => {
+        csv += `"${new Date(l.date).toLocaleDateString('en-IN')}","${l.category}","${l.note || ''}",${l.amount}\n`;
+      });
+      downloadBlob(csv, `Cash_Ledger_${new Date().toISOString().slice(0,10)}.csv`);
+    }
+
+    function downloadBlob(content, filename) {
+      const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+    }
+
+    // Modal Helpers
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
+
+    function switchAppTab(tab) {
+      const tabs = ['overview', 'projects', 'labour', 'thekedar', 'suppliers', 'ledger', 'reports'];
+      tabs.forEach(t => {
+        const el = document.getElementById('tab-' + t);
+        if (el) el.classList.add('hidden');
+        const nav = document.getElementById('nav-btn-' + t);
+        if (nav) nav.className = "nav-item flex flex-col items-center gap-1 py-1 px-3 rounded-2xl text-slate-400 transition";
+      });
+
+      const active = document.getElementById('tab-' + tab);
+      if (active) active.classList.remove('hidden');
+      const activeNav = document.getElementById('nav-btn-' + tab);
+      if (activeNav) activeNav.className = "nav-item flex flex-col items-center gap-1 py-1 px-3 rounded-2xl text-blue-500 transition";
+
+      renderAll();
+    }
+
+    // DOM LOAD
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedPin = localStorage.getItem('vc_master_pin');
+      switchAuthTab(savedPin ? 'quick' : 'full');
+    });
   </script>
 </body>
 </html>
