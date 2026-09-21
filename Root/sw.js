@@ -1,13 +1,11 @@
 /**
  * VIJAY CONSTRUCTION - PWA Service Worker
- * Version: vc-hub-cache-v5.1
- * Strategy: Network-First for HTML/App Shell, Cache-Bypass for Supabase, Stale-While-Revalidate for Assets
+ * Version: vc-hub-cache-v5.2 (Auto-Update & Instant Takeover Engine)
  */
 
-const CACHE_NAME = 'vc-hub-cache-v5.1';
+const CACHE_NAME = 'vc-hub-cache-v5.2';
 
-// Pre-cached App Shell Assets
-const PRECACHE_URLS = [
+const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/labour.html',
@@ -15,25 +13,26 @@ const PRECACHE_URLS = [
   '/manifest.json'
 ];
 
-// 1. INSTALL EVENT: Pre-cache core app shell and skip waiting immediately
+// 1. INSTALL: Purane worker ka wait kiye bina turant activate ho
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('📦 [SW] Pre-caching Core App Shell...');
-      return cache.addAll(PRECACHE_URLS);
-    }).then(() => self.skipWaiting())
+      console.log('📦 [SW v5.2] Pre-caching core shell...');
+      return cache.addAll(PRECACHE_ASSETS);
+    })
   );
 });
 
-// 2. ACTIVATE EVENT: Delete old cache versions and claim clients
+// 2. ACTIVATE: Purana v5.1 cache turant delete karein aur browser ko instantly control karein
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then((keys) => {
       return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            console.log('🗑️ [SW] Removing Stale Cache:', cache);
-            return caches.delete(cache);
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            console.log('🗑️ [SW] Deleting old cache:', key);
+            return caches.delete(key);
           }
         })
       );
@@ -41,17 +40,15 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 3. FETCH EVENT: Intelligent Traffic Routing
+// 3. FETCH: Strict Network-First for HTML/Code, Cache-Bypass for Supabase
 self.addEventListener('fetch', (event) => {
-  const request = event.request;
-  const url = new URL(request.url);
+  const req = event.request;
+  const url = new URL(req.url);
 
-  // A. Non-GET requests (POST, PUT, DELETE, PATCH): Direct Network Pass
-  if (request.method !== 'GET') {
-    return;
-  }
+  // Non-GET requests direct network
+  if (req.method !== 'GET') return;
 
-  // B. Database & Auth Requests (Supabase): NEVER CACHE, Always Network
+  // Supabase, Auth aur APIs: KABHI CACHE NA KAREIN (Always Fresh Live Network)
   if (
     url.hostname.includes('supabase.co') ||
     url.pathname.includes('/auth/v1') ||
@@ -60,9 +57,9 @@ self.addEventListener('fetch', (event) => {
     url.pathname.includes('/api/')
   ) {
     event.respondWith(
-      fetch(request).catch(() => {
+      fetch(req).catch(() => {
         return new Response(
-          JSON.stringify({ error: 'Network offline. Request queued locally.' }),
+          JSON.stringify({ error: 'Network offline. Action queued.' }),
           { status: 503, headers: { 'Content-Type': 'application/json' } }
         );
       })
@@ -70,21 +67,26 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // C. HTML Navigation Requests (App Shell): Network-First with Offline Fallback
-  if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
+  // HTML Pages & Core Code (index.html, labour.html, data.js): NETWORK-FIRST
+  // Pehle hamesha Vercel se taaza code mangega, sirf tabhi cache use karega jab net band ho
+  if (
+    req.mode === 'navigate' ||
+    req.headers.get('accept')?.includes('text/html') ||
+    url.pathname.endsWith('.html') ||
+    url.pathname.endsWith('data.js')
+  ) {
     event.respondWith(
-      fetch(request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const responseClone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
+      fetch(req)
+        .then((networkRes) => {
+          if (networkRes && networkRes.status === 200) {
+            const clone = networkRes.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
           }
-          return networkResponse;
+          return networkRes;
         })
         .catch(() => {
-          return caches.match(request).then((cachedResponse) => {
-            if (cachedResponse) return cachedResponse;
-            // Fallback to offline index shell
+          return caches.match(req).then((cachedRes) => {
+            if (cachedRes) return cachedRes;
             if (url.pathname.includes('labour')) {
               return caches.match('/labour.html');
             }
@@ -95,18 +97,18 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // D. Static Assets (Scripts, Styles, Fonts, CDN Libraries): Stale-While-Revalidate
+  // Static Assets (Images, Icons, Fonts): Stale-While-Revalidate
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      const fetchPromise = fetch(request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
+    caches.match(req).then((cached) => {
+      const netFetch = fetch(req).then((res) => {
+        if (res && res.status === 200) {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
         }
-        return networkResponse;
+        return res;
       }).catch(() => null);
 
-      return cachedResponse || fetchPromise;
+      return cached || netFetch;
     })
   );
 });
