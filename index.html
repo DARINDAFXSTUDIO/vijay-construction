@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>VIJAY Construction - Master Hub Pro</title>
+  <title>VIJAY Construction - Master Hub</title>
   
   <meta name="theme-color" content="#020617" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   
-  <!-- Modern Tailwind CSS Engine -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,13 +26,13 @@
 </head>
 <body class="h-full bg-slate-950 text-slate-100 flex flex-col select-none overflow-hidden antialiased">
 
-  <!-- INSTANT NOTIFICATION TOAST -->
+  <!-- TOAST NOTIFICATION -->
   <div id="toast" class="fixed top-4 inset-x-4 z-[999999] p-3.5 rounded-2xl text-xs font-black shadow-2xl flex items-center justify-between transition-all duration-300 transform -translate-y-28 opacity-0 pointer-events-none">
     <span id="toast-msg">Notification</span>
     <span id="toast-icon">⚡</span>
   </div>
 
-  <!-- 🔐 MASTER AUTHENTICATION GATE (QUICK PIN + BIOMETRIC) -->
+  <!-- 🔐 MASTER AUTHENTICATION GATE -->
   <div id="admin-auth-modal" class="fixed inset-0 z-[99999] bg-slate-950/95 backdrop-blur-2xl flex items-center justify-center p-4">
     <div class="glass-card w-full max-w-sm rounded-3xl p-6 border border-slate-800 shadow-2xl text-center space-y-5">
       <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-orange-500/20 mx-auto">
@@ -75,7 +74,7 @@
         </button>
       </div>
 
-      <!-- Full Email + Password Setup -->
+      <!-- Full Master ID Login -->
       <form id="admin-login-form" onsubmit="handleFullAdminLogin(event)" class="space-y-3.5 hidden text-left">
         <div>
           <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-1">Admin Email ID</label>
@@ -96,7 +95,7 @@
     </div>
   </div>
 
-  <!-- 📱 TOP BAR (SITE SELECTOR & SYNC INDICATOR) -->
+  <!-- 📱 TOP BAR -->
   <header class="glass-header sticky top-0 z-40 px-4 py-3 flex items-center justify-between">
     <div class="flex items-center gap-3">
       <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center font-black text-slate-950 text-base shadow-lg shadow-orange-500/20">
@@ -207,7 +206,7 @@
       </div>
     </section>
 
-    <!-- 2. SITES / PROJECTS TAB -->
+    <!-- 2. SITES TAB -->
     <section id="tab-projects" class="space-y-4 hidden">
       <div class="flex items-center justify-between">
         <h3 class="text-xs font-black text-white uppercase tracking-wider">Site Projects</h3>
@@ -218,11 +217,9 @@
       <div id="projects-list-container" class="space-y-3"></div>
     </section>
 
-    <!-- 3. LABOUR MUSTER TAB (ATTENDANCE LOCK + SITE ASSIGN + OT STEPPER) -->
+    <!-- 3. LABOUR MUSTER TAB -->
     <section id="tab-labour" class="space-y-3 hidden">
       <div class="glass-card rounded-3xl p-4 space-y-3">
-        
-        <!-- Header Strip with New Worker Button -->
         <div class="flex items-center justify-between">
           <div>
             <h3 class="text-xs font-black text-white uppercase tracking-wider">Daily Labour Muster</h3>
@@ -233,23 +230,21 @@
           </button>
         </div>
 
-        <!-- Date Picker & Attendance Lock / Unlock Controls -->
+        <!-- Date & Lock Control -->
         <div class="flex items-center gap-2 pt-1">
           <input type="date" id="admin-muster-date" onchange="handleDateOrFilterChange()" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-black text-white outline-none" />
           
-          <!-- 🔥 ATTENDANCE LOCK / UNLOCK TOGGLE -->
           <button id="btn-toggle-lock" onclick="toggleAttendanceLock()" class="px-3 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 transition active:scale-95 bg-slate-800 border border-slate-700 text-slate-300">
             <span id="lock-icon">🔓</span>
             <span id="lock-text">Open</span>
           </button>
 
-          <!-- Sabhi Present Button -->
           <button id="btn-all-present" onclick="markAllWorkersPresent()" class="px-3 py-2 rounded-xl bg-blue-600/20 border border-blue-500/30 text-blue-400 text-xs font-black hover:bg-blue-600 hover:text-white transition active:scale-95">
             Sabhi P
           </button>
         </div>
 
-        <!-- Instamart Search & Role Filter -->
+        <!-- Search & Filter -->
         <div class="flex items-center gap-2 pt-1">
           <input type="text" id="worker-search-input" oninput="renderLabourRoster()" placeholder="Search naam ya mobile..." 
                  class="flex-1 bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none" />
@@ -263,7 +258,6 @@
             <option value="Painter">Painter</option>
           </select>
 
-          <!-- Site Filter Mode -->
           <select id="worker-site-filter" onchange="renderLabourRoster()" class="bg-slate-950/80 border border-slate-800 rounded-xl px-2 py-1.5 text-xs font-bold text-amber-400 outline-none">
             <option value="ACTIVE">Is Site Ke</option>
             <option value="ALL">Sabhi Sites Ke</option>
@@ -271,7 +265,6 @@
         </div>
       </div>
 
-      <!-- Workers List Container -->
       <div id="admin-workers-container" class="space-y-3"></div>
     </section>
 
@@ -345,7 +338,7 @@
 
   </main>
 
-  <!-- 🧭 BOTTOM DOCK NAVIGATION -->
+  <!-- 🧭 BOTTOM DOCK -->
   <nav class="glass-dock fixed bottom-0 inset-x-0 z-40 px-2 py-2 flex items-center justify-around">
     <button onclick="switchAppTab('overview')" id="nav-btn-overview" class="nav-item flex flex-col items-center gap-1 py-1 px-3 rounded-2xl text-blue-500 transition">
       <span class="text-lg">🏠</span>
@@ -369,11 +362,7 @@
     </button>
   </nav>
 
-  <!-- ========================================================================= -->
-  <!-- 📝 MODALS: WORKER (WITH SITE ASSIGNMENT), ADVANCE, SITE, MB, LEDGER       -->
-  <!-- ========================================================================= -->
-
-  <!-- ADD / EDIT WORKER MODAL (WITH SITE SELECTION DROPDOWN) -->
+  <!-- MODALS -->
   <div id="modal-worker" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="glass-card w-full max-w-md rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
@@ -406,11 +395,9 @@
           </div>
         </div>
 
-        <!-- 🔥 WORKER SITE ASSIGNMENT DROPDOWN -->
         <div>
           <label class="font-black text-amber-400 block mb-1">📍 Site Par Assign Karein</label>
           <select id="w-assign-site" class="w-full bg-slate-900 border border-amber-500/40 rounded-xl px-3 py-2.5 text-amber-200 font-black outline-none">
-            <!-- Dynamically injected sites + 'ALL' option -->
           </select>
         </div>
 
@@ -437,7 +424,6 @@
     </div>
   </div>
 
-  <!-- WORKER ADVANCE (KHARCHA) MODAL -->
   <div id="modal-advance" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="glass-card w-full max-w-sm rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
@@ -459,7 +445,6 @@
     </div>
   </div>
 
-  <!-- NEW PROJECT / SITE MODAL -->
   <div id="modal-project" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="glass-card w-full max-w-md rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
@@ -499,7 +484,6 @@
     </div>
   </div>
 
-  <!-- THEKEDAR MB MODAL -->
   <div id="modal-mb" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="glass-card w-full max-w-md rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
@@ -537,7 +521,6 @@
     </div>
   </div>
 
-  <!-- CASHBOOK LEDGER MODAL -->
   <div id="modal-ledger" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="glass-card w-full max-w-sm rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
@@ -570,7 +553,6 @@
     </div>
   </div>
 
-  <!-- 📸 GEO CAMERA MODAL -->
   <div id="camera-modal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md hidden flex-col">
     <div class="p-4 flex items-center justify-between border-b border-slate-800">
       <h3 class="text-sm font-black text-white">Live Site GPS Photo Proof</h3>
@@ -587,13 +569,10 @@
     </div>
   </div>
 
-  <!-- ========================================================================= -->
-  <!-- ⚙️ FULL COMPREHENSIVE JAVASCRIPT ENGINE                                   -->
-  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT LOGIC ENGINE -->
   <script>
-    // 🔥 1. SUPABASE EXACT MATCH ADDRESS
+    // 🔥 EXACT SUPABASE PROJECT URL & PUBLISHABLE KEY
     const SUPABASE_URL = "https://lcacvkjmsmhbxipnkuvn.supabase.co";
-    // Anon Key (Paste your API anon key here or keep cached)
     const SUPABASE_ANON_KEY = "sb_publishable_uRAQfZWY4J4pg95Yw5e9_A_DbUo7XT1";
 
     let supabaseClient = null;
@@ -605,19 +584,17 @@
       console.warn("Supabase Init Error:", e);
     }
 
-    // 📦 APP STATE
     let appState = {
       projects: [],
       workers: [],
-      attendance: {},        // key: labourId_date -> { status, ot, locked }
-      dateLockStatus: {},    // key: siteId_date -> boolean (true = locked)
+      attendance: {},
+      dateLockStatus: {},
       measurements: [],
       ledger: [],
       activeSiteId: null,
       selectedDate: new Date().toISOString().slice(0, 10)
     };
 
-    // ⚡ TOAST
     function notify(msg, type = "success") {
       const t = document.getElementById('toast');
       const m = document.getElementById('toast-msg');
@@ -630,9 +607,6 @@
       }, 3000);
     }
 
-    // -------------------------------------------------------------------------
-    // 🔐 AUTH SYSTEM
-    // -------------------------------------------------------------------------
     function switchAuthTab(type) {
       document.getElementById('auth-view-quick').classList.toggle('hidden', type !== 'quick');
       document.getElementById('admin-login-form').classList.toggle('hidden', type !== 'full');
@@ -718,15 +692,21 @@
       document.getElementById('admin-auth-modal').classList.remove('hidden');
     }
 
-    // -------------------------------------------------------------------------
-    // 🚀 INITIALIZATION & OPTIMISTIC CACHE
-    // -------------------------------------------------------------------------
+    // 🔥 PERSISTENT LOCAL INITIALIZATION (NO DATA RESET ON RESTART)
     function initDashboard() {
       const cached = localStorage.getItem('vc_app_state');
       if (cached) {
         try {
-          appState = JSON.parse(cached);
-        } catch (e) {}
+          const parsed = JSON.parse(cached);
+          if (parsed.projects && parsed.projects.length > 0) appState.projects = parsed.projects;
+          if (parsed.activeSiteId) appState.activeSiteId = parsed.activeSiteId;
+          if (parsed.workers && parsed.workers.length > 0) appState.workers = parsed.workers;
+          if (parsed.attendance) appState.attendance = parsed.attendance;
+          if (parsed.ledger) appState.ledger = parsed.ledger;
+          if (parsed.measurements) appState.measurements = parsed.measurements;
+        } catch (e) {
+          console.warn("Local cache read error", e);
+        }
       }
 
       if (!appState.projects || appState.projects.length === 0) {
@@ -806,9 +786,6 @@
       }
     }
 
-    // -------------------------------------------------------------------------
-    // 🎨 UI RENDER ROUTINES
-    // -------------------------------------------------------------------------
     function renderAll() {
       renderTopBar();
       renderOverview();
@@ -832,6 +809,7 @@
 
     function handleGlobalSiteChange(sId) {
       appState.activeSiteId = sId;
+      localStorage.setItem('vc_app_state', JSON.stringify(appState));
       renderAll();
     }
 
@@ -865,14 +843,10 @@
       document.getElementById('ov-cost-val').innerText = `₹${siteExpenses.toLocaleString('en-IN')}`;
       document.getElementById('ov-recovery-due').innerText = `Due: ₹${(totalVal - received).toLocaleString('en-IN')}`;
 
-      // Site assigned worker count
       const activeWorkers = (appState.workers || []).filter(w => !w.site_id || w.site_id === 'ALL' || String(w.site_id) === String(appState.activeSiteId));
       document.getElementById('ov-worker-count').innerText = `${activeWorkers.length} Assigned Workers`;
     }
 
-    // -------------------------------------------------------------------------
-    // 🔒 ATTENDANCE LOCK ENGINE
-    // -------------------------------------------------------------------------
     function isCurrentAttendanceLocked() {
       const dt = appState.selectedDate;
       const lockKey = `${appState.activeSiteId}_${dt}`;
@@ -884,35 +858,22 @@
       const lockKey = `${appState.activeSiteId}_${dt}`;
       const currentlyLocked = Boolean(appState.dateLockStatus[lockKey]);
 
-      if (!currentlyLocked) {
-        // LOCK ATTENDANCE
-        appState.dateLockStatus[lockKey] = true;
-        notify(`🔒 Haziri Lock ho gayi! (${dt}) Ab koi edit nahi kar sakta.`);
-      } else {
-        // UNLOCK ATTENDANCE
-        appState.dateLockStatus[lockKey] = false;
-        notify(`🔓 Haziri Unlock ho gayi! Edit mode active.`);
-      }
+      appState.dateLockStatus[lockKey] = !currentlyLocked;
+      notify(!currentlyLocked ? `🔒 Haziri Lock ho gayi! (${dt})` : `🔓 Haziri Unlock ho gayi! Edit mode active.`);
 
       localStorage.setItem('vc_app_state', JSON.stringify(appState));
       renderLabourRoster();
 
-      // Sync lock flag to Supabase attendance
       if (supabaseClient && navigator.onLine) {
         try {
           await supabaseClient
             .from('attendance')
             .update({ is_locked: !currentlyLocked })
             .match({ project_id: appState.activeSiteId, date: dt });
-        } catch (e) {
-          console.warn("Lock status sync error:", e);
-        }
+        } catch (e) {}
       }
     }
 
-    // -------------------------------------------------------------------------
-    // 👷 LABOUR MUSTER (WITH ATTENDANCE LOCK, SITE ASSIGN & WHATSAPP)
-    // -------------------------------------------------------------------------
     function renderLabourRoster() {
       const container = document.getElementById('admin-workers-container');
       if (!container) return;
@@ -921,7 +882,6 @@
       const dt = appState.selectedDate;
       const isLocked = isCurrentAttendanceLocked();
 
-      // Update Lock/Unlock Button UI
       const lockBtn = document.getElementById('btn-toggle-lock');
       const lockIcon = document.getElementById('lock-icon');
       const lockText = document.getElementById('lock-text');
@@ -947,17 +907,14 @@
 
       let workers = appState.workers || [];
 
-      // 1. Filter by Site Assignment
       if (siteFilterMode === 'ACTIVE') {
         workers = workers.filter(w => !w.site_id || w.site_id === 'ALL' || String(w.site_id) === String(appState.activeSiteId));
       }
 
-      // 2. Filter by Role
       if (roleFilter !== 'ALL') {
         workers = workers.filter(w => w.role === roleFilter);
       }
 
-      // 3. Search Filter
       if (searchQuery) {
         workers = workers.filter(w => (w.name || '').toLowerCase().includes(searchQuery) || (w.phone || '').includes(searchQuery));
       }
@@ -978,7 +935,6 @@
         const st = att.status;
         const ot = Number(att.ot) || 0;
 
-        // Resolve Assigned Site Name
         let siteBadge = "🌐 All Sites";
         if (w.site_id && w.site_id !== 'ALL') {
           const matchedProj = appState.projects.find(p => String(p.id) === String(w.site_id));
@@ -1012,13 +968,11 @@
             </div>
           </div>
 
-          <!-- Attendance Action Strip -->
           <div class="grid grid-cols-4 gap-2 pt-1 border-t border-slate-800/80">
             <button onclick="setWorkerAtt('${w.id}', 'P')" ${isLocked ? 'disabled' : ''} class="py-2.5 rounded-xl text-xs font-black transition active:scale-95 ${st === 'P' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30' : 'bg-slate-900 border border-slate-800 text-slate-400'} ${isLocked ? 'opacity-60 cursor-not-allowed' : ''}">P (Full)</button>
             <button onclick="setWorkerAtt('${w.id}', 'HD')" ${isLocked ? 'disabled' : ''} class="py-2.5 rounded-xl text-xs font-black transition active:scale-95 ${st === 'HD' ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/30' : 'bg-slate-900 border border-slate-800 text-slate-400'} ${isLocked ? 'opacity-60 cursor-not-allowed' : ''}">HD (Half)</button>
             <button onclick="setWorkerAtt('${w.id}', 'A')" ${isLocked ? 'disabled' : ''} class="py-2.5 rounded-xl text-xs font-black transition active:scale-95 ${st === 'A' ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30' : 'bg-slate-900 border border-slate-800 text-slate-400'} ${isLocked ? 'opacity-60 cursor-not-allowed' : ''}">A (Absent)</button>
             
-            <!-- Overtime Stepper -->
             <div class="flex items-center bg-slate-900 border border-slate-800 rounded-xl px-1.5 py-1 justify-between ${isLocked ? 'opacity-60' : ''}">
               <button onclick="stepOT('${w.id}', -1)" ${isLocked ? 'disabled' : ''} class="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-800 text-slate-400 text-xs font-black">-</button>
               <span class="text-[11px] font-black text-amber-400">${ot}h</span>
@@ -1031,10 +985,7 @@
     }
 
     async function setWorkerAtt(workerId, status) {
-      if (isCurrentAttendanceLocked()) {
-        notify("Attendance locked hai! Pehle unlock karein.", "error");
-        return;
-      }
+      if (isCurrentAttendanceLocked()) return notify("Attendance locked hai!", "error");
 
       const dt = appState.selectedDate;
       const attKey = `${workerId}_${dt}`;
@@ -1054,17 +1005,12 @@
             date: dt,
             is_locked: false
           }, { onConflict: 'labour_id,date' });
-        } catch (e) {
-          console.warn("Attendance sync failed:", e);
-        }
+        } catch (e) {}
       }
     }
 
     async function stepOT(workerId, delta) {
-      if (isCurrentAttendanceLocked()) {
-        notify("Attendance locked hai! Pehle unlock karein.", "error");
-        return;
-      }
+      if (isCurrentAttendanceLocked()) return notify("Attendance locked hai!", "error");
 
       const dt = appState.selectedDate;
       const attKey = `${workerId}_${dt}`;
@@ -1090,10 +1036,7 @@
     }
 
     async function markAllWorkersPresent() {
-      if (isCurrentAttendanceLocked()) {
-        notify("Attendance locked hai! Pehle unlock karein.", "error");
-        return;
-      }
+      if (isCurrentAttendanceLocked()) return notify("Attendance locked hai!", "error");
 
       const dt = appState.selectedDate;
       const workers = (appState.workers || []).filter(w => !w.site_id || w.site_id === 'ALL' || String(w.site_id) === String(appState.activeSiteId));
@@ -1124,9 +1067,6 @@
       }
     }
 
-    // -------------------------------------------------------------------------
-    // 📝 WORKER CRUD WITH SITE ASSIGNMENT
-    // -------------------------------------------------------------------------
     function populateSiteAssignmentDropdown(selectedSiteId = 'ALL') {
       const select = document.getElementById('w-assign-site');
       select.innerHTML = '<option value="ALL">🌐 Sabhi Sites (Floating Worker)</option>';
@@ -1181,7 +1121,6 @@
         return;
       }
 
-      // Supabase Schema Payload
       const workerPayload = {
         name: name,
         mobile: phone,
@@ -1267,10 +1206,7 @@
       const workerName = document.getElementById('adv-worker-name').innerText;
       const amount = Number(document.getElementById('adv-amount').value) || 0;
 
-      if (amount <= 0) {
-        notify("Sahi advance amount likhein!", "error");
-        return;
-      }
+      if (amount <= 0) return notify("Sahi advance amount likhein!", "error");
 
       const ledgerEntry = {
         id: 'LED_' + Date.now(),
@@ -1308,9 +1244,9 @@
         `👷 Worker: *${worker.name}* (${worker.role})\n` +
         `📍 Site: *${p.name}*\n` +
         `📅 Date: ${dt}\n` +
-        `✅ Haziri: *${att.status === 'P' ? 'Present (Full)' : att.status === 'HD' ? 'Half Day' : 'Absent'}*\n` +
+        `✅ Haziri: *${att.status === 'P' ? 'Present' : att.status === 'HD' ? 'Half Day' : 'Absent'}*\n` +
         `⏰ Overtime: ${att.ot || 0} Ghante\n` +
-        `💰 Daily Dihaadi: ₹${worker.rate}\n` +
+        `💰 Dihaadi: ₹${worker.rate}\n` +
         `🔑 Portal Login PIN: *${worker.pin || '1234'}*\n` +
         `-----------------------------------------\n` +
         `VIJAY Construction Central Control Hub`
@@ -1319,9 +1255,6 @@
       window.open(`https://wa.me/91${worker.phone}?text=${msg}`, '_blank');
     }
 
-    // -------------------------------------------------------------------------
-    // 🏗️ SITES, MB & CASHBOOK
-    // -------------------------------------------------------------------------
     function renderProjects() {
       const container = document.getElementById('projects-list-container');
       if (!container) return;
@@ -1408,10 +1341,7 @@
       const w = Number(document.getElementById('mb-w').value) || 0;
       const rate = Number(document.getElementById('mb-rate').value) || 0;
 
-      if (!contractor || !item || l <= 0 || w <= 0 || rate <= 0) {
-        notify("Sahi Length, Width aur Rate bhariye!", "error");
-        return;
-      }
+      if (!contractor || !item || l <= 0 || w <= 0 || rate <= 0) return notify("Sahi Length, Width aur Rate bhariye!", "error");
 
       const totalArea = Math.round(l * w * 10) / 10;
       const amount = Math.round(totalArea * rate);
@@ -1492,9 +1422,6 @@
       }
     }
 
-    // -------------------------------------------------------------------------
-    // 📸 GEO CAMERA PROOF
-    // -------------------------------------------------------------------------
     let liveCameraStream = null;
     async function openCameraViewfinder() {
       const modal = document.getElementById('camera-modal');
@@ -1554,7 +1481,7 @@
     function sendClientPaymentNotice() {
       const p = appState.projects.find(x => String(x.id) === String(appState.activeSiteId)) || appState.projects[0];
       const due = (p.total_value || p.totalValue || 0) - (p.received || 0);
-      const msg = encodeURIComponent(`Namaste ${p.client} Ji,\n\nVijay Construction ki taraf se aapki site (${p.name}) ka update.\nTotal Contract: ₹${p.total_value || p.totalValue}\nReceived: ₹${p.received}\nPending Due: ₹${due}\n\nKripya agla payment installment release karein taaki kaam uninterrupted chalta rahe.\nDhanyawad,\nVIJAY Construction`);
+      const msg = encodeURIComponent(`Namaste ${p.client} Ji,\n\nVijay Construction ki taraf se aapki site (${p.name}) ka update.\nTotal Contract: ₹${p.total_value || p.totalValue}\nReceived: ₹${p.received}\nPending Due: ₹${due}\n\nKripya agla payment installment release karein.\nDhanyawad,\nVIJAY Construction`);
       window.open(`https://wa.me/91${p.phone || ''}?text=${msg}`, '_blank');
     }
 
