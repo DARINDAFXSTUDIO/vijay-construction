@@ -1,21 +1,43 @@
 /**
  * VIJAY CONSTRUCTION - Master Control Hub
- * Module: data.js (Enterprise Supabase CRUD & Offline Sync Engine)
+ * Module: data.js (Enterprise Supabase CRUD & Live Auto-Update Engine)
  * Database Source of Truth: Supabase (PostgreSQL)
  */
 
 // =========================================================================
-// 🚀 1. PWA SERVICE WORKER REGISTRATION
+// 🚀 1. PWA SERVICE WORKER REGISTRATION (WITH AUTO-UPDATE & LIVE RELOAD)
 // =========================================================================
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js', { scope: '/' })
       .then((reg) => {
-        console.log('✅ Service Worker Active (Scope Locked):', reg.scope);
+        // App khulte hi background me check karein ki naya code deploy hua hai ya nahi
+        reg.update();
+
+        reg.addEventListener('updatefound', () => {
+          const installingWorker = reg.installing;
+          if (installingWorker) {
+            installingWorker.addEventListener('statechange', () => {
+              if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('🔄 Naya code mila! App refresh ho rahi hai...');
+                window.location.reload();
+              }
+            });
+          }
+        });
       })
       .catch((err) => {
-        console.warn('⚠️ Service Worker Registration Notice:', err);
+        console.warn('⚠️ Service Worker Notice:', err);
       });
+
+    // Jab naya service worker take-over kare to turant screen refresh ho jaye
+    let isRefreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!isRefreshing) {
+        isRefreshing = true;
+        window.location.reload();
+      }
+    });
   });
 }
 
@@ -122,10 +144,10 @@ window.showNativeToast = function(message, type = 'info') {
   let typeClass = 'vj-toast-info';
   
   const msgLower = String(message).toLowerCase();
-  if (type === 'error' || msgLower.includes('error') || msgLower.includes('galat') || msgLower.includes('failed') || msgLower.includes('invalid')) {
+  if (type === 'error' || msgLower.includes('error') || msgLower.includes('galat') || msgLower.includes('failed') || msgLower.includes('invalid') || msgLower.includes('denied')) {
     icon = '⚠️';
     typeClass = 'vj-toast-error';
-  } else if (type === 'success' || msgLower.includes('success') || msgLower.includes('save') || msgLower.includes('sync') || msgLower.includes('ho gaya')) {
+  } else if (type === 'success' || msgLower.includes('success') || msgLower.includes('save') || msgLower.includes('sync') || msgLower.includes('ho gaya') || msgLower.includes('kamyab')) {
     icon = '✅';
     typeClass = 'vj-toast-success';
   }
@@ -202,7 +224,7 @@ const defaultMasterDB = {
   settlements: []
 };
 
-// Cloud-First Fetch: Seedhe PostgreSQL Tables se Data Hydrate Karein
+// Cloud-First Fetch
 async function getCloudMasterDB() {
   const local = localStorage.getItem(MASTER_DB_KEY);
   let parsedLocal = null;
@@ -213,7 +235,6 @@ async function getCloudMasterDB() {
   const client = window.initSupabase();
   if (navigator.onLine && client) {
     try {
-      // Parallel fetch for speed
       const [projRes, labourRes, attRes, stateRes] = await Promise.all([
         client.from('projects').select('*').order('created_at', { ascending: false }),
         client.from('labour').select('*').order('created_at', { ascending: false }),
@@ -256,7 +277,6 @@ async function getCloudMasterDB() {
         }));
       }
 
-      // Map attendance records with Overtime protection
       if (!attRes.error && attRes.data && mergedState.workers) {
         attRes.data.forEach(rec => {
           const worker = mergedState.workers.find(w => String(w.id) === String(rec.labour_id));
@@ -274,7 +294,7 @@ async function getCloudMasterDB() {
       localStorage.setItem(MASTER_DB_KEY, JSON.stringify(mergedState));
       return mergedState;
     } catch (err) {
-      console.warn("⚠️ Live Supabase fetch failed, fallback to local:", err);
+      console.warn("⚠️ Supabase fetch warning:", err);
     }
   }
 
@@ -295,36 +315,13 @@ async function saveCloudMasterDB(data) {
         updated_at: new Date().toISOString()
       });
     } catch (err) {
-      console.warn("⚠️ Cloud state buffer saved locally:", err);
+      console.warn("⚠️ State sync warning:", err);
     }
   }
 }
 
-// Push notification hook
-window.sendPushNotification = async function(title, message, targetPlayerId = null) {
-  try {
-    const res = await fetch('/api/notify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, message, targetPlayerId })
-    });
-    return await res.json();
-  } catch (err) {
-    console.warn("Push notify offline:", err);
-  }
-};
-
-window.getDeviceToken = function() {
-  let token = localStorage.getItem('vc_device_token');
-  if (!token) {
-    token = 'DEV_' + Math.random().toString(36).substring(2, 9).toUpperCase();
-    localStorage.setItem('vc_device_token', token);
-  }
-  return token;
-};
-
 // =========================================================================
-// ⏱️ 5. OFFLINE ATTENDANCE QUEUE & SYNC (With OT & Duplicate Prevention)
+// ⏱️ 5. OFFLINE ATTENDANCE QUEUE & SYNC
 // =========================================================================
 window.saveOfflineAttendance = function(labourId, status, date, projectId = null, otHours = 0) {
   let queue = JSON.parse(localStorage.getItem('vc_offline_attendance') || '[]');
@@ -370,7 +367,6 @@ window.syncOfflineData = async function() {
       window.playSuccessChime();
       window.showNativeToast("✅ Sabhi offline haziri sync ho gayi!", 'success');
     } else {
-      console.error("Attendance sync error:", error);
       window.showNativeToast("⚠️ Sync me dikkat aayi: " + error.message, 'error');
     }
   } catch (e) {
@@ -383,19 +379,8 @@ window.syncOfflineData = async function() {
 window.addEventListener('online', window.syncOfflineData);
 
 // =========================================================================
-// 📍 6. CALCULATIONS & METRICS (Strict Math Validation)
+// 📍 6. CALCULATIONS & METRICS
 // =========================================================================
-function calculateGPSDistanceMeters(lat1, lon1, lat2, lon2) {
-  if (!lat1 || !lon1 || !lat2 || !lon2) return null;
-  const R = 6371e3;
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
-}
-
 function calcWorkerShifts(w) {
   if (!w || !w.att) return 0;
   return Object.values(w.att).reduce((acc, v) => {
