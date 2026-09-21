@@ -1,9 +1,55 @@
 {
-  "name": "VIJAY Construction Portal",
-  "short_name": "VijayApp",
-  "start_url": "./labour.html",
+  "name": "VIJAY Construction - Master Control Hub",
+  "short_name": "VC Hub",
+  "description": "Enterprise Site Operations, Realtime Muster & Financial Control Hub",
+  "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#f4f6f9",
-  "theme_color": "#2563eb",
-  "orientation": "portrait"
+  "orientation": "portrait-primary",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "lang": "hi-IN",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/ChatGPT Image Aug 31, 2026, 04_56_32 PM.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/ChatGPT Image Aug 31, 2026, 04_57_01 PM.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Daily Haziri",
+      "short_name": "Haziri",
+      "description": "Worker Attendance & Overtime Portal",
+      "url": "/labour.html",
+      "icons": [
+        {
+          "src": "/ChatGPT Image Aug 31, 2026, 04_56_32 PM.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Admin Control",
+      "short_name": "Admin",
+      "description": "Master Dashboard & Site Reports",
+      "url": "/index.html",
+      "icons": [
+        {
+          "src": "/ChatGPT Image Aug 31, 2026, 04_56_32 PM.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
 }
