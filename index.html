@@ -9,7 +9,6 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   
-  <!-- Modern Tailwind CSS Engine -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,17 +26,13 @@
 </head>
 <body class="h-full bg-slate-950 text-slate-100 flex flex-col select-none overflow-hidden antialiased">
 
-  <!-- ========================================================================= -->
-  <!-- ⚡ TOAST NOTIFICATION SYSTEM                                              -->
-  <!-- ========================================================================= -->
+  <!-- NOTIFICATION TOAST -->
   <div id="toast" class="fixed top-4 inset-x-4 z-[999999] p-3.5 rounded-2xl text-xs font-black shadow-2xl flex items-center justify-between transition-all duration-300 transform -translate-y-28 opacity-0 pointer-events-none">
     <span id="toast-msg">Notification</span>
     <span id="toast-icon">⚡</span>
   </div>
 
-  <!-- ========================================================================= -->
-  <!-- 🔐 1. ENTERPRISE AUTHENTICATION GATE (PIN + FINGERPRINT + MASTER PASS)    -->
-  <!-- ========================================================================= -->
+  <!-- AUTHENTICATION GATE -->
   <div id="admin-auth-modal" class="fixed inset-0 z-[99999] bg-slate-950/95 backdrop-blur-2xl flex items-center justify-center p-4">
     <div class="glass-card w-full max-w-sm rounded-3xl p-6 border border-slate-800 shadow-2xl text-center space-y-5">
       <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-orange-500/20 mx-auto">
@@ -53,7 +48,6 @@
         <button type="button" id="tab-full-login" onclick="switchAuthTab('full')" class="flex-1 py-2 rounded-lg text-slate-400 hover:text-white transition-all">🔑 Master ID</button>
       </div>
 
-      <!-- Quick PIN & Biometric Screen -->
       <div id="auth-view-quick" class="space-y-4">
         <div>
           <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2 text-left">4-Digit Security PIN</label>
@@ -79,7 +73,6 @@
         </button>
       </div>
 
-      <!-- Email + Pass Setup Screen -->
       <form id="admin-login-form" onsubmit="handleFullAdminLogin(event)" class="space-y-3.5 hidden text-left">
         <div>
           <label class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-1">Admin Email ID</label>
@@ -100,9 +93,7 @@
     </div>
   </div>
 
-  <!-- ========================================================================= -->
-  <!-- 📱 2. TOP APP BAR (SITE DROPDOWN & REALTIME SYNC)                         -->
-  <!-- ========================================================================= -->
+  <!-- TOP APP BAR -->
   <header class="glass-header sticky top-0 z-40 px-4 py-3 flex items-center justify-between">
     <div class="flex items-center gap-3">
       <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center font-black text-slate-950 text-base shadow-lg shadow-orange-500/20">
@@ -131,17 +122,11 @@
     </div>
   </header>
 
-  <!-- ========================================================================= -->
-  <!-- 📊 3. MAIN DASHBOARD CONTENT (SNAPPY TAB ENGINE)                          -->
-  <!-- ========================================================================= -->
+  <!-- MAIN SCROLLABLE DASHBOARD -->
   <main class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4 pb-28">
 
-    <!-- --------------------------------------------------------------------- -->
-    <!-- TAB 1: OVERVIEW / KPI SUMMARY                                         -->
-    <!-- --------------------------------------------------------------------- -->
+    <!-- OVERVIEW TAB -->
     <section id="tab-overview" class="space-y-4">
-      
-      <!-- Financial Profit Margin Card -->
       <div class="glass-card rounded-3xl p-5 border border-blue-500/20 bg-gradient-to-br from-slate-900 via-slate-900/90 to-blue-950/40 space-y-4 shadow-xl">
         <div class="flex items-center justify-between">
           <div>
@@ -172,7 +157,6 @@
         </div>
       </div>
 
-      <!-- Ground Actions: Camera & Client Notice -->
       <div class="grid grid-cols-2 gap-3">
         <div onclick="openCameraViewfinder()" class="glass-card rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:border-slate-600 active:scale-98 transition shadow-lg">
           <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg font-black">
@@ -195,7 +179,6 @@
         </div>
       </div>
 
-      <!-- Quick Navigate Hubs -->
       <div class="grid grid-cols-2 gap-3">
         <div onclick="switchAppTab('labour')" class="glass-card rounded-2xl p-4 flex flex-col gap-1 cursor-pointer hover:border-slate-600 active:scale-98 transition">
           <span class="text-2xl">👷</span>
@@ -221,12 +204,9 @@
           <p class="text-[10px] text-slate-400">Petty Cashbook</p>
         </div>
       </div>
-
     </section>
 
-    <!-- --------------------------------------------------------------------- -->
-    <!-- TAB 2: SITES / PROJECTS MANAGER                                       -->
-    <!-- --------------------------------------------------------------------- -->
+    <!-- SITES TAB -->
     <section id="tab-projects" class="space-y-4 hidden">
       <div class="flex items-center justify-between">
         <h3 class="text-xs font-black text-white uppercase tracking-wider">Site Projects</h3>
@@ -234,16 +214,11 @@
           + Nayi Site Add Karein
         </button>
       </div>
-
       <div id="projects-list-container" class="space-y-3"></div>
     </section>
 
-    <!-- --------------------------------------------------------------------- -->
-    <!-- TAB 3: LABOUR MUSTER (FULL CRUD + SEARCH + OT STEPPER)                 -->
-    <!-- --------------------------------------------------------------------- -->
+    <!-- LABOUR MUSTER TAB -->
     <section id="tab-labour" class="space-y-3 hidden">
-      
-      <!-- Control Hub Header -->
       <div class="glass-card rounded-3xl p-4 space-y-3">
         <div class="flex items-center justify-between">
           <div>
@@ -255,7 +230,6 @@
           </button>
         </div>
 
-        <!-- Date Picker & Quick Sabhi Present -->
         <div class="flex items-center gap-2 pt-1">
           <input type="date" id="admin-muster-date" onchange="renderLabourRoster()" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-black text-white outline-none" />
           <button onclick="markAllWorkersPresent()" class="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/30 text-blue-400 text-xs font-black hover:bg-blue-600 hover:text-white transition active:scale-95">
@@ -263,7 +237,6 @@
           </button>
         </div>
 
-        <!-- Instamart Style Search & Filter Bar -->
         <div class="flex items-center gap-2 pt-1">
           <input type="text" id="worker-search-input" oninput="renderLabourRoster()" placeholder="Search worker naam ya mobile..." 
                  class="flex-1 bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none" />
@@ -277,13 +250,10 @@
         </div>
       </div>
 
-      <!-- Workers List Container -->
       <div id="admin-workers-container" class="space-y-3"></div>
     </section>
 
-    <!-- --------------------------------------------------------------------- -->
-    <!-- TAB 4: THEKEDAR MEASUREMENT BOOK (MB)                                 -->
-    <!-- --------------------------------------------------------------------- -->
+    <!-- THEKEDAR MB TAB -->
     <section id="tab-thekedar" class="space-y-4 hidden">
       <div class="glass-card rounded-2xl p-4 flex items-center justify-between">
         <div>
@@ -294,13 +264,10 @@
           + MB Entry
         </button>
       </div>
-
       <div id="thekedar-list-container" class="space-y-3"></div>
     </section>
 
-    <!-- --------------------------------------------------------------------- -->
-    <!-- TAB 5: SUPPLIER KHATA                                                 -->
-    <!-- --------------------------------------------------------------------- -->
+    <!-- SUPPLIER KHATA TAB -->
     <section id="tab-suppliers" class="space-y-4 hidden">
       <div class="glass-card rounded-2xl p-4 flex items-center justify-between">
         <div>
@@ -311,13 +278,10 @@
           + Naya Supplier
         </button>
       </div>
-
       <div id="suppliers-list-container" class="space-y-3"></div>
     </section>
 
-    <!-- --------------------------------------------------------------------- -->
-    <!-- TAB 6: CASHBOOK & PETTY CASH LEDGER                                   -->
-    <!-- --------------------------------------------------------------------- -->
+    <!-- PETTY CASH LEDGER TAB -->
     <section id="tab-ledger" class="space-y-4 hidden">
       <div class="glass-card rounded-2xl p-4 flex items-center justify-between">
         <div>
@@ -328,13 +292,10 @@
           + Entry Karein
         </button>
       </div>
-
       <div id="ledger-list-container" class="space-y-2"></div>
     </section>
 
-    <!-- --------------------------------------------------------------------- -->
-    <!-- TAB 7: REPORTS & CSV DOWNLOADS                                        -->
-    <!-- --------------------------------------------------------------------- -->
+    <!-- REPORTS TAB -->
     <section id="tab-reports" class="space-y-4 hidden">
       <div class="glass-card rounded-2xl p-4">
         <h3 class="text-xs font-black text-white uppercase tracking-wider">One-Click Excel Reports</h3>
@@ -362,60 +323,33 @@
 
   </main>
 
-  <!-- ========================================================================= -->
-  <!-- 🧭 4. BOTTOM APP NAVIGATION DOCK (INSTAGRAM STYLE SMOOTH TABS)            -->
-  <!-- ========================================================================= -->
+  <!-- BOTTOM NAVIGATION DOCK -->
   <nav class="glass-dock fixed bottom-0 inset-x-0 z-40 px-2 py-2 flex items-center justify-around">
     <button onclick="switchAppTab('overview')" id="nav-btn-overview" class="nav-item flex flex-col items-center gap-1 py-1 px-3 rounded-2xl text-blue-500 transition">
       <span class="text-lg">🏠</span>
       <span class="text-[9px] font-black">Home</span>
     </button>
-
     <button onclick="switchAppTab('projects')" id="nav-btn-projects" class="nav-item flex flex-col items-center gap-1 py-1 px-3 rounded-2xl text-slate-400 transition">
       <span class="text-lg">🏗️</span>
       <span class="text-[9px] font-black">Sites</span>
     </button>
-
     <button onclick="switchAppTab('labour')" id="nav-btn-labour" class="nav-item flex flex-col items-center gap-1 py-1 px-3 rounded-2xl text-slate-400 transition">
       <span class="text-lg">👷</span>
       <span class="text-[9px] font-black">Labour</span>
     </button>
-
     <button onclick="switchAppTab('thekedar')" id="nav-btn-thekedar" class="nav-item flex flex-col items-center gap-1 py-1 px-3 rounded-2xl text-slate-400 transition">
       <span class="text-lg">📐</span>
       <span class="text-[9px] font-black">MB Book</span>
     </button>
-
     <button onclick="switchAppTab('reports')" id="nav-btn-reports" class="nav-item flex flex-col items-center gap-1 py-1 px-3 rounded-2xl text-slate-400 transition">
       <span class="text-lg">📊</span>
       <span class="text-[9px] font-black">Reports</span>
     </button>
   </nav>
 
-  <!-- ========================================================================= -->
-  <!-- 📸 5. WATERMARKED SITE CAMERA MODAL                                       -->
-  <!-- ========================================================================= -->
-  <div id="camera-modal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md hidden flex-col">
-    <div class="p-4 flex items-center justify-between border-b border-slate-800">
-      <h3 class="text-sm font-black text-white">Live Site GPS Photo Proof</h3>
-      <button onclick="closeCameraViewfinder()" class="p-2 text-slate-400 hover:text-white text-lg">✕</button>
-    </div>
-    <div class="flex-1 flex flex-col items-center justify-center p-4 relative">
-      <video id="camera-video" autoplay playsinline class="w-full max-w-sm rounded-3xl bg-black aspect-[3/4] object-cover shadow-2xl border border-slate-800"></video>
-      <canvas id="camera-canvas" class="hidden"></canvas>
-    </div>
-    <div class="p-6 flex items-center justify-center bg-slate-900/60 border-t border-slate-800">
-      <button onclick="captureSiteProof()" class="w-16 h-16 rounded-full border-4 border-white bg-red-600 active:scale-90 transition shadow-2xl flex items-center justify-center">
-        <div class="w-6 h-6 rounded-full bg-white"></div>
-      </button>
-    </div>
-  </div>
+  <!-- MODALS -->
 
-  <!-- ========================================================================= -->
-  <!-- 📝 6. MODALS: WORKER (ADD/EDIT), ADVANCE CUT, SITE, MB, LEDGER            -->
-  <!-- ========================================================================= -->
-
-  <!-- WORKER MODAL (ADD / EDIT) -->
+  <!-- ADD / EDIT WORKER MODAL -->
   <div id="modal-worker" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="glass-card w-full max-w-md rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
@@ -458,7 +392,6 @@
             <input type="number" id="w-ot-rate" placeholder="100" value="100" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-2 text-white font-bold outline-none" />
           </div>
           <div>
-            <!-- Worker Login PIN -->
             <label class="font-black text-amber-400 block mb-1">App PIN (4-D)</label>
             <input type="password" id="w-login-pin" maxlength="4" placeholder="1234" inputmode="numeric" value="1234" class="w-full bg-slate-900 border border-amber-500/50 rounded-xl px-2.5 py-2 text-amber-300 font-mono font-black text-center outline-none" />
           </div>
@@ -472,7 +405,7 @@
     </div>
   </div>
 
-  <!-- WORKER ADVANCE (KHARCHA CUT) MODAL -->
+  <!-- WORKER ADVANCE (KHARCHA) MODAL -->
   <div id="modal-advance" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="glass-card w-full max-w-sm rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
@@ -494,7 +427,7 @@
     </div>
   </div>
 
-  <!-- NEW PROJECT / SITE MODAL -->
+  <!-- NEW PROJECT MODAL -->
   <div id="modal-project" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="glass-card w-full max-w-md rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
@@ -534,7 +467,7 @@
     </div>
   </div>
 
-  <!-- THEKEDAR MB ENTRY MODAL -->
+  <!-- MB ENTRY MODAL -->
   <div id="modal-mb" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="glass-card w-full max-w-md rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
@@ -572,7 +505,7 @@
     </div>
   </div>
 
-  <!-- CASHBOOK LEDGER MODAL -->
+  <!-- LEDGER MODAL -->
   <div id="modal-ledger" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="glass-card w-full max-w-sm rounded-3xl p-5 border border-slate-700 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
@@ -605,11 +538,8 @@
     </div>
   </div>
 
-  <!-- ========================================================================= -->
-  <!-- ⚙️ 7. ULTRA HIGH PERFORMANCE ENGINE (VANILLA JS + SUPABASE SYNC)          -->
-  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT LOGIC -->
   <script>
-    // 🌐 INLINE SUPABASE CONFIG
     const SUPABASE_URL = "https://aeqeqslyfxfmsuacujov.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlcWVxc2x5ZnhmbXN1YWN1am92Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIzMTA2MzcsImV4cCI6MjA1Nzg4NjYzN30.8V4XwHwV3l_fX68gO7wQO0mS0M1JvQyC4R9QpG2q7vI";
     
@@ -622,7 +552,6 @@
       console.warn("Supabase Init Error:", e);
     }
 
-    // 📦 RESILIENT STATE ENGINE
     let appState = {
       projects: [],
       workers: [],
@@ -633,7 +562,6 @@
       selectedDate: new Date().toISOString().slice(0, 10)
     };
 
-    // ⚡ INSTAMART TOAST NOTIFIER
     function notify(msg, type = "success") {
       const t = document.getElementById('toast');
       const m = document.getElementById('toast-msg');
@@ -646,9 +574,6 @@
       }, 3000);
     }
 
-    // -------------------------------------------------------------------------
-    // 🔐 AUTH SYSTEM
-    // -------------------------------------------------------------------------
     function switchAuthTab(type) {
       document.getElementById('auth-view-quick').classList.toggle('hidden', type !== 'quick');
       document.getElementById('admin-login-form').classList.toggle('hidden', type !== 'full');
@@ -734,11 +659,7 @@
       document.getElementById('admin-auth-modal').classList.remove('hidden');
     }
 
-    // -------------------------------------------------------------------------
-    // 🚀 INITIALIZATION & CACHE-FIRST OPTIMISTIC SYNC
-    // -------------------------------------------------------------------------
     function initDashboard() {
-      // 1. Instant Local Cache Render (0ms Lag)
       const cached = localStorage.getItem('vc_app_state');
       if (cached) {
         try {
@@ -759,8 +680,6 @@
       document.getElementById('admin-muster-date').value = appState.selectedDate;
 
       renderAll();
-
-      // 2. Background Asynchronous Sync (No blocking spinner!)
       syncAllData(false);
     }
 
@@ -770,7 +689,6 @@
 
       try {
         if (supabaseClient && navigator.onLine) {
-          // Parallel Non-Blocking Fetch
           const [resProj, resLab, resAtt, resMB, resLed] = await Promise.allSettled([
             supabaseClient.from('projects').select('*'),
             supabaseClient.from('labour').select('*'),
@@ -782,9 +700,20 @@
           if (resProj.status === 'fulfilled' && resProj.value.data && resProj.value.data.length > 0) {
             appState.projects = resProj.value.data;
           }
+          
+          // 🔥 SUPABASE EXACT COLUMN NAME MAPPING
           if (resLab.status === 'fulfilled' && resLab.value.data) {
-            appState.workers = resLab.value.data;
+            appState.workers = resLab.value.data.map(w => ({
+              id: w.id,
+              name: w.name,
+              phone: w.mobile || w.phone,
+              role: w.role,
+              rate: w.daily_rate || w.rate,
+              ot_rate: w.ot_rate_per_hour || w.ot_rate,
+              pin: w.pin || '1234'
+            }));
           }
+          
           if (resAtt.status === 'fulfilled' && resAtt.value.data) {
             appState.attendance = {};
             resAtt.value.data.forEach(a => {
@@ -810,9 +739,6 @@
       }
     }
 
-    // -------------------------------------------------------------------------
-    // 🎨 UI RENDERERS
-    // -------------------------------------------------------------------------
     function renderAll() {
       renderTopBar();
       renderOverview();
@@ -844,7 +770,6 @@
       const totalVal = Number(p.total_value || p.totalValue) || 0;
       const received = Number(p.received) || 0;
 
-      // Calculate Expenses
       const siteExpenses = (appState.ledger || [])
         .filter(l => String(l.project_id || l.site) === String(appState.activeSiteId))
         .reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
@@ -869,9 +794,6 @@
       document.getElementById('ov-worker-count').innerText = `${activeWorkers.length} Active Workers`;
     }
 
-    // -------------------------------------------------------------------------
-    // 👷 LABOUR MUSTER (FULL CRUD + WORKER PIN SETUP + OT STEPPER)
-    // -------------------------------------------------------------------------
     function renderLabourRoster() {
       const container = document.getElementById('admin-workers-container');
       if (!container) return;
@@ -883,13 +805,11 @@
       const searchQuery = (document.getElementById('worker-search-input')?.value || '').toLowerCase();
       const roleFilter = document.getElementById('worker-role-filter')?.value || 'ALL';
 
-      let workers = (appState.workers || []).filter(w => !w.site_id || String(w.site_id) === String(appState.activeSiteId));
+      let workers = appState.workers || [];
 
-      // Filter by role
       if (roleFilter !== 'ALL') {
         workers = workers.filter(w => w.role === roleFilter);
       }
-      // Filter by search
       if (searchQuery) {
         workers = workers.filter(w => (w.name || '').toLowerCase().includes(searchQuery) || (w.phone || '').includes(searchQuery));
       }
@@ -897,7 +817,7 @@
       if (workers.length === 0) {
         container.innerHTML = `
           <div class="glass-card p-6 rounded-3xl text-center space-y-2">
-            <p class="text-xs font-bold text-slate-400">Is filter ya site par koi worker nahi mila.</p>
+            <p class="text-xs font-bold text-slate-400">Is filter par koi worker nahi mila.</p>
             <button onclick="openAddWorkerModal()" class="px-4 py-2 rounded-xl bg-blue-600 text-xs font-black text-white">+ Naya Worker Add Karein</button>
           </div>
         `;
@@ -935,13 +855,11 @@
             </div>
           </div>
 
-          <!-- Attendance Action Strip (Full, Half, Absent, Overtime Stepper) -->
           <div class="grid grid-cols-4 gap-2 pt-1 border-t border-slate-800/80">
             <button onclick="setWorkerAtt('${w.id}', 'P')" class="py-2.5 rounded-xl text-xs font-black transition active:scale-95 ${st === 'P' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30' : 'bg-slate-900 border border-slate-800 text-slate-400'}">P (Full)</button>
             <button onclick="setWorkerAtt('${w.id}', 'HD')" class="py-2.5 rounded-xl text-xs font-black transition active:scale-95 ${st === 'HD' ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/30' : 'bg-slate-900 border border-slate-800 text-slate-400'}">HD (Half)</button>
             <button onclick="setWorkerAtt('${w.id}', 'A')" class="py-2.5 rounded-xl text-xs font-black transition active:scale-95 ${st === 'A' ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30' : 'bg-slate-900 border border-slate-800 text-slate-400'}">A (Absent)</button>
             
-            <!-- OT Stepper -->
             <div class="flex items-center bg-slate-900 border border-slate-800 rounded-xl px-1.5 py-1 justify-between">
               <button onclick="stepOT('${w.id}', -1)" class="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-800 text-slate-400 text-xs font-black">-</button>
               <span class="text-[11px] font-black text-amber-400">${ot}h</span>
@@ -958,12 +876,10 @@
       const attKey = `${workerId}_${dt}`;
       const currentOT = appState.attendance[attKey]?.ot || 0;
 
-      // 1. Optimistic Update (Immediate Feedback)
       appState.attendance[attKey] = { status, ot: currentOT };
       renderLabourRoster();
       localStorage.setItem('vc_app_state', JSON.stringify(appState));
 
-      // 2. Background Cloud Sync
       if (supabaseClient && navigator.onLine) {
         try {
           await supabaseClient.from('attendance').upsert({
@@ -974,7 +890,7 @@
             date: dt
           }, { onConflict: 'labour_id,date' });
         } catch (e) {
-          console.warn("Attendance cloud sync failed:", e);
+          console.warn("Attendance sync error:", e);
         }
       }
     }
@@ -1004,7 +920,7 @@
 
     async function markAllWorkersPresent() {
       const dt = appState.selectedDate;
-      const workers = (appState.workers || []).filter(w => !w.site_id || String(w.site_id) === String(appState.activeSiteId));
+      const workers = appState.workers || [];
 
       const payload = [];
       workers.forEach(w => {
@@ -1031,9 +947,6 @@
       }
     }
 
-    // -------------------------------------------------------------------------
-    // 📝 WORKER CRUD (ADD / EDIT / DELETE)
-    // -------------------------------------------------------------------------
     function openAddWorkerModal() {
       document.getElementById('modal-worker-title').innerText = "Naya Worker Register Karein";
       document.getElementById('w-edit-id').value = "";
@@ -1059,6 +972,7 @@
       openModal('modal-worker');
     }
 
+    // 🔥 SAVE WORKER TO SUPABASE (EXACT COLUMN NAMES)
     async function saveWorker() {
       const editId = document.getElementById('w-edit-id').value;
       const name = document.getElementById('w-name').value.trim();
@@ -1073,40 +987,45 @@
         return;
       }
 
+      // Supabase Schema Payload
       const workerPayload = {
-        name,
-        role,
-        phone,
-        rate,
-        ot_rate,
-        pin,
-        site_id: appState.activeSiteId
+        name: name,
+        mobile: phone,
+        role: role,
+        pin: pin,
+        daily_rate: rate,
+        ot_rate_per_hour: ot_rate
       };
 
-      if (editId) {
-        // Edit Mode
-        const idx = appState.workers.findIndex(x => String(x.id) === String(editId));
-        if (idx !== -1) appState.workers[idx] = { ...appState.workers[idx], ...workerPayload };
-        notify("Worker details update ho gayi!");
+      notify("Supabase me save ho raha hai...");
 
-        if (supabaseClient && navigator.onLine) {
-          supabaseClient.from('labour').update(workerPayload).eq('id', editId).then();
-        }
-      } else {
-        // Add Mode
-        const tempId = 'W' + (Date.now() % 1000000);
-        const newWorkerObj = { id: tempId, ...workerPayload };
-        appState.workers.unshift(newWorkerObj);
-        notify("Naya Worker kamyabi se add ho gaya!");
-
-        if (supabaseClient && navigator.onLine) {
-          try {
-            const { data } = await supabaseClient.from('labour').insert([workerPayload]).select();
+      try {
+        if (supabaseClient) {
+          if (editId) {
+            const { error } = await supabaseClient.from('labour').update(workerPayload).eq('id', editId);
+            if (error) throw error;
+            notify("Worker details update ho gayi!");
+          } else {
+            const { data, error } = await supabaseClient.from('labour').insert([workerPayload]).select();
+            if (error) throw error;
             if (data && data[0]) {
-              newWorkerObj.id = data[0].id;
+              appState.workers.unshift({
+                id: data[0].id,
+                name: data[0].name,
+                phone: data[0].mobile,
+                role: data[0].role,
+                rate: data[0].daily_rate,
+                ot_rate: data[0].ot_rate_per_hour,
+                pin: data[0].pin
+              });
             }
-          } catch (e) {}
+            notify("Worker Supabase me save ho gaya!");
+          }
         }
+      } catch (err) {
+        console.error("Supabase Save Error:", err);
+        notify("Database Error: " + err.message, "error");
+        return;
       }
 
       localStorage.setItem('vc_app_state', JSON.stringify(appState));
@@ -1128,9 +1047,6 @@
       }
     }
 
-    // -------------------------------------------------------------------------
-    // 💵 KHARCHA CUT (ADVANCE) & CASHBOOK
-    // -------------------------------------------------------------------------
     function openAdvanceModal(workerId, workerName) {
       document.getElementById('adv-worker-id').value = workerId;
       document.getElementById('adv-worker-name').innerText = workerName;
@@ -1170,9 +1086,6 @@
       }
     }
 
-    // -------------------------------------------------------------------------
-    // 🏗️ SITES HUB
-    // -------------------------------------------------------------------------
     function renderProjects() {
       const container = document.getElementById('projects-list-container');
       if (!container) return;
@@ -1227,9 +1140,6 @@
       }
     }
 
-    // -------------------------------------------------------------------------
-    // 📐 THEKEDAR MB BOOK & CASHBOOK LEDGER
-    // -------------------------------------------------------------------------
     function renderThekedarMB() {
       const container = document.getElementById('thekedar-list-container');
       if (!container) return;
@@ -1346,9 +1256,6 @@
       }
     }
 
-    // -------------------------------------------------------------------------
-    // 📸 GEO CAMERA PROOF
-    // -------------------------------------------------------------------------
     let liveCameraStream = null;
     async function openCameraViewfinder() {
       const modal = document.getElementById('camera-modal');
@@ -1412,13 +1319,10 @@
       window.open(`https://wa.me/91${p.phone || ''}?text=${msg}`, '_blank');
     }
 
-    // -------------------------------------------------------------------------
-    // 📊 EXCEL / CSV DOWNLOAD ENGINE
-    // -------------------------------------------------------------------------
     function exportLabourCSV() {
       let csv = "Worker Name,Role,Phone,Rate,Daily Status,OT Hours\n";
       const dt = appState.selectedDate;
-      const workers = (appState.workers || []).filter(w => !w.site_id || String(w.site_id) === String(appState.activeSiteId));
+      const workers = appState.workers || [];
       workers.forEach(w => {
         const att = appState.attendance[`${w.id}_${dt}`] || { status: 'A', ot: 0 };
         csv += `"${w.name}","${w.role}","${w.phone}",${w.rate},"${att.status}",${att.ot}\n`;
@@ -1443,7 +1347,6 @@
       link.click();
     }
 
-    // Modal Helpers
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
 
@@ -1464,7 +1367,6 @@
       renderAll();
     }
 
-    // DOM LOAD
     window.addEventListener('DOMContentLoaded', () => {
       const savedPin = localStorage.getItem('vc_master_pin');
       switchAuthTab(savedPin ? 'quick' : 'full');
